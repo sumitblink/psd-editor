@@ -1,4 +1,3 @@
-
 import { originalHeight, originalWidth } from '../../config/app';
 import { Header } from '../../layout/Header';
 import { LayerSidebar } from '../../layout/LayerSidebar';
@@ -16,7 +15,7 @@ function CreateTemplate() {
   const activeTemplate = useSelector(selectActiveTemplate);
   const dimensions = useSelector(selectDimensions);
   const selected = useSelector(selectSelected);
-  
+
   const [canvas, ref] = useCanvas();
   const containerRef = useRef(null);
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
@@ -70,9 +69,9 @@ function CreateTemplate() {
           <LayerSidebar />
           <MainContainer id="canvas-container" ref={containerRef}>
             <Box height={canvasDimensions.scaledHeight} width={canvasDimensions.scaledWidth} position="relative">
-              <CanvasContainer 
-                height={canvasDimensions.height} 
-                width={canvasDimensions.width} 
+              <CanvasContainer
+                height={canvasDimensions.height}
+                width={canvasDimensions.width}
                 transform={`scale(${canvasDimensions.scale})`}
               >
                 <canvas id="canvas" ref={ref} />

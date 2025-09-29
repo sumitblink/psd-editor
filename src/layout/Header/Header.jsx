@@ -4,7 +4,7 @@ import { Box, Button, HStack, Input } from '@chakra-ui/react';
 import { HeadBar, HeaderLogo } from '../container';
 import { useDispatch } from 'react-redux';
 import { parsePSDFromFile, convertPSDTOTemplate } from '../../functions/psd';
-import { setActiveTemplate } from '../../store/templateSlice';
+import { setActive as setActiveTemplate } from '../../store/templateSlice';
 import { loadFromTemplate } from '../../store/canvasSlice';
 
 const Header = () => {
