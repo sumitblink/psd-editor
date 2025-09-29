@@ -31,7 +31,9 @@ export function useCanvas(props) {
         interactive: true,
         selectable: true,
         evented: true,
-        targetFindTolerance: 10,
+        targetFindTolerance: 5,
+        perPixelTargetFind: true,
+        stopContextMenu: true,
       };
 
       const fabric = new fabricJS.Canvas(element, options);
@@ -85,18 +87,31 @@ export function useCanvas(props) {
         // Clicked on empty canvas area - deselect all
         dispatch(deselectObject());
         canvas.instance.discardActiveObject().renderAll();
-      } else {
-        // Clicked on an object - it will be selected automatically by Fabric.js
-        // The selection:created or selection:updated event will handle the dispatch
       }
+      // Don't interfere with object selection - let Fabric.js handle it naturally
+    };
+
+    const handleObjectMoving = (event) => {
+      // Prevent other objects from being selected during move
+      const activeObject = canvas.instance.getActiveObject();
+      if (activeObject && event.target === activeObject) {
+        // Ensure the moving object stays selected
+        dispatch(selectObject());
+      }
+    };
+
+    const handlePathCreated = () => {
+      dispatch(updateObjects());
     };
 
     canvas.instance.on('object:modified', handleObjectModified);
     canvas.instance.on('object:scaling', handleObjectScaling);
+    canvas.instance.on('object:moving', handleObjectMoving);
     canvas.instance.on('selection:created', handleSelectionCreated);
     canvas.instance.on('selection:updated', handleSelectionUpdated);
     canvas.instance.on('selection:cleared', handleSelectionCleared);
     canvas.instance.on('mouse:down', handleMouseDown);
+    canvas.instance.on('path:created', handlePathCreated);
 
     window.addEventListener('mousedown', clickAwayListener);
 
