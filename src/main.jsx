@@ -8,7 +8,5 @@ import './index.css'
 window.fabric = fabric;
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <App />
 )

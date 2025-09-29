@@ -19,8 +19,11 @@ export function useCanvas(props) {
 
   const ref = useCallback((element) => {
     if (!element) {
-      canvas.instance?.dispose();
-      console.log('Canvas element removed');
+      if (canvas.instance) {
+        canvas.instance.off();
+        canvas.instance.dispose();
+        console.log('Canvas element removed and disposed');
+      }
     } else {
       console.log('Initializing canvas on element:', element);
       const options = {
@@ -165,6 +168,16 @@ export function useCanvas(props) {
       window.removeEventListener('mousedown', clickAwayListener);
     };
   }, [canvas.instance, clickAwayListener, dispatch]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (canvas.instance) {
+        canvas.instance.off();
+        canvas.instance.dispose();
+      }
+    };
+  }, []);
 
   return [canvas, ref];
 }
