@@ -14,7 +14,6 @@ import {
   SliderFilledTrack,
   SliderThumb,
   HStack,
-  ColorPicker,
   useColorModeValue
 } from '@chakra-ui/react';
 import { Drawer } from '../container';
