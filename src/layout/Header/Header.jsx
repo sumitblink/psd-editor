@@ -5,7 +5,7 @@ import { HeadBar, HeaderLogo } from '../container';
 import { useDispatch, useSelector } from 'react-redux';
 import { parsePSDFromFile, convertPSDTOTemplate } from '../../functions/psd';
 import { setActive as setActiveTemplate } from '../../store/templateSlice';
-import { loadFromTemplate, undo, redo, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON } from '../../store/canvasSlice';
+import { loadFromTemplate, undo, redo, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON, updateObjects } from '../../store/canvasSlice';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -31,7 +31,12 @@ const Header = () => {
 
       // Set as active template and load into canvas
       dispatch(setActiveTemplate(template));
-      dispatch(loadFromTemplate(template));
+      await dispatch(loadFromTemplate(template));
+
+      // Force update objects list after import
+      setTimeout(() => {
+        dispatch(updateObjects());
+      }, 500);
 
       // Reset file input
       event.target.value = '';

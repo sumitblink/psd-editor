@@ -54,11 +54,23 @@ export function useCanvas(props) {
 
     canvas.instance.off();
 
-    const handleObjectModified = () => dispatch(saveState());
+    const handleObjectModified = () => {
+      dispatch(saveState());
+      dispatch(updateObjects());
+    };
     const handleObjectScaling = (event) => dispatch(scaleObject(event));
-    const handleSelectionCreated = () => dispatch(selectObject());
-    const handleSelectionUpdated = () => dispatch(selectObject());
-    const handleSelectionCleared = () => dispatch(deselectObject());
+    const handleSelectionCreated = () => {
+      dispatch(selectObject());
+      dispatch(updateObjects());
+    };
+    const handleSelectionUpdated = () => {
+      dispatch(selectObject());
+      dispatch(updateObjects());
+    };
+    const handleSelectionCleared = () => {
+      dispatch(deselectObject());
+      dispatch(updateObjects());
+    };
 
     canvas.instance.on('object:modified', handleObjectModified);
     canvas.instance.on('object:scaling', handleObjectScaling);

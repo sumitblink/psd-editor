@@ -78,7 +78,17 @@ export const loadFromTemplate = createAsyncThunk(
       canvas.instance.renderAll();
     }
 
-    return template;
+    // Update objects list after loading template
+    const objects = canvas.instance.getObjects();
+    const updatedObjects = objects
+      .map((object, index) => ({ 
+        name: object.name || `Layer ${index + 1}`, 
+        type: object.type, 
+        index,
+        visible: object.visible !== false
+      }));
+    
+    return { template, objects: updatedObjects };
   }
 );
 
@@ -255,9 +265,14 @@ const canvasSlice = createSlice({
       if (!state.instance) return;
       const objects = state.instance.getObjects();
       state.objects = objects
-        .map((object) => object.toObject(exportedProps))
-        .map((object, index) => ({ name: object.name, type: object.type, index }));
-      state.selected = state.instance.getActiveObject()?.toObject(exportedProps);
+        .map((object, index) => ({ 
+          name: object.name || `Layer ${index + 1}`, 
+          type: object.type, 
+          index,
+          visible: object.visible !== false
+        }));
+      const activeObject = state.instance.getActiveObject();
+      state.selected = activeObject ? activeObject.toObject(exportedProps) : null;
     },
     updateBackground: (state, action) => {
       state.background = action.payload;

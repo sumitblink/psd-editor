@@ -3,7 +3,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, VStack, Text, Input, Select, FormLabel, FormControl } from '@chakra-ui/react';
 import { Drawer } from '../container';
-import { selectSelected, changeTextProperty } from '../../store/canvasSlice';
+import { selectSelected, changeTextProperty, changeImageProperty, changeObjectDimensions } from '../../store/canvasSlice';
 
 const PropertySidebar = () => {
   const dispatch = useDispatch();
@@ -11,6 +11,14 @@ const PropertySidebar = () => {
 
   const handleTextChange = (property, value) => {
     dispatch(changeTextProperty({ property, value }));
+  };
+
+  const handleImageChange = (property, value) => {
+    dispatch(changeImageProperty({ property, value }));
+  };
+
+  const handleObjectChange = (property, value) => {
+    dispatch(changeObjectDimensions({ property, value }));
   };
 
   if (!selected) {
@@ -94,17 +102,63 @@ const PropertySidebar = () => {
         )}
 
         <FormControl>
+          <FormLabel fontSize="sm">Left</FormLabel>
+          <Input
+            size="sm"
+            type="number"
+            value={Math.round(selected.left || 0)}
+            onChange={(e) => handleObjectChange('left', parseInt(e.target.value))}
+          />
+        </FormControl>
+
+        <FormControl>
+          <FormLabel fontSize="sm">Top</FormLabel>
+          <Input
+            size="sm"
+            type="number"
+            value={Math.round(selected.top || 0)}
+            onChange={(e) => handleObjectChange('top', parseInt(e.target.value))}
+          />
+        </FormControl>
+
+        <FormControl>
           <FormLabel fontSize="sm">Width</FormLabel>
-          <Text fontSize="sm" color="gray.600">
-            {Math.round(selected.width || 0)}px
-          </Text>
+          <Input
+            size="sm"
+            type="number"
+            value={Math.round(selected.width || 0)}
+            onChange={(e) => handleObjectChange('width', parseInt(e.target.value))}
+          />
         </FormControl>
 
         <FormControl>
           <FormLabel fontSize="sm">Height</FormLabel>
-          <Text fontSize="sm" color="gray.600">
-            {Math.round(selected.height || 0)}px
-          </Text>
+          <Input
+            size="sm"
+            type="number"
+            value={Math.round(selected.height || 0)}
+            onChange={(e) => handleObjectChange('height', parseInt(e.target.value))}
+          />
+        </FormControl>
+
+        <FormControl>
+          <FormLabel fontSize="sm">Opacity</FormLabel>
+          <Input
+            size="sm"
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value={selected.opacity || 1}
+            onChange={(e) => {
+              const value = parseFloat(e.target.value);
+              if (selected.type === 'textbox') {
+                handleTextChange('opacity', value);
+              } else {
+                handleImageChange('opacity', value);
+              }
+            }}
+          />
         </FormControl>
       </VStack>
     </Drawer>
