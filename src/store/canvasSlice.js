@@ -430,6 +430,10 @@ const canvasSlice = createSlice({
           visible: object.visible !== false
         }));
 
+      // Update selected object to maintain selection after layer change
+      const activeObject = state.instance.getActiveObject();
+      state.selected = activeObject ? activeObject.toObject(exportedProps) : null;
+
       state.instance.fire('object:modified', { target: element }).renderAll();
     },
     deleteObject: (state) => {

@@ -106,12 +106,12 @@ const Header = () => {
 
   const handleMoveBack = () => {
     if (!selected || !canvas) return;
-    dispatch(changeObjectLayer({ direction: 'back' }));
+    dispatch(changeObjectLayer('back'));
   };
 
   const handleMoveFront = () => {
     if (!selected || !canvas) return;
-    dispatch(changeObjectLayer({ direction: 'front' }));
+    dispatch(changeObjectLayer('front'));
   };
 
   const handleDelete = () => {

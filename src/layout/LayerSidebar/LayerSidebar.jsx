@@ -16,6 +16,7 @@ const LayerSidebar = () => {
   };
 
   const handleLayerMove = (direction) => {
+    if (!canvas || !selected) return;
     dispatch(changeObjectLayer(direction));
   };
 
