@@ -96,7 +96,7 @@ const LayerSidebar = () => {
                     {object.name || `Layer ${index + 1}`}
                   </Text>
                   <Text fontSize="xs" color="gray.500">
-                    {object.type} • Layer {objects.length - object.index}
+                    {object.type} • Layer {object.index}
                   </Text>
                 </Box>
                 <HStack spacing={1}>
