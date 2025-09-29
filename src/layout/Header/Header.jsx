@@ -1,11 +1,11 @@
-
 import React, { useRef } from 'react';
-import { Box, Button, HStack, Input } from '@chakra-ui/react';
+import { Box, Button, HStack, Input, IconButton, Tooltip } from '@chakra-ui/react';
+import { Undo, Redo } from 'lucide-react';
 import { HeadBar, HeaderLogo } from '../container';
 import { useDispatch, useSelector } from 'react-redux';
 import { parsePSDFromFile, convertPSDTOTemplate } from '../../functions/psd';
 import { setActive as setActiveTemplate } from '../../store/templateSlice';
-import { loadFromTemplate, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON } from '../../store/canvasSlice';
+import { loadFromTemplate, undo, redo, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON } from '../../store/canvasSlice';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -25,14 +25,14 @@ const Header = () => {
     try {
       // Parse PSD file
       const psd = await parsePSDFromFile(file);
-      
+
       // Convert to template format
       const template = await convertPSDTOTemplate(psd);
-      
+
       // Set as active template and load into canvas
       dispatch(setActiveTemplate(template));
       dispatch(loadFromTemplate(template));
-      
+
       // Reset file input
       event.target.value = '';
     } catch (error) {
@@ -43,17 +43,12 @@ const Header = () => {
 
   const handleUndo = () => {
     if (!canvas || !canUndo) return;
-    // Get the current state from canvas store
-    const state = canvas.toObject();
-    // Load previous state - this would need to be implemented in canvasSlice
-    // For now, just trigger the undo action
-    console.log('Undo clicked - implement undo logic');
+    dispatch(undo());
   };
 
   const handleRedo = () => {
     if (!canvas || !canRedo) return;
-    // Similar to undo, implement redo logic
-    console.log('Redo clicked - implement redo logic');
+    dispatch(redo());
   };
 
   return (
@@ -75,22 +70,28 @@ const Header = () => {
         <Button size="sm" variant="outline" onClick={handleImportPSD}>
           Import PSD
         </Button>
-        <Button 
-          size="sm" 
-          variant="outline" 
-          onClick={handleUndo}
-          isDisabled={!canUndo}
-        >
-          Undo
-        </Button>
-        <Button 
-          size="sm" 
-          variant="outline" 
-          onClick={handleRedo}
-          isDisabled={!canRedo}
-        >
-          Redo
-        </Button>
+        <HStack spacing={1}>
+          <Tooltip label="Undo (Ctrl+Z)">
+            <IconButton
+              size="sm"
+              variant="outline"
+              icon={<Undo size={16} />}
+              onClick={handleUndo}
+              isDisabled={!canUndo}
+              aria-label="Undo"
+            />
+          </Tooltip>
+          <Tooltip label="Redo (Ctrl+Y)">
+            <IconButton
+              size="sm"
+              variant="outline"
+              icon={<Redo size={16} />}
+              onClick={handleRedo}
+              isDisabled={!canRedo}
+              aria-label="Redo"
+            />
+          </Tooltip>
+        </HStack>
         <Button size="sm" variant="outline">
           Export
         </Button>

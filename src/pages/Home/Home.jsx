@@ -4,13 +4,14 @@ import { LayerSidebar } from '../../layout/LayerSidebar';
 import PropertySidebar from '../../layout/PropertySidebar/PropertySidebar';
 import { CanvasContainer, Layout, Loader, MainContainer, MainWrapperContainer } from '../../layout/container';
 import { useCanvas } from '../../hooks/useCanvas';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { selectIsLoading, selectActiveTemplate } from '../../store/templateSlice';
-import { selectDimensions, selectSelected } from '../../store/canvasSlice';
+import { selectDimensions, selectSelected, undo, redo, deleteObject } from '../../store/canvasSlice';
 import { Box } from '@chakra-ui/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 function CreateTemplate() {
+  const dispatch = useDispatch();
   const isLoading = useSelector(selectIsLoading);
   const activeTemplate = useSelector(selectActiveTemplate);
   const dimensions = useSelector(selectDimensions);
@@ -46,24 +47,23 @@ function CreateTemplate() {
             event.preventDefault();
             if (event.shiftKey) {
               // Ctrl+Shift+Z for redo
-              console.log('Redo shortcut');
+              dispatch(redo());
             } else {
               // Ctrl+Z for undo
-              console.log('Undo shortcut');
+              dispatch(undo());
             }
             break;
           case 'y':
             // Ctrl+Y for redo (alternative)
             event.preventDefault();
-            console.log('Redo shortcut (Y)');
+            dispatch(redo());
             break;
         }
       } else if (event.key === 'Delete' || event.key === 'Backspace') {
         // Delete key for deleting selected object
         event.preventDefault();
         if (selected) {
-          // dispatch(deleteObject());
-          console.log('Delete shortcut');
+          dispatch(deleteObject());
         }
       }
     };
