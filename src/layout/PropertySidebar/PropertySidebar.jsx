@@ -3,14 +3,14 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, VStack, Text, Input, Select, FormLabel, FormControl } from '@chakra-ui/react';
 import { Drawer } from '../container';
-import { selectSelected, updateTextProperty } from '../../store/canvasSlice';
+import { selectSelected, changeTextProperty } from '../../store/canvasSlice';
 
 const PropertySidebar = () => {
   const dispatch = useDispatch();
   const selected = useSelector(selectSelected);
 
   const handleTextChange = (property, value) => {
-    dispatch(updateTextProperty({ property, value }));
+    dispatch(changeTextProperty({ property, value }));
   };
 
   if (!selected) {

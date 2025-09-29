@@ -480,8 +480,8 @@ export const selectCanvasInstance = (state) => state.canvas.instance;
 export const selectObjects = (state) => state.canvas.objects;
 export const selectSelected = (state) => state.canvas.selected;
 export const selectDimensions = (state) => ({
-  width: state.canvas.dimensions.width,
-  height: state.canvas.dimensions.height
+  width: state.canvas.width,
+  height: state.canvas.height
 });
 export const selectCanUndo = (state) => state.canvas.undoStack.length > 0;
 export const selectCanRedo = (state) => state.canvas.redoStack.length > 0;
