@@ -420,7 +420,7 @@ const canvasSlice = createSlice({
           break;
       }
 
-      // Update objects list with correct order and indices
+      // Force immediate update of objects list with correct order and indices
       const objects = state.instance.getObjects();
       state.objects = objects
         .map((object, index) => ({ 
@@ -435,6 +435,9 @@ const canvasSlice = createSlice({
       state.selected = activeObject ? activeObject.toObject(exportedProps) : null;
 
       state.instance.fire('object:modified', { target: element }).renderAll();
+      
+      // Force state update to trigger re-render
+      state.objects = [...state.objects];
     },
     deleteObject: (state) => {
       if (!state.instance) return;

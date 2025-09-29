@@ -79,7 +79,7 @@ const LayerSidebar = () => {
         <VStack spacing={1} p={2} align="stretch">
           {objects.map((object, index) => (
             <Item
-              key={`${object.name}-${index}`}
+              key={`${object.name}-${object.index}-${index}`}
               width="full"
               bg={selected?.name === object.name ? "blue.100" : "white"}
               border="1px solid"
