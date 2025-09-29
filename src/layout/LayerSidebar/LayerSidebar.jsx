@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, VStack, Text, HStack, IconButton, Button, ButtonGroup } from '@chakra-ui/react';
-import { EyeIcon, EyeOffIcon, TrashIcon, ArrowUpIcon, ArrowDownIcon, MoveUpIcon, MoveDownIcon } from 'lucide-react';
+import { EyeIcon, EyeOffIcon, TrashIcon, ArrowUpIcon, ArrowDownIcon, MoveUpIcon, MoveDownIcon, GripVerticalIcon } from 'lucide-react';
 import { Drawer, Item } from '../container';
 import { selectObjects, selectSelected, selectCanvasInstance, deleteObject, changeObjectLayer, selectObject } from '../../store/canvasSlice';
 
@@ -10,6 +10,8 @@ const LayerSidebar = () => {
   const objects = useSelector(selectObjects);
   const selected = useSelector(selectSelected);
   const canvas = useSelector(selectCanvasInstance);
+  const [draggedItem, setDraggedItem] = useState(null);
+  const [dragOverItem, setDragOverItem] = useState(null);
 
   const handleDeleteObject = () => {
     dispatch(deleteObject());
@@ -43,6 +45,57 @@ const LayerSidebar = () => {
       targetObject.set('visible', !targetObject.visible);
       canvas.renderAll();
     }
+  };
+
+  // Drag and drop handlers
+  const handleDragStart = (e, object) => {
+    setDraggedItem(object);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', '');
+  };
+
+  const handleDragOver = (e, object) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverItem(object);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverItem(null);
+  };
+
+  const handleDrop = (e, targetObject) => {
+    e.preventDefault();
+    setDragOverItem(null);
+    
+    if (!draggedItem || !targetObject || !canvas) return;
+    if (draggedItem.name === targetObject.name) return;
+
+    // Find the canvas objects
+    const canvasObjects = canvas.getObjects();
+    const draggedCanvasObj = canvasObjects.find(obj => obj.name === draggedItem.name);
+    const targetCanvasObj = canvasObjects.find(obj => obj.name === targetObject.name);
+
+    if (!draggedCanvasObj || !targetCanvasObj) return;
+
+    // Get current indices
+    const draggedIndex = canvasObjects.indexOf(draggedCanvasObj);
+    const targetIndex = canvasObjects.indexOf(targetCanvasObj);
+
+    // Move the dragged object to the target position
+    draggedCanvasObj.moveTo(targetIndex);
+    
+    // Select the moved object
+    canvas.setActiveObject(draggedCanvasObj);
+    canvas.renderAll();
+    dispatch(selectObject());
+
+    setDraggedItem(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItem(null);
+    setDragOverItem(null);
   };
 
   // Debug: Log objects to console
@@ -81,16 +134,47 @@ const LayerSidebar = () => {
             <Item
               key={`${object.name}-${object.index}-${index}`}
               width="full"
-              bg={selected?.name === object.name ? "blue.100" : "white"}
-              border="1px solid"
-              borderColor={selected?.name === object.name ? "blue.300" : "gray.200"}
+              bg={
+                dragOverItem?.name === object.name 
+                  ? "blue.50" 
+                  : selected?.name === object.name 
+                  ? "blue.100" 
+                  : "white"
+              }
+              border="2px solid"
+              borderColor={
+                dragOverItem?.name === object.name
+                  ? "blue.400"
+                  : selected?.name === object.name 
+                  ? "blue.300" 
+                  : "gray.200"
+              }
               cursor="pointer"
               onClick={() => handleSelectLayer(object.name)}
-              _hover={{ bg: "gray.50" }}
+              _hover={{ bg: dragOverItem?.name === object.name ? "blue.50" : "gray.50" }}
               p={2}
               borderRadius="md"
+              draggable="true"
+              onDragStart={(e) => handleDragStart(e, object)}
+              onDragOver={(e) => handleDragOver(e, object)}
+              onDragLeave={handleDragLeave}
+              onDrop={(e) => handleDrop(e, object)}
+              onDragEnd={handleDragEnd}
+              opacity={draggedItem?.name === object.name ? 0.5 : 1}
+              transform={draggedItem?.name === object.name ? "rotate(5deg)" : "none"}
+              transition="all 0.2s"
             >
               <HStack flex={1} spacing={2}>
+                <IconButton
+                  size="xs"
+                  variant="ghost"
+                  icon={<GripVerticalIcon size={12} />}
+                  aria-label="Drag to reorder"
+                  color="gray.400"
+                  cursor="grab"
+                  _active={{ cursor: "grabbing" }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                />
                 <Box flex={1}>
                   <Text fontSize="sm" fontWeight="medium" noOfLines={1}>
                     {object.name || `Layer ${index + 1}`}
