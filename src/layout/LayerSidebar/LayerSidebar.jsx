@@ -77,7 +77,7 @@ const LayerSidebar = () => {
       </Box>
       <Box flex={1} overflowY="auto" bg="white">
         <VStack spacing={1} p={2} align="stretch">
-          {objects.map((object, index) => (
+          {[...objects].reverse().map((object, index) => (
             <Item
               key={`${object.name}-${object.index}-${index}`}
               width="full"
@@ -96,7 +96,7 @@ const LayerSidebar = () => {
                     {object.name || `Layer ${index + 1}`}
                   </Text>
                   <Text fontSize="xs" color="gray.500">
-                    {object.type}
+                    {object.type} • Layer {objects.length - object.index}
                   </Text>
                 </Box>
                 <HStack spacing={1}>
