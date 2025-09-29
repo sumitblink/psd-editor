@@ -20,9 +20,13 @@ export function useCanvas(props) {
   const ref = useCallback((element) => {
     if (!element) {
       if (canvas.instance) {
-        canvas.instance.off();
-        canvas.instance.dispose();
-        console.log('Canvas element removed and disposed');
+        try {
+          canvas.instance.off();
+          canvas.instance.dispose();
+          console.log('Canvas element removed and disposed');
+        } catch (error) {
+          console.warn('Canvas cleanup error:', error);
+        }
       }
     } else {
       console.log('Initializing canvas on element:', element);
@@ -76,12 +80,16 @@ export function useCanvas(props) {
     canvas.instance.off();
 
     const handleObjectModified = (event) => {
-      dispatch(saveState());
-      dispatch(updateObjects());
-      
-      // If this was a layer change, ensure objects are updated
-      if (event.target && event.target.canvas) {
+      try {
+        dispatch(saveState());
         dispatch(updateObjects());
+        
+        // If this was a layer change, ensure objects are updated
+        if (event.target && event.target.canvas) {
+          dispatch(updateObjects());
+        }
+      } catch (error) {
+        console.warn('Object modified handler error:', error);
       }
     };
     const handleObjectScaling = (event) => dispatch(scaleObject(event));
@@ -173,11 +181,16 @@ export function useCanvas(props) {
   useEffect(() => {
     return () => {
       if (canvas.instance) {
-        canvas.instance.off();
-        canvas.instance.dispose();
+        try {
+          canvas.instance.off();
+          canvas.instance.clear();
+          canvas.instance.dispose();
+        } catch (error) {
+          console.warn('Canvas unmount cleanup error:', error);
+        }
       }
     };
-  }, []);
+  }, [canvas.instance]);
 
   return [canvas, ref];
 }

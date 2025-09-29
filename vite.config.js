@@ -8,12 +8,15 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5000,
     hmr: {
-      port: 5000
+      port: 5000,
+      overlay: false
+    },
+    watch: {
+      usePolling: false,
+      interval: 1000
     }
   },
-  build: {
-    rollupOptions: {
-      external: []
-    }
+  optimizeDeps: {
+    include: ['fabric', 'ag-psd']
   }
 })
