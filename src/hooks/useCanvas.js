@@ -20,7 +20,9 @@ export function useCanvas(props) {
   const ref = useCallback((element) => {
     if (!element) {
       canvas.instance?.dispose();
+      console.log('Canvas element removed');
     } else {
+      console.log('Initializing canvas on element:', element);
       const options = {
         width: originalWidth,
         height: originalHeight,
@@ -39,7 +41,15 @@ export function useCanvas(props) {
       };
 
       const fabric = new fabricJS.Canvas(element, options);
+      console.log('Canvas created:', fabric);
       dispatch(setInstance(fabric));
+      
+      // Force render after creation
+      setTimeout(() => {
+        fabric.renderAll();
+        console.log('Canvas rendered');
+      }, 100);
+      
       props?.onInitialize?.(fabric);
     }
   }, [dispatch, props]);

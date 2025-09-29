@@ -103,13 +103,27 @@ function CreateTemplate() {
         <MainWrapperContainer>
           <LayerSidebar />
           <MainContainer id="canvas-container" ref={containerRef}>
-            <Box height={canvasDimensions.scaledHeight} width={canvasDimensions.scaledWidth} position="relative">
+            <Box 
+              height={canvasDimensions.scaledHeight || 400} 
+              width={canvasDimensions.scaledWidth || 600} 
+              position="relative"
+              minHeight="400px"
+              minWidth="600px"
+            >
               <CanvasContainer
-                height={canvasDimensions.height}
-                width={canvasDimensions.width}
-                transform={`scale(${canvasDimensions.scale})`}
+                height={canvasDimensions.height || 400}
+                width={canvasDimensions.width || 600}
+                transform={`scale(${canvasDimensions.scale || 1})`}
               >
-                <canvas id="canvas" ref={ref} />
+                <canvas 
+                  id="canvas" 
+                  ref={ref} 
+                  style={{ 
+                    display: 'block',
+                    backgroundColor: 'white',
+                    border: '1px solid #ccc'
+                  }} 
+                />
               </CanvasContainer>
             </Box>
           </MainContainer>

@@ -34,10 +34,11 @@ export const MainContainer = chakra(Box, {
 
 export const CanvasContainer = chakra(Box, {
   baseStyle: {
-    position: "absolute",
-    top: 0,
-    left: 0,
+    position: "relative",
     transformOrigin: "0 0",
+    border: "1px solid #e2e8f0",
+    backgroundColor: "white",
+    boxShadow: "lg",
   },
 });
 
