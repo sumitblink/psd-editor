@@ -1,4 +1,3 @@
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { exportedProps, maxUndoRedoSteps, originalHeight, originalWidth } from '../config/app';
 import { defaultFont, defaultFontSize } from '../config/fonts';
@@ -91,7 +90,7 @@ export const loadFromJSON = createAsyncThunk(
 
     const active = canvas.selected ? canvas.selected.name : false;
     canvas.instance.clear();
-    
+
     await new Promise((resolve) => {
       canvas.instance.loadFromJSON(state, () => resolve(state));
     });
@@ -135,7 +134,7 @@ export const changeImageSource = createAsyncThunk(
 
     image.set('scaleX', scaleX).set('scaleY', scaleY);
     canvas.instance.fire('object:modified', { target: image }).renderAll();
-    
+
     return source;
   }
 );
@@ -156,7 +155,7 @@ export const changeFontFamily = createAsyncThunk(
 
     text.set('fontFamily', res.name);
     canvas.instance.fire('object:modified', { target: text }).renderAll();
-    
+
     return res.name;
   }
 );
@@ -186,7 +185,7 @@ export const addText = createAsyncThunk(
 
     dispatch(updateObjects());
     canvas.instance.fire('object:modified', { target: textbox }).renderAll();
-    
+
     return textbox.toObject(exportedProps);
   }
 );
@@ -213,7 +212,7 @@ export const addImage = createAsyncThunk(
 
     dispatch(updateObjects());
     canvas.instance.fire('object:modified', { target: image }).renderAll();
-    
+
     return image.toObject(exportedProps);
   }
 );
@@ -410,7 +409,7 @@ const canvasSlice = createSlice({
       state.objects = objects
         .map((object) => object.toObject(exportedProps))
         .map((object, index) => ({ name: object.name, type: object.type, index }));
-      
+
       state.instance.fire('object:modified', { target: element }).renderAll();
     },
     deleteObject: (state) => {
@@ -480,8 +479,11 @@ export const selectCanvas = (state) => state.canvas;
 export const selectCanvasInstance = (state) => state.canvas.instance;
 export const selectObjects = (state) => state.canvas.objects;
 export const selectSelected = (state) => state.canvas.selected;
-export const selectDimensions = (state) => ({ height: state.canvas.height, width: state.canvas.width });
-export const selectCanUndo = (state) => state.canvas.actionsEnabled && state.canvas.undoStack.length > 1;
-export const selectCanRedo = (state) => state.canvas.actionsEnabled && state.canvas.redoStack.length > 0;
+export const selectDimensions = (state) => ({
+  width: state.canvas.dimensions.width,
+  height: state.canvas.dimensions.height
+});
+export const selectCanUndo = (state) => state.canvas.undoStack.length > 0;
+export const selectCanRedo = (state) => state.canvas.redoStack.length > 0;
 
 export default canvasSlice.reducer;
