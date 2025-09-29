@@ -28,6 +28,10 @@ export function useCanvas(props) {
         backgroundColor: 'white',
         selection: true,
         centredRotation: true,
+        interactive: true,
+        selectable: true,
+        evented: true,
+        targetFindTolerance: 10,
       };
 
       const fabric = new fabricJS.Canvas(element, options);
@@ -76,12 +80,23 @@ export function useCanvas(props) {
       dispatch(deselectObject());
       dispatch(updateObjects());
     };
+    const handleMouseDown = (event) => {
+      if (!event.target) {
+        // Clicked on empty canvas area - deselect all
+        dispatch(deselectObject());
+        canvas.instance.discardActiveObject().renderAll();
+      } else {
+        // Clicked on an object - it will be selected automatically by Fabric.js
+        // The selection:created or selection:updated event will handle the dispatch
+      }
+    };
 
     canvas.instance.on('object:modified', handleObjectModified);
     canvas.instance.on('object:scaling', handleObjectScaling);
     canvas.instance.on('selection:created', handleSelectionCreated);
     canvas.instance.on('selection:updated', handleSelectionUpdated);
     canvas.instance.on('selection:cleared', handleSelectionCleared);
+    canvas.instance.on('mouse:down', handleMouseDown);
 
     window.addEventListener('mousedown', clickAwayListener);
 

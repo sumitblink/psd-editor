@@ -54,6 +54,8 @@ export const loadFromTemplate = createAsyncThunk(
             ...element.details,
             name,
             fontFamily: fontRes.name,
+            selectable: true,
+            evented: true,
           });
 
           textbox.set('meta', intializeMetaProperties(textbox, canvas.instance));
@@ -67,6 +69,8 @@ export const loadFromTemplate = createAsyncThunk(
               name,
               objectCaching: true,
               crossOrigin: 'anonymous',
+              selectable: true,
+              evented: true,
             });
           });
           image.set('meta', intializeMetaProperties(image, canvas.instance));
@@ -187,6 +191,8 @@ export const addText = createAsyncThunk(
       fill: options.fill,
       fontSize: options.fontSize,
       width: 310,
+      selectable: true,
+      evented: true,
     });
 
     canvas.instance.add(textbox);
@@ -209,7 +215,9 @@ export const addImage = createAsyncThunk(
     const image = await new Promise((resolve) => {
       fabricJS.Image.fromURL(source, (image) => resolve(image), { 
         name: objectID('image'), 
-        objectCaching: true 
+        objectCaching: true,
+        selectable: true,
+        evented: true
       });
     });
 
