@@ -35,6 +35,32 @@ const LayerSidebar = () => {
     }
   };
 
+  const handleLayerHover = (layerName, isHovering) => {
+    if (!canvas) return;
+
+    const canvasObjects = canvas.getObjects();
+    const targetObject = canvasObjects.find(obj => obj.name === layerName);
+
+    if (targetObject && targetObject !== canvas.getActiveObject()) {
+      if (isHovering) {
+        // Add hover effect
+        targetObject.set({
+          stroke: '#3182ce',
+          strokeWidth: 2,
+          strokeDashArray: [5, 5]
+        });
+      } else {
+        // Remove hover effect
+        targetObject.set({
+          stroke: null,
+          strokeWidth: 0,
+          strokeDashArray: null
+        });
+      }
+      canvas.renderAll();
+    }
+  };
+
   const toggleLayerVisibility = (layerName) => {
     if (!canvas) return;
 
@@ -151,6 +177,8 @@ const LayerSidebar = () => {
               }
               cursor="pointer"
               onClick={() => handleSelectLayer(object.name)}
+              onMouseEnter={() => handleLayerHover(object.name, true)}
+              onMouseLeave={() => handleLayerHover(object.name, false)}
               _hover={{ bg: dragOverItem?.name === object.name ? "blue.50" : "gray.50" }}
               p={2}
               borderRadius="md"

@@ -34,6 +34,8 @@ export function useCanvas(props) {
         targetFindTolerance: 5,
         perPixelTargetFind: true,
         stopContextMenu: true,
+        hoverCursor: 'pointer',
+        moveCursor: 'move',
       };
 
       const fabric = new fabricJS.Canvas(element, options);
@@ -100,6 +102,38 @@ export function useCanvas(props) {
       }
     };
 
+    const handleMouseOver = (event) => {
+      if (event.target && event.target !== canvas.instance.getActiveObject()) {
+        // Show hover effect - add a subtle border
+        event.target.set({
+          stroke: '#3182ce',
+          strokeWidth: 2,
+          strokeDashArray: [5, 5]
+        });
+        canvas.instance.renderAll();
+        
+        // Change cursor to pointer
+        canvas.instance.defaultCursor = 'pointer';
+        canvas.instance.hoverCursor = 'pointer';
+      }
+    };
+
+    const handleMouseOut = (event) => {
+      if (event.target && event.target !== canvas.instance.getActiveObject()) {
+        // Remove hover effect
+        event.target.set({
+          stroke: null,
+          strokeWidth: 0,
+          strokeDashArray: null
+        });
+        canvas.instance.renderAll();
+        
+        // Reset cursor
+        canvas.instance.defaultCursor = 'default';
+        canvas.instance.hoverCursor = 'move';
+      }
+    };
+
     const handlePathCreated = () => {
       dispatch(updateObjects());
     };
@@ -111,6 +145,8 @@ export function useCanvas(props) {
     canvas.instance.on('selection:updated', handleSelectionUpdated);
     canvas.instance.on('selection:cleared', handleSelectionCleared);
     canvas.instance.on('mouse:down', handleMouseDown);
+    canvas.instance.on('mouse:over', handleMouseOver);
+    canvas.instance.on('mouse:out', handleMouseOut);
     canvas.instance.on('path:created', handlePathCreated);
 
     window.addEventListener('mousedown', clickAwayListener);
