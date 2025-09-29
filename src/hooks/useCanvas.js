@@ -54,9 +54,14 @@ export function useCanvas(props) {
 
     canvas.instance.off();
 
-    const handleObjectModified = () => {
+    const handleObjectModified = (event) => {
       dispatch(saveState());
       dispatch(updateObjects());
+      
+      // If this was a layer change, ensure objects are updated
+      if (event.target && event.target.canvas) {
+        dispatch(updateObjects());
+      }
     };
     const handleObjectScaling = (event) => dispatch(scaleObject(event));
     const handleSelectionCreated = () => {

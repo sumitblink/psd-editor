@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, VStack, Text, HStack, IconButton, Button, ButtonGroup } from '@chakra-ui/react';
@@ -22,10 +21,10 @@ const LayerSidebar = () => {
 
   const handleSelectLayer = (layerName) => {
     if (!canvas) return;
-    
+
     const canvasObjects = canvas.getObjects();
     const targetObject = canvasObjects.find(obj => obj.name === layerName);
-    
+
     if (targetObject) {
       canvas.setActiveObject(targetObject);
       canvas.renderAll();
@@ -35,10 +34,10 @@ const LayerSidebar = () => {
 
   const toggleLayerVisibility = (layerName) => {
     if (!canvas) return;
-    
+
     const canvasObjects = canvas.getObjects();
     const targetObject = canvasObjects.find(obj => obj.name === layerName);
-    
+
     if (targetObject) {
       targetObject.set('visible', !targetObject.visible);
       canvas.renderAll();
@@ -78,7 +77,7 @@ const LayerSidebar = () => {
       <Box flex={1} overflowY="auto" bg="white">
         <VStack spacing={1} p={2} align="stretch">
           {objects.map((object, index) => (
-            <Item 
+            <Item
               key={`${object.name}-${index}`}
               width="full"
               bg={selected?.name === object.name ? "blue.100" : "white"}

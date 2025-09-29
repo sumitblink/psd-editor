@@ -420,10 +420,15 @@ const canvasSlice = createSlice({
           break;
       }
 
+      // Update objects list with correct order and indices
       const objects = state.instance.getObjects();
       state.objects = objects
-        .map((object) => object.toObject(exportedProps))
-        .map((object, index) => ({ name: object.name, type: object.type, index }));
+        .map((object, index) => ({ 
+          name: object.name || `Layer ${index + 1}`, 
+          type: object.type, 
+          index,
+          visible: object.visible !== false
+        }));
 
       state.instance.fire('object:modified', { target: element }).renderAll();
     },
