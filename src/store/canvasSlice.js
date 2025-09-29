@@ -440,7 +440,45 @@ const canvasSlice = createSlice({
       state.redoStack = [];
       state.undoStack = [];
       state.selected = null;
-    }
+    },
+    undo: (state) => {
+      if (state.undoStack.length > 0 && state.instance) {
+        const currentState = state.instance.toObject(exportedProps);
+        state.redoStack.push(currentState);
+
+        if (state.redoStack.length > maxUndoRedoSteps) {
+          state.redoStack.splice(0, 1);
+        }
+
+        const previousState = state.undoStack.pop();
+        state.actionsEnabled = false;
+
+        // Load the previous state
+        state.instance.loadFromJSON(previousState, () => {
+          state.actionsEnabled = true;
+          state.instance.renderAll();
+        });
+      }
+    },
+    redo: (state) => {
+      if (state.redoStack.length > 0 && state.instance) {
+        const currentState = state.instance.toObject(exportedProps);
+        state.undoStack.push(currentState);
+
+        if (state.undoStack.length > maxUndoRedoSteps) {
+          state.undoStack.splice(0, 1);
+        }
+
+        const nextState = state.redoStack.pop();
+        state.actionsEnabled = false;
+
+        // Load the next state
+        state.instance.loadFromJSON(nextState, () => {
+          state.actionsEnabled = true;
+          state.instance.renderAll();
+        });
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -471,7 +509,9 @@ export const {
   deleteObject,
   setActionsEnabled,
   setTemplate,
-  clearCanvas
+  clearCanvas,
+  undo,
+  redo
 } = canvasSlice.actions;
 
 // Selectors

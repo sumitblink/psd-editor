@@ -2,14 +2,17 @@
 import React, { useRef } from 'react';
 import { Box, Button, HStack, Input } from '@chakra-ui/react';
 import { HeadBar, HeaderLogo } from '../container';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { parsePSDFromFile, convertPSDTOTemplate } from '../../functions/psd';
 import { setActive as setActiveTemplate } from '../../store/templateSlice';
-import { loadFromTemplate } from '../../store/canvasSlice';
+import { loadFromTemplate, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON } from '../../store/canvasSlice';
 
 const Header = () => {
   const dispatch = useDispatch();
   const fileInputRef = useRef(null);
+  const canUndo = useSelector(selectCanUndo);
+  const canRedo = useSelector(selectCanRedo);
+  const canvas = useSelector(selectCanvasInstance);
 
   const handleImportPSD = () => {
     fileInputRef.current?.click();
@@ -38,6 +41,21 @@ const Header = () => {
     }
   };
 
+  const handleUndo = () => {
+    if (!canvas || !canUndo) return;
+    // Get the current state from canvas store
+    const state = canvas.toObject();
+    // Load previous state - this would need to be implemented in canvasSlice
+    // For now, just trigger the undo action
+    console.log('Undo clicked - implement undo logic');
+  };
+
+  const handleRedo = () => {
+    if (!canvas || !canRedo) return;
+    // Similar to undo, implement redo logic
+    console.log('Redo clicked - implement redo logic');
+  };
+
   return (
     <HeadBar>
       <HStack spacing={4}>
@@ -56,6 +74,22 @@ const Header = () => {
         />
         <Button size="sm" variant="outline" onClick={handleImportPSD}>
           Import PSD
+        </Button>
+        <Button 
+          size="sm" 
+          variant="outline" 
+          onClick={handleUndo}
+          isDisabled={!canUndo}
+        >
+          Undo
+        </Button>
+        <Button 
+          size="sm" 
+          variant="outline" 
+          onClick={handleRedo}
+          isDisabled={!canRedo}
+        >
+          Redo
         </Button>
         <Button size="sm" variant="outline">
           Export

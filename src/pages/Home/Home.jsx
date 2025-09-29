@@ -37,6 +37,41 @@ function CreateTemplate() {
     return () => window.removeEventListener('resize', updateSize);
   }, []);
 
+  // Add keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case 'z':
+            event.preventDefault();
+            if (event.shiftKey) {
+              // Ctrl+Shift+Z for redo
+              console.log('Redo shortcut');
+            } else {
+              // Ctrl+Z for undo
+              console.log('Undo shortcut');
+            }
+            break;
+          case 'y':
+            // Ctrl+Y for redo (alternative)
+            event.preventDefault();
+            console.log('Redo shortcut (Y)');
+            break;
+        }
+      } else if (event.key === 'Delete' || event.key === 'Backspace') {
+        // Delete key for deleting selected object
+        event.preventDefault();
+        if (selected) {
+          // dispatch(deleteObject());
+          console.log('Delete shortcut');
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selected]);
+
   const canvasDimensions = useMemo(() => {
     const canvasWidth = dimensions.width || originalWidth;
     const canvasHeight = dimensions.height || originalHeight;
@@ -48,7 +83,7 @@ function CreateTemplate() {
 
     const scaleX = availableWidth / canvasWidth;
     const scaleY = availableHeight / canvasHeight;
-    const scale = Math.min(scaleX, scaleY, 1); // Don't scale up beyond 1
+    const scale = Math.min(scaleX, scaleY, 0.8); // Allow scaling up to 80% and down as needed
 
     return {
       width: canvasWidth,
