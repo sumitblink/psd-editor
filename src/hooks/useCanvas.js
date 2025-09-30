@@ -28,7 +28,7 @@ export function useCanvas(props) {
           console.warn('Canvas cleanup error:', error);
         }
       }
-    } else if (!canvas.instance) {
+    } else if (!canvas.instance && element.id === 'canvas') {
       console.log('Initializing canvas on element:', element);
       const options = {
         width: originalWidth,
@@ -47,19 +47,21 @@ export function useCanvas(props) {
         moveCursor: 'move',
       };
 
-      const fabric = new fabricJS.Canvas(element, options);
-      console.log('Canvas created:', fabric);
-      dispatch(setInstance(fabric));
-      
-      // Force render after creation
-      setTimeout(() => {
+      try {
+        const fabric = new fabricJS.Canvas(element, options);
+        console.log('Canvas created:', fabric);
+        dispatch(setInstance(fabric));
+        
+        // Immediate render
         fabric.renderAll();
         console.log('Canvas rendered');
-      }, 100);
-      
-      props?.onInitialize?.(fabric);
+        
+        props?.onInitialize?.(fabric);
+      } catch (error) {
+        console.error('Canvas initialization error:', error);
+      }
     }
-  }, [dispatch, props]);
+  }, [dispatch, props, canvas.instance]);
 
   const clickAwayListener = useCallback(
     (event) => {

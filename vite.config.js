@@ -1,34 +1,20 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
     host: '0.0.0.0',
     port: 5000,
     hmr: {
-      port: 5000,
-      overlay: false,
-      clientPort: 5000
+      overlay: false
     },
     watch: {
-      usePolling: false,
-      interval: 1000,
-      ignored: ['**/node_modules/**', '**/.git/**']
+      usePolling: true,
+      interval: 1000
     }
   },
   optimizeDeps: {
-    include: ['fabric', 'ag-psd', '@chakra-ui/react', 'react-redux']
-  },
-  build: {
-    rollupOptions: {
-      onwarn(warning, warn) {
-        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
-          return;
-        }
-        warn(warning);
-      }
-    }
+    include: ['fabric', 'ag-psd']
   }
 })
