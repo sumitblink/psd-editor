@@ -9,14 +9,26 @@ export default defineConfig({
     port: 5000,
     hmr: {
       port: 5000,
-      overlay: false
+      overlay: false,
+      clientPort: 5000
     },
     watch: {
       usePolling: false,
-      interval: 1000
+      interval: 1000,
+      ignored: ['**/node_modules/**', '**/.git/**']
     }
   },
   optimizeDeps: {
-    include: ['fabric', 'ag-psd']
+    include: ['fabric', 'ag-psd', '@chakra-ui/react', 'react-redux']
+  },
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+          return;
+        }
+        warn(warning);
+      }
+    }
   }
 })

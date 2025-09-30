@@ -28,7 +28,7 @@ export function useCanvas(props) {
           console.warn('Canvas cleanup error:', error);
         }
       }
-    } else {
+    } else if (!canvas.instance) {
       console.log('Initializing canvas on element:', element);
       const options = {
         width: originalWidth,

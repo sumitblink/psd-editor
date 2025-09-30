@@ -135,4 +135,4 @@ function CreateTemplate() {
   );
 }
 
-export const Home = CreateTemplate;
+export { CreateTemplate as Home };

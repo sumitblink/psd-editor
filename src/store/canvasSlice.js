@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSelector } from 'reselect';
 import { exportedProps, maxUndoRedoSteps, originalHeight, originalWidth } from '../config/app';
 import { defaultFont, defaultFontSize } from '../config/fonts';
 import { brandLogoKey, mainTextKey, subTextKey } from '../constants/keys';
@@ -91,7 +92,7 @@ export const loadFromTemplate = createAsyncThunk(
         index,
         visible: object.visible !== false
       }));
-    
+
     return { template, objects: updatedObjects };
   }
 );
@@ -443,7 +444,7 @@ const canvasSlice = createSlice({
       state.selected = activeObject ? activeObject.toObject(exportedProps) : null;
 
       state.instance.fire('object:modified', { target: element }).renderAll();
-      
+
       // Force state update to trigger re-render
       state.objects = [...state.objects];
     },
@@ -554,10 +555,10 @@ export const selectCanvas = (state) => state.canvas;
 export const selectCanvasInstance = (state) => state.canvas.instance;
 export const selectObjects = (state) => state.canvas.objects;
 export const selectSelected = (state) => state.canvas.selected;
-export const selectDimensions = (state) => ({
-  width: state.canvas.width,
-  height: state.canvas.height
-});
+export const selectDimensions = createSelector(
+  [(state) => state.canvas.width, (state) => state.canvas.height],
+  (width, height) => ({ width, height })
+);
 export const selectCanUndo = (state) => state.canvas.undoStack.length > 0;
 export const selectCanRedo = (state) => state.canvas.redoStack.length > 0;
 
