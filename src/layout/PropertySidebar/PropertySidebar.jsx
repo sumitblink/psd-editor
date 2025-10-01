@@ -6,15 +6,9 @@ import {
   Input, 
   Select, 
   Grid, 
-  InputGroup, 
-  InputLeftElement,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   HStack,
-  IconButton
+  IconButton,
+  Flex
 } from '@chakra-ui/react';
 import { 
   Eye, 
@@ -38,6 +32,47 @@ import {
   updateObjects,
   selectCanvasInstance
 } from '../../store/canvasSlice';
+
+const CompactNumberInput = ({ label, value, onChange, icon, suffix }) => {
+  return (
+    <Flex
+      align="center"
+      border="1px solid"
+      borderColor="gray.200"
+      borderRadius="lg"
+      bg="white"
+      h="32px"
+      fontSize="sm"
+      overflow="hidden"
+    >
+      <Box
+        px={2}
+        fontWeight="bold"
+        color="gray.600"
+        fontSize="xs"
+        minW="24px"
+        textAlign="center"
+      >
+        {icon || label}
+      </Box>
+      <Input
+        value={value}
+        onChange={(e) => onChange(parseInt(e.target.value) || 0)}
+        type="number"
+        border="none"
+        h="30px"
+        fontSize="sm"
+        px={2}
+        _focus={{ outline: 'none', boxShadow: 'none' }}
+      />
+      {suffix && (
+        <Box px={2} color="gray.500" fontSize="xs">
+          {suffix}
+        </Box>
+      )}
+    </Flex>
+  );
+};
 
 const PropertySidebar = () => {
   const dispatch = useDispatch();
@@ -103,7 +138,7 @@ const PropertySidebar = () => {
           <Text fontSize="sm" fontWeight="bold" letterSpacing="wide" color="gray.600">
             LAYER
           </Text>
-          <HStack spacing={2}>
+          <HStack spacing={1}>
             <IconButton
               icon={selected.visible === false ? <EyeOff size={16} /> : <Eye size={16} />}
               size="xs"
@@ -155,153 +190,45 @@ const PropertySidebar = () => {
       <Box p={3}>
         {/* Position - X and Y */}
         <Grid templateColumns="1fr 1fr" gap={2} mb={2}>
-          <Box>
-            <NumberInput
-              value={Math.round(selected.left || 0)}
-              onChange={(_, value) => handleObjectChange('left', value)}
-              size="sm"
-            >
-              <NumberInputField 
-                borderRadius="lg" 
-                pl={8}
-                fontSize="sm"
-              />
-              <InputLeftElement h="32px" pl={2} pointerEvents="none">
-                <Text fontSize="xs" fontWeight="bold">X</Text>
-              </InputLeftElement>
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-          </Box>
-          
-          <Box>
-            <NumberInput
-              value={Math.round(selected.top || 0)}
-              onChange={(_, value) => handleObjectChange('top', value)}
-              size="sm"
-            >
-              <NumberInputField 
-                borderRadius="lg" 
-                pl={8}
-                fontSize="sm"
-              />
-              <InputLeftElement h="32px" pl={2} pointerEvents="none">
-                <Text fontSize="xs" fontWeight="bold">Y</Text>
-              </InputLeftElement>
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-          </Box>
+          <CompactNumberInput
+            icon="X"
+            value={Math.round(selected.left || 0)}
+            onChange={(value) => handleObjectChange('left', value)}
+          />
+          <CompactNumberInput
+            icon="Y"
+            value={Math.round(selected.top || 0)}
+            onChange={(value) => handleObjectChange('top', value)}
+          />
         </Grid>
 
         {/* Size - Width and Height */}
         <Grid templateColumns="1fr 1fr" gap={2} mb={2}>
-          <Box>
-            <NumberInput
-              value={Math.round(selected.width || 0)}
-              onChange={(_, value) => handleObjectChange('width', value)}
-              size="sm"
-            >
-              <NumberInputField 
-                borderRadius="lg" 
-                pl={8}
-                fontSize="sm"
-              />
-              <InputLeftElement h="32px" pl={2} pointerEvents="none">
-                <Text fontSize="xs" fontWeight="bold">↔</Text>
-              </InputLeftElement>
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-          </Box>
-          
-          <Box>
-            <NumberInput
-              value={Math.round(selected.height || 0)}
-              onChange={(_, value) => handleObjectChange('height', value)}
-              size="sm"
-            >
-              <NumberInputField 
-                borderRadius="lg" 
-                pl={8}
-                fontSize="sm"
-              />
-              <InputLeftElement h="32px" pl={2} pointerEvents="none">
-                <Text fontSize="xs" fontWeight="bold">↕</Text>
-              </InputLeftElement>
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-          </Box>
+          <CompactNumberInput
+            icon="↔"
+            value={Math.round(selected.width || 0)}
+            onChange={(value) => handleObjectChange('width', value)}
+          />
+          <CompactNumberInput
+            icon="↕"
+            value={Math.round(selected.height || 0)}
+            onChange={(value) => handleObjectChange('height', value)}
+          />
         </Grid>
 
         {/* Rotation and Opacity */}
         <Grid templateColumns="1fr 1fr" gap={2} mb={2}>
-          <Box>
-            <NumberInput
-              value={Math.round(selected.angle || 0)}
-              onChange={(_, value) => handleObjectChange('angle', value)}
-              size="sm"
-              min={0}
-              max={360}
-            >
-              <NumberInputField 
-                borderRadius="lg" 
-                pl={8}
-                fontSize="sm"
-              />
-              <InputLeftElement h="32px" pl={2} pointerEvents="none">
-                <Text fontSize="xs" fontWeight="bold">↻</Text>
-              </InputLeftElement>
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-          </Box>
-          
-          <Box>
-            <NumberInput
-              value={Math.round((selected.opacity || 1) * 100)}
-              onChange={(_, value) => handlePropertyChange('opacity', value / 100)}
-              size="sm"
-              min={0}
-              max={100}
-            >
-              <NumberInputField 
-                borderRadius="lg" 
-                pl={8}
-                pr={8}
-                fontSize="sm"
-              />
-              <InputLeftElement h="32px" pl={2} pointerEvents="none">
-                <Text fontSize="xs" fontWeight="bold">◐</Text>
-              </InputLeftElement>
-              <Box 
-                position="absolute" 
-                right={10} 
-                top="50%" 
-                transform="translateY(-50%)"
-                pointerEvents="none"
-                fontSize="xs"
-                color="gray.500"
-              >
-                %
-              </Box>
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-          </Box>
+          <CompactNumberInput
+            icon="↻"
+            value={Math.round(selected.angle || 0)}
+            onChange={(value) => handleObjectChange('angle', value)}
+          />
+          <CompactNumberInput
+            icon="◐"
+            value={Math.round((selected.opacity || 1) * 100)}
+            onChange={(value) => handlePropertyChange('opacity', value / 100)}
+            suffix="%"
+          />
         </Grid>
 
         {/* Text-specific properties */}
@@ -326,17 +253,14 @@ const PropertySidebar = () => {
 
             <Box mb={2}>
               <Text fontSize="xs" color="gray.500" mb={1}>Font Size</Text>
-              <NumberInput
-                value={selected.fontSize || 16}
-                onChange={(_, value) => handleTextChange('fontSize', value)}
+              <Input
                 size="sm"
-              >
-                <NumberInputField borderRadius="lg" fontSize="sm" />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
+                type="number"
+                value={selected.fontSize || 16}
+                onChange={(e) => handleTextChange('fontSize', parseInt(e.target.value))}
+                borderRadius="lg"
+                fontSize="sm"
+              />
             </Box>
 
             <Box mb={2}>
@@ -382,17 +306,14 @@ const PropertySidebar = () => {
             {selected.type === 'circle' && (
               <Box mb={2}>
                 <Text fontSize="xs" color="gray.500" mb={1}>Radius</Text>
-                <NumberInput
-                  value={Math.round(selected.radius || 0)}
-                  onChange={(_, value) => handleImageChange('radius', value)}
+                <Input
                   size="sm"
-                >
-                  <NumberInputField borderRadius="lg" fontSize="sm" />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
+                  type="number"
+                  value={Math.round(selected.radius || 0)}
+                  onChange={(e) => handleImageChange('radius', parseInt(e.target.value))}
+                  borderRadius="lg"
+                  fontSize="sm"
+                />
               </Box>
             )}
           </>
