@@ -64,25 +64,43 @@ export const loadFromTemplate = createAsyncThunk(
           break;
 
         case 'image':
-          const image = await new Promise((resolve) => {
-            fabricJS.Image.fromURL(element.value, (img) => resolve(img), {
-              ...element.details,
-              name,
-              objectCaching: true,
-              crossOrigin: 'anonymous',
-              selectable: true,
-              evented: true,
-            });
+          const image = await new Promise((resolve, reject) => {
+            fabricJS.Image.fromURL(
+              element.value, 
+              (img) => {
+                if (img.width === 0 || img.height === 0) {
+                  console.warn('Image loaded with zero dimensions:', element.name);
+                }
+                resolve(img);
+              },
+              {
+                ...element.details,
+                name,
+                objectCaching: false,
+                crossOrigin: 'anonymous',
+                selectable: true,
+                evented: true,
+              }
+            );
           });
-          image.set('meta', intializeMetaProperties(image, canvas.instance));
-          canvas.instance.add(image);
+          
+          // Ensure image has proper dimensions
+          if (image.width > 0 && image.height > 0) {
+            image.set('meta', intializeMetaProperties(image, canvas.instance));
+            canvas.instance.add(image);
+            console.log('Added image:', element.name, 'Size:', image.width, 'x', image.height);
+          } else {
+            console.warn('Skipping image with invalid dimensions:', element.name);
+          }
           break;
       }
 
-      canvas.instance.fire('object:modified', { target: null });
-      canvas.instance.renderAll();
-    }
+      }
 
+    // Force render and update after all objects are added
+    canvas.instance.renderAll();
+    canvas.instance.calcOffset();
+    
     // Update objects list after loading template
     const objects = canvas.instance.getObjects();
     const updatedObjects = objects
@@ -93,6 +111,7 @@ export const loadFromTemplate = createAsyncThunk(
         visible: object.visible !== false
       }));
 
+    console.log('Template loaded with objects:', updatedObjects.length);
     return { template, objects: updatedObjects };
   }
 );

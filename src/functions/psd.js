@@ -40,12 +40,14 @@ export async function convertTemplateToState(layers) {
     const type = layer.text ? "textbox" : "image";
     const name = layer.name ? layer.name : objectID(type);
     const blob = layer.canvas ? await convertCanvasToBlob(layer.canvas) : null;
-    const file = blob ? new File([blob], name, { type: blob.type }) : null;
 
     let value = "";
     if (type === "image") {
-      if (file) {
-        value = URL.createObjectURL(file);
+      if (blob) {
+        value = URL.createObjectURL(blob);
+      } else if (layer.canvas) {
+        // Fallback: convert canvas directly to data URL
+        value = layer.canvas.toDataURL('image/png');
       }
     } else {
       if (layer.text) {
@@ -83,9 +85,17 @@ export async function convertTemplateToState(layers) {
 
 export async function convertCanvasToBlob(canvas) {
   return new Promise((resolve) => {
-    canvas.toBlob((blob) => {
-      if (!blob) return resolve(null);
-      resolve(blob);
-    });
+    try {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          console.warn('Failed to create blob, falling back to data URL');
+          return resolve(null);
+        }
+        resolve(blob);
+      }, 'image/png', 1.0);
+    } catch (error) {
+      console.warn('Canvas toBlob error:', error);
+      resolve(null);
+    }
   });
 }
