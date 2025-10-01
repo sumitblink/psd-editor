@@ -19,7 +19,14 @@ export function useCanvas(props) {
 
   const ref = useCallback((element) => {
     if (!element) {
-      canvas.instance?.dispose();
+      if (canvas.instance) {
+        try {
+          canvas.instance.dispose();
+          console.log('Canvas disposed successfully');
+        } catch (error) {
+          console.warn('Canvas cleanup error:', error);
+        }
+      }
     } else {
       const options = {
         width: originalWidth,
@@ -63,26 +70,42 @@ export function useCanvas(props) {
     canvas.instance.off();
 
     const handleObjectModified = (event) => {
-      dispatch(saveState());
-      dispatch(updateObjects());
-      
-      // If this was a layer change, ensure objects are updated
-      if (event.target && event.target.canvas) {
+      try {
+        dispatch(saveState());
         dispatch(updateObjects());
+        
+        // If this was a layer change, ensure objects are updated
+        if (event.target && event.target.canvas) {
+          dispatch(updateObjects());
+        }
+      } catch (error) {
+        console.warn('Error in object modified handler:', error);
       }
     };
     const handleObjectScaling = (event) => dispatch(scaleObject(event));
     const handleSelectionCreated = () => {
-      dispatch(selectObject());
-      dispatch(updateObjects());
+      try {
+        dispatch(selectObject());
+        dispatch(updateObjects());
+      } catch (error) {
+        console.warn('Error in selection created handler:', error);
+      }
     };
     const handleSelectionUpdated = () => {
-      dispatch(selectObject());
-      dispatch(updateObjects());
+      try {
+        dispatch(selectObject());
+        dispatch(updateObjects());
+      } catch (error) {
+        console.warn('Error in selection updated handler:', error);
+      }
     };
     const handleSelectionCleared = () => {
-      dispatch(deselectObject());
-      dispatch(updateObjects());
+      try {
+        dispatch(deselectObject());
+        dispatch(updateObjects());
+      } catch (error) {
+        console.warn('Error in selection cleared handler:', error);
+      }
     };
     const handleMouseDown = (event) => {
       if (!event.target) {
@@ -152,7 +175,14 @@ export function useCanvas(props) {
     window.addEventListener('mousedown', clickAwayListener);
 
     return () => {
-      window.removeEventListener('mousedown', clickAwayListener);
+      try {
+        window.removeEventListener('mousedown', clickAwayListener);
+        if (canvas.instance) {
+          canvas.instance.off();
+        }
+      } catch (error) {
+        console.warn('Error in canvas cleanup:', error);
+      }
     };
   }, [canvas.instance, clickAwayListener, dispatch]);
 

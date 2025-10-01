@@ -25,7 +25,8 @@ const initialState = {
 export const loadFromTemplate = createAsyncThunk(
   'canvas/loadFromTemplate',
   async (template, { getState, dispatch }) => {
-    const { canvas } = getState();
+    const state = getState();
+    const canvas = state.canvas;
     if (!canvas.instance) return;
 
     const factorY = originalHeight / canvas.height;
@@ -98,15 +99,16 @@ export const loadFromTemplate = createAsyncThunk(
 
 export const loadFromJSON = createAsyncThunk(
   'canvas/loadFromJSON',
-  async (state, { getState, dispatch }) => {
-    const { canvas } = getState();
+  async (jsonState, { getState, dispatch }) => {
+    const currentState = getState();
+    const canvas = currentState.canvas;
     if (!canvas.instance) return;
 
     const active = canvas.selected ? canvas.selected.name : false;
     canvas.instance.clear();
 
     await new Promise((resolve) => {
-      canvas.instance.loadFromJSON(state, () => resolve(state));
+      canvas.instance.loadFromJSON(jsonState, () => resolve(jsonState));
     });
 
     if (active) {
@@ -121,14 +123,15 @@ export const loadFromJSON = createAsyncThunk(
 
     dispatch(updateObjects());
     canvas.instance.renderAll();
-    return state;
+    return jsonState;
   }
 );
 
 export const changeImageSource = createAsyncThunk(
   'canvas/changeImageSource',
   async (source, { getState }) => {
-    const { canvas } = getState();
+    const state = getState();
+    const canvas = state.canvas;
     if (!canvas.instance) return;
 
     const image = canvas.instance.getActiveObject();
@@ -156,7 +159,8 @@ export const changeImageSource = createAsyncThunk(
 export const changeFontFamily = createAsyncThunk(
   'canvas/changeFontFamily',
   async (fontFamily = defaultFont, { getState }) => {
-    const { canvas } = getState();
+    const state = getState();
+    const canvas = state.canvas;
     if (!canvas.instance) return;
 
     const res = await addFontFace(fontFamily);
@@ -177,7 +181,8 @@ export const changeFontFamily = createAsyncThunk(
 export const addText = createAsyncThunk(
   'canvas/addText',
   async ({ text = 'Sample Text', options = { fill: '#0000000', fontSize: defaultFontSize } }, { getState, dispatch }) => {
-    const { canvas } = getState();
+    const state = getState();
+    const canvas = state.canvas;
     if (!canvas.instance) return;
 
     const res = await addFontFace(defaultFont);
@@ -209,7 +214,8 @@ export const addText = createAsyncThunk(
 export const addImage = createAsyncThunk(
   'canvas/addImage',
   async ({ source, options = { width: 500, height: 500 } }, { getState, dispatch }) => {
-    const { canvas } = getState();
+    const state = getState();
+    const canvas = state.canvas;
     if (!canvas.instance) return;
 
     const image = await new Promise((resolve) => {
@@ -554,11 +560,14 @@ export const selectCanvas = (state) => state.canvas;
 export const selectCanvasInstance = (state) => state.canvas.instance;
 export const selectObjects = (state) => state.canvas.objects;
 export const selectSelected = (state) => state.canvas.selected;
-export const selectDimensions = (state) => ({
-  width: state.canvas.width,
-  height: state.canvas.height
-});
 export const selectCanUndo = (state) => state.canvas.undoStack.length > 0;
 export const selectCanRedo = (state) => state.canvas.redoStack.length > 0;
+
+// Memoized selector to prevent unnecessary re-renders
+import { createSelector } from '@reduxjs/toolkit';
+export const selectDimensions = createSelector(
+  [(state) => state.canvas.width, (state) => state.canvas.height],
+  (width, height) => ({ width, height })
+);
 
 export default canvasSlice.reducer;
