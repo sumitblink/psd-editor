@@ -180,7 +180,7 @@ export const changeFontFamily = createAsyncThunk(
 
 export const addText = createAsyncThunk(
   'canvas/addText',
-  async ({ text = 'Sample Text', options = { fill: '#0000000', fontSize: defaultFontSize } }, { getState, dispatch }) => {
+  async ({ text = 'Sample Text', options = { fill: '#000000', fontSize: defaultFontSize } }, { getState, dispatch }) => {
     const state = getState();
     const canvas = state.canvas;
     if (!canvas.instance) return;
@@ -238,6 +238,213 @@ export const addImage = createAsyncThunk(
     canvas.instance.fire('object:modified', { target: image }).renderAll();
 
     return image.toObject(exportedProps);
+  }
+);
+
+export const addRectangle = createAsyncThunk(
+  'canvas/addRectangle',
+  async ({ options = { width: 200, height: 150, fill: '#3182ce' } }, { getState, dispatch }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    if (!canvas.instance) return;
+
+    const rect = new fabricJS.Rect({
+      name: objectID('rectangle'),
+      width: options.width,
+      height: options.height,
+      fill: options.fill,
+      selectable: true,
+      evented: true,
+    });
+
+    canvas.instance.add(rect);
+    canvas.instance.viewportCenterObject(rect);
+    canvas.instance.setActiveObject(rect);
+
+    dispatch(updateObjects());
+    canvas.instance.fire('object:modified', { target: rect }).renderAll();
+
+    return rect.toObject(exportedProps);
+  }
+);
+
+export const addCircle = createAsyncThunk(
+  'canvas/addCircle',
+  async ({ options = { radius: 75, fill: '#38a169' } }, { getState, dispatch }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    if (!canvas.instance) return;
+
+    const circle = new fabricJS.Circle({
+      name: objectID('circle'),
+      radius: options.radius,
+      fill: options.fill,
+      selectable: true,
+      evented: true,
+    });
+
+    canvas.instance.add(circle);
+    canvas.instance.viewportCenterObject(circle);
+    canvas.instance.setActiveObject(circle);
+
+    dispatch(updateObjects());
+    canvas.instance.fire('object:modified', { target: circle }).renderAll();
+
+    return circle.toObject(exportedProps);
+  }
+);
+
+export const addTriangle = createAsyncThunk(
+  'canvas/addTriangle',
+  async ({ options = { width: 150, height: 150, fill: '#d69e2e' } }, { getState, dispatch }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    if (!canvas.instance) return;
+
+    const triangle = new fabricJS.Triangle({
+      name: objectID('triangle'),
+      width: options.width,
+      height: options.height,
+      fill: options.fill,
+      selectable: true,
+      evented: true,
+    });
+
+    canvas.instance.add(triangle);
+    canvas.instance.viewportCenterObject(triangle);
+    canvas.instance.setActiveObject(triangle);
+
+    dispatch(updateObjects());
+    canvas.instance.fire('object:modified', { target: triangle }).renderAll();
+
+    return triangle.toObject(exportedProps);
+  }
+);
+
+export const copyObject = createAsyncThunk(
+  'canvas/copyObject',
+  async (_, { getState, dispatch }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    if (!canvas.instance) return;
+
+    const activeObject = canvas.instance.getActiveObject();
+    if (!activeObject) return;
+
+    // Clone the object asynchronously and store in clipboard
+    const cloned = await new Promise((resolve) => {
+      activeObject.clone((clonedObj) => {
+        resolve(clonedObj.toObject(exportedProps));
+      }, exportedProps);
+    });
+
+    dispatch(setClipboard(cloned));
+    return cloned;
+  }
+);
+
+export const cutObject = createAsyncThunk(
+  'canvas/cutObject',
+  async (_, { getState, dispatch }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    if (!canvas.instance) return;
+
+    const activeObject = canvas.instance.getActiveObject();
+    if (!activeObject) return;
+
+    // Clone the object asynchronously and store in clipboard
+    const cloned = await new Promise((resolve) => {
+      activeObject.clone((clonedObj) => {
+        resolve(clonedObj.toObject(exportedProps));
+      }, exportedProps);
+    });
+
+    dispatch(setClipboard(cloned));
+
+    // Remove the object
+    canvas.instance.remove(activeObject);
+    canvas.instance.discardActiveObject();
+
+    dispatch(updateObjects());
+    canvas.instance.fire('object:modified', { target: null }).renderAll();
+
+    return cloned;
+  }
+);
+
+export const pasteObject = createAsyncThunk(
+  'canvas/pasteObject',
+  async (_, { getState, dispatch }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    if (!canvas.instance || !canvas.clipboard) return;
+
+    const clipboardData = canvas.clipboard;
+
+    let pastedObject = null;
+
+    if (clipboardData.type === 'textbox') {
+      pastedObject = new fabricJS.Textbox(clipboardData.text, {
+        ...clipboardData,
+        left: clipboardData.left + 20,
+        top: clipboardData.top + 20,
+        name: objectID(clipboardData.name || 'text')
+      });
+
+      canvas.instance.add(pastedObject);
+      canvas.instance.setActiveObject(pastedObject);
+    } else if (clipboardData.type === 'image') {
+      pastedObject = await new Promise((resolve) => {
+        fabricJS.Image.fromURL(clipboardData.src, (img) => {
+          img.set({
+            ...clipboardData,
+            left: clipboardData.left + 20,
+            top: clipboardData.top + 20,
+            name: objectID(clipboardData.name || 'image')
+          });
+          resolve(img);
+        });
+      });
+
+      canvas.instance.add(pastedObject);
+      canvas.instance.setActiveObject(pastedObject);
+    } else if (clipboardData.type === 'rect') {
+      pastedObject = new fabricJS.Rect({
+        ...clipboardData,
+        left: clipboardData.left + 20,
+        top: clipboardData.top + 20,
+        name: objectID(clipboardData.name || 'rect')
+      });
+
+      canvas.instance.add(pastedObject);
+      canvas.instance.setActiveObject(pastedObject);
+    } else if (clipboardData.type === 'circle') {
+      pastedObject = new fabricJS.Circle({
+        ...clipboardData,
+        left: clipboardData.left + 20,
+        top: clipboardData.top + 20,
+        name: objectID(clipboardData.name || 'circle')
+      });
+
+      canvas.instance.add(pastedObject);
+      canvas.instance.setActiveObject(pastedObject);
+    } else if (clipboardData.type === 'triangle') {
+      pastedObject = new fabricJS.Triangle({
+        ...clipboardData,
+        left: clipboardData.left + 20,
+        top: clipboardData.top + 20,
+        name: objectID(clipboardData.name || 'triangle')
+      });
+
+      canvas.instance.add(pastedObject);
+      canvas.instance.setActiveObject(pastedObject);
+    }
+
+    dispatch(updateObjects());
+    canvas.instance.fire('object:modified', { target: pastedObject }).renderAll();
+
+    return pastedObject ? pastedObject.toObject(exportedProps) : null;
   }
 );
 
@@ -520,6 +727,9 @@ const canvasSlice = createSlice({
         });
       }
     },
+    setClipboard: (state, action) => {
+      state.clipboard = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -552,7 +762,8 @@ export const {
   setTemplate,
   clearCanvas,
   undo,
-  redo
+  redo,
+  setClipboard
 } = canvasSlice.actions;
 
 // Selectors

@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Box, VStack, Text, HStack, IconButton, Button, ButtonGroup } from '@chakra-ui/react';
 import { EyeIcon, EyeOffIcon, TrashIcon, ArrowUpIcon, ArrowDownIcon, MoveUpIcon, MoveDownIcon, GripVerticalIcon } from 'lucide-react';
 import { Drawer, Item } from '../container';
-import { selectObjects, selectSelected, selectCanvasInstance, deleteObject, changeObjectLayer, selectObject } from '../../store/canvasSlice';
+import { selectObjects, selectSelected, selectCanvasInstance, deleteObject, changeObjectLayer, selectObject, updateObjects } from '../../store/canvasSlice';
 
 const LayerSidebar = () => {
   const dispatch = useDispatch();
@@ -70,6 +70,7 @@ const LayerSidebar = () => {
     if (targetObject) {
       targetObject.set('visible', !targetObject.visible);
       canvas.renderAll();
+      dispatch(updateObjects());
     }
   };
 
@@ -114,6 +115,9 @@ const LayerSidebar = () => {
     // Select the moved object
     canvas.setActiveObject(draggedCanvasObj);
     canvas.renderAll();
+    
+    // Update the objects list and selection in store
+    dispatch(updateObjects());
     dispatch(selectObject());
 
     setDraggedItem(null);
@@ -215,8 +219,9 @@ const LayerSidebar = () => {
                   <IconButton
                     size="xs"
                     variant="ghost"
-                    icon={<EyeIcon size={12} />}
+                    icon={object.visible ? <EyeIcon size={12} /> : <EyeOffIcon size={12} />}
                     aria-label="Toggle visibility"
+                    color={object.visible ? "gray.600" : "gray.400"}
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleLayerVisibility(object.name);

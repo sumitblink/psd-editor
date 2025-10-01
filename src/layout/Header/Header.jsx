@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
 import { Box, Button, HStack, Input, IconButton, Tooltip } from '@chakra-ui/react';
-import { Undo, Redo, Type, Image, ArrowUp, ArrowDown, Trash2 } from 'lucide-react';
+import { Undo, Redo, Type, Image, ArrowUp, ArrowDown, Trash2, Square, Circle, Triangle } from 'lucide-react';
 import { HeadBar, HeaderLogo } from '../container';
 import { useDispatch, useSelector } from 'react-redux';
 import { parsePSDFromFile, convertPSDTOTemplate } from '../../functions/psd';
 import { setActive as setActiveTemplate } from '../../store/templateSlice';
-import { loadFromTemplate, undo, redo, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON, updateObjects, deleteObject, changeObjectLayer, selectSelected } from '../../store/canvasSlice';
+import { loadFromTemplate, undo, redo, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON, updateObjects, deleteObject, changeObjectLayer, selectSelected, addRectangle, addCircle, addTriangle, addText, addImage } from '../../store/canvasSlice';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -60,20 +60,7 @@ const Header = () => {
 
   const handleAddText = () => {
     if (!canvas) return;
-    
-    const text = new fabric.Textbox('Sample Text', {
-      left: 100,
-      top: 100,
-      width: 200,
-      fontSize: 20,
-      fill: '#000000',
-      name: `Text ${canvas.getObjects().length + 1}`
-    });
-    
-    canvas.add(text);
-    canvas.setActiveObject(text);
-    canvas.renderAll();
-    dispatch(updateObjects());
+    dispatch(addText({ text: 'Sample Text', options: { fill: '#000000', fontSize: 20 } }));
   };
 
   const handleAddImage = () => {
@@ -86,19 +73,7 @@ const Header = () => {
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      fabric.Image.fromURL(e.target.result, (img) => {
-        img.set({
-          left: 100,
-          top: 100,
-          scaleX: 0.5,
-          scaleY: 0.5,
-          name: `Image ${canvas.getObjects().length + 1}`
-        });
-        canvas.add(img);
-        canvas.setActiveObject(img);
-        canvas.renderAll();
-        dispatch(updateObjects());
-      });
+      dispatch(addImage({ source: e.target.result, options: { width: 300, height: 300 } }));
     };
     reader.readAsDataURL(file);
     event.target.value = '';
@@ -117,6 +92,21 @@ const Header = () => {
   const handleDelete = () => {
     if (!selected || !canvas) return;
     dispatch(deleteObject());
+  };
+
+  const handleAddRectangle = () => {
+    if (!canvas) return;
+    dispatch(addRectangle({}));
+  };
+
+  const handleAddCircle = () => {
+    if (!canvas) return;
+    dispatch(addCircle({}));
+  };
+
+  const handleAddTriangle = () => {
+    if (!canvas) return;
+    dispatch(addTriangle({}));
   };
 
   return (
@@ -154,6 +144,45 @@ const Header = () => {
               mb={1}
             />
             <Box fontSize="xs" color="gray.600">Image</Box>
+          </Box>
+        </Tooltip>
+
+        <Tooltip label="Add Rectangle">
+          <Box textAlign="center" cursor="pointer" onClick={handleAddRectangle}>
+            <IconButton
+              size="sm"
+              variant="ghost"
+              icon={<Square size={20} />}
+              aria-label="Add Rectangle"
+              mb={1}
+            />
+            <Box fontSize="xs" color="gray.600">Rectangle</Box>
+          </Box>
+        </Tooltip>
+
+        <Tooltip label="Add Circle">
+          <Box textAlign="center" cursor="pointer" onClick={handleAddCircle}>
+            <IconButton
+              size="sm"
+              variant="ghost"
+              icon={<Circle size={20} />}
+              aria-label="Add Circle"
+              mb={1}
+            />
+            <Box fontSize="xs" color="gray.600">Circle</Box>
+          </Box>
+        </Tooltip>
+
+        <Tooltip label="Add Triangle">
+          <Box textAlign="center" cursor="pointer" onClick={handleAddTriangle}>
+            <IconButton
+              size="sm"
+              variant="ghost"
+              icon={<Triangle size={20} />}
+              aria-label="Add Triangle"
+              mb={1}
+            />
+            <Box fontSize="xs" color="gray.600">Triangle</Box>
           </Box>
         </Tooltip>
 

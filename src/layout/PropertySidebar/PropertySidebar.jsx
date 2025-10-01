@@ -101,6 +101,32 @@ const PropertySidebar = () => {
           </>
         )}
 
+        {(selected.type === 'rect' || selected.type === 'circle' || selected.type === 'triangle') && (
+          <>
+            <FormControl>
+              <FormLabel fontSize="sm">Fill Color</FormLabel>
+              <Input
+                size="sm"
+                type="color"
+                value={selected.fill || '#3182ce'}
+                onChange={(e) => handleImageChange('fill', e.target.value)}
+              />
+            </FormControl>
+
+            {selected.type === 'circle' && (
+              <FormControl>
+                <FormLabel fontSize="sm">Radius</FormLabel>
+                <Input
+                  size="sm"
+                  type="number"
+                  value={Math.round(selected.radius || 0)}
+                  onChange={(e) => handleImageChange('radius', parseInt(e.target.value))}
+                />
+              </FormControl>
+            )}
+          </>
+        )}
+
         <FormControl>
           <FormLabel fontSize="sm">Left</FormLabel>
           <Input
