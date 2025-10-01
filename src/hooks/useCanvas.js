@@ -66,15 +66,13 @@ export function useCanvas(props) {
             
             if (hasInvalidBlobs) {
               console.log('Saved state contains invalid blob URLs, reloading from template...');
-              // Try to reload from template data instead
+              // Clear invalid state and reload from template
+              localStorage.removeItem('canvasState');
+              
               if (parsedTemplate && parsedTemplate.state) {
-                // Import the reload action
-                import('../store/canvasSlice.js').then(({ loadFromTemplate }) => {
-                  const { store } = require('../store/store.js');
-                  store.dispatch(loadFromTemplate(parsedTemplate));
-                });
+                // Dispatch loadFromTemplate action
+                dispatch(loadFromTemplate(parsedTemplate));
               } else {
-                localStorage.removeItem('canvasState');
                 localStorage.removeItem('templateData');
                 fabric.renderAll();
                 dispatch(updateObjects());
@@ -96,6 +94,7 @@ export function useCanvas(props) {
         } else {
           // Immediate render if no saved state
           fabric.renderAll();
+          dispatch(updateObjects());
           console.log('Canvas rendered');
         }
 

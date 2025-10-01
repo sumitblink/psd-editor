@@ -45,20 +45,11 @@ export async function convertTemplateToState(layers) {
       if (layer.canvas) {
         // Always use data URL for persistence across page refreshes
         value = layer.canvas.toDataURL('image/png');
-      } else if (blob) {
-        // Convert blob to data URL for persistence
-        try {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          const img = new Image();
-          
-          // This will be handled asynchronously, but we'll use the blob URL for now
-          // and the canvas reload will handle the conversion
-          value = URL.createObjectURL(blob);
-        } catch (error) {
-          console.warn('Error converting blob to data URL:', error);
-          value = URL.createObjectURL(blob);
-        }
+        console.log('Created data URL for layer:', layer.name);
+      } else {
+        console.warn('No canvas data for image layer:', layer.name);
+        // Skip this layer if no canvas data
+        continue;
       }
     } else {
       if (layer.text) {
