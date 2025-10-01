@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createSelector } from 'reselect';
 import { exportedProps, maxUndoRedoSteps, originalHeight, originalWidth } from '../config/app';
 import { defaultFont, defaultFontSize } from '../config/fonts';
 import { brandLogoKey, mainTextKey, subTextKey } from '../constants/keys';
@@ -29,12 +28,11 @@ export const loadFromTemplate = createAsyncThunk(
     const { canvas } = getState();
     if (!canvas.instance) return;
 
-    // Clear existing objects first
-    canvas.instance.clear();
+    const factorY = originalHeight / canvas.height;
+    const factorX = originalWidth / canvas.width;
 
-    // Set canvas dimensions to match template
-    dispatch(changeDimensions({ height: template.height, width: template.width }));
     dispatch(changeBackground(template));
+    dispatch(changeDimensions({ height: template.height * factorY, width: template.width * factorX }));
 
     const processedElements = [];
 
@@ -58,8 +56,6 @@ export const loadFromTemplate = createAsyncThunk(
             fontFamily: fontRes.name,
             selectable: true,
             evented: true,
-            left: element.details.left || 0,
-            top: element.details.top || 0,
           });
 
           textbox.set('meta', intializeMetaProperties(textbox, canvas.instance));
@@ -67,57 +63,25 @@ export const loadFromTemplate = createAsyncThunk(
           break;
 
         case 'image':
-          const image = await new Promise((resolve, reject) => {
-            fabricJS.Image.fromURL(
-              element.value, 
-              (img) => {
-                if (img.width === 0 || img.height === 0) {
-                  console.warn('Image loaded with zero dimensions:', element.name);
-                  // Try to reload from template if available
-                  reject(new Error('Invalid image dimensions'));
-                  return;
-                }
-                resolve(img);
-              },
-              {
-                ...element.details,
-                name,
-                objectCaching: false,
-                crossOrigin: 'anonymous',
-                selectable: true,
-                evented: true,
-              }
-            );
-          }).catch((error) => {
-            console.warn('Failed to load image:', element.name, error);
-            return null; // Skip this image
-          });
-          
-          // Only add image if it loaded successfully
-          if (image && image.width > 0 && image.height > 0) {
-            // Ensure the image is positioned correctly
-            image.set({
-              left: element.details.left || 0,
-              top: element.details.top || 0,
+          const image = await new Promise((resolve) => {
+            fabricJS.Image.fromURL(element.value, (img) => resolve(img), {
+              ...element.details,
+              name,
+              objectCaching: true,
+              crossOrigin: 'anonymous',
               selectable: true,
               evented: true,
             });
-            
-            image.set('meta', intializeMetaProperties(image, canvas.instance));
-            canvas.instance.add(image);
-            console.log('Added image:', element.name, 'Size:', image.width, 'x', image.height, 'Position:', image.left, image.top);
-          } else {
-            console.warn('Skipping failed image:', element.name);
-          }
+          });
+          image.set('meta', intializeMetaProperties(image, canvas.instance));
+          canvas.instance.add(image);
           break;
       }
 
-      }
+      canvas.instance.fire('object:modified', { target: null });
+      canvas.instance.renderAll();
+    }
 
-    // Force render and update after all objects are added
-    canvas.instance.renderAll();
-    canvas.instance.calcOffset();
-    
     // Update objects list after loading template
     const objects = canvas.instance.getObjects();
     const updatedObjects = objects
@@ -127,18 +91,7 @@ export const loadFromTemplate = createAsyncThunk(
         index,
         visible: object.visible !== false
       }));
-
-    // Save template to localStorage for persistence
-    try {
-      const canvasState = canvas.instance.toJSON();
-      localStorage.setItem('canvasState', JSON.stringify(canvasState));
-      localStorage.setItem('templateData', JSON.stringify(template));
-      console.log('Template state saved to localStorage');
-    } catch (error) {
-      console.warn('Failed to save template state:', error);
-    }
-
-    console.log('Template loaded with objects:', updatedObjects.length);
+    
     return { template, objects: updatedObjects };
   }
 );
@@ -490,7 +443,7 @@ const canvasSlice = createSlice({
       state.selected = activeObject ? activeObject.toObject(exportedProps) : null;
 
       state.instance.fire('object:modified', { target: element }).renderAll();
-
+      
       // Force state update to trigger re-render
       state.objects = [...state.objects];
     },
@@ -601,10 +554,10 @@ export const selectCanvas = (state) => state.canvas;
 export const selectCanvasInstance = (state) => state.canvas.instance;
 export const selectObjects = (state) => state.canvas.objects;
 export const selectSelected = (state) => state.canvas.selected;
-export const selectDimensions = createSelector(
-  [(state) => state.canvas.width, (state) => state.canvas.height],
-  (width, height) => ({ width, height })
-);
+export const selectDimensions = (state) => ({
+  width: state.canvas.width,
+  height: state.canvas.height
+});
 export const selectCanUndo = (state) => state.canvas.undoStack.length > 0;
 export const selectCanRedo = (state) => state.canvas.redoStack.length > 0;
 
