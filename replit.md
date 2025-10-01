@@ -4,6 +4,10 @@
 A React-based PSD (Photoshop Document) editor application that allows users to import, edit, and manipulate PSD files in a web interface. Built with React, TypeScript, Vite, and Fabric.js for canvas manipulation.
 
 ## Recent Changes (October 1, 2025)
+- ✅ Fixed deployment port mismatch - configured Vite preview to use port 5000
+- ✅ Fixed color picker lag with debounced updates and onBlur handling
+- ✅ Fixed keyboard shortcuts to prevent interference with input fields
+- ✅ Enhanced font loading to accept both font names and custom web URLs
 - ✅ Converted property editing to async thunks (changeTextProperty, changeImageProperty, changeObjectDimensions)
 - ✅ Fixed undo/redo with async thunks, proper stack management, and UI synchronization
 - ✅ Implemented lock/unlock layer functionality with comprehensive fabric.js flags
@@ -59,4 +63,5 @@ A React-based PSD (Photoshop Document) editor application that allows users to i
 ## Deployment Configuration
 - Target: Autoscale (stateless frontend)
 - Build: npm run build (TypeScript compilation + Vite build)
-- Run: npm run preview (production preview server)
+- Run: npm run preview (production preview server on port 5000)
+- Preview server configured to bind to 0.0.0.0:5000 for deployment compatibility
