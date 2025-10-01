@@ -4,6 +4,13 @@
 A React-based PSD (Photoshop Document) editor application that allows users to import, edit, and manipulate PSD files in a web interface. Built with React, TypeScript, Vite, and Fabric.js for canvas manipulation.
 
 ## Recent Changes (October 1, 2025)
+- ✅ Converted property editing to async thunks (changeTextProperty, changeImageProperty, changeObjectDimensions)
+- ✅ Fixed undo/redo with async thunks, proper stack management, and UI synchronization
+- ✅ Implemented lock/unlock layer functionality with comprehensive fabric.js flags
+- ✅ Added duplicate layer feature with automatic unique naming
+- ✅ Implemented inline layer name editing with duplicate name prevention (auto-suffix -1, -2)
+- ✅ Consolidated shape buttons into a single Shapes dropdown menu
+- ✅ Fixed font family changes to properly load fonts via changeFontFamily thunk
 - ✅ Fixed layer drag-and-drop reordering with proper state updates and selection sync
 - ✅ Implemented cut/copy/paste functionality with keyboard shortcuts (Ctrl/Cmd+C/X/V)
 - ✅ Added basic shapes (Rectangle, Circle, Triangle) with full property editing support
@@ -31,13 +38,16 @@ A React-based PSD (Photoshop Document) editor application that allows users to i
 - PSD file import and parsing
 - Canvas-based editing interface with Fabric.js
 - Layer management with drag-and-drop reordering
-- Property editing sidebar for all object types
+- Property editing sidebar for all object types (text, images, shapes)
 - Text and image manipulation tools
-- Shape creation tools (Rectangle, Circle, Triangle)
+- Shape creation tools (Rectangle, Circle, Triangle) via dropdown menu
 - Cut/Copy/Paste with keyboard shortcuts (Ctrl/Cmd+C/X/V)
 - Layer visibility toggle
+- Layer lock/unlock to prevent editing
+- Layer duplication with automatic unique naming
+- Inline layer name editing with duplicate prevention
 - Layer reordering (Send to Back/Bring to Front)
-- Undo/Redo functionality
+- Undo/Redo functionality with proper stack management
 - Delete objects
 
 ## Development Setup
