@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
-import { Box, Button, HStack, Input, IconButton, Tooltip } from '@chakra-ui/react';
-import { Undo, Redo, Type, Image, ArrowUp, ArrowDown, Trash2, Square, Circle, Triangle } from 'lucide-react';
+import { Box, Button, HStack, Input, IconButton, Tooltip, Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/react';
+import { Undo, Redo, Type, Image, ArrowUp, ArrowDown, Trash2, Square, Circle, Triangle, ChevronDown, Shapes } from 'lucide-react';
 import { HeadBar, HeaderLogo } from '../container';
 import { useDispatch, useSelector } from 'react-redux';
 import { parsePSDFromFile, convertPSDTOTemplate } from '../../functions/psd';
 import { setActive as setActiveTemplate } from '../../store/templateSlice';
-import { loadFromTemplate, undo, redo, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON, updateObjects, deleteObject, changeObjectLayer, selectSelected, addRectangle, addCircle, addTriangle, addText, addImage } from '../../store/canvasSlice';
+import { loadFromTemplate, undoAction, redoAction, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON, updateObjects, deleteObject, changeObjectLayer, selectSelected, addRectangle, addCircle, addTriangle, addText, addImage } from '../../store/canvasSlice';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -50,12 +50,12 @@ const Header = () => {
 
   const handleUndo = () => {
     if (!canvas || !canUndo) return;
-    dispatch(undo());
+    dispatch(undoAction());
   };
 
   const handleRedo = () => {
     if (!canvas || !canRedo) return;
-    dispatch(redo());
+    dispatch(redoAction());
   };
 
   const handleAddText = () => {
@@ -147,44 +147,32 @@ const Header = () => {
           </Box>
         </Tooltip>
 
-        <Tooltip label="Add Rectangle">
-          <Box textAlign="center" cursor="pointer" onClick={handleAddRectangle}>
-            <IconButton
-              size="sm"
-              variant="ghost"
-              icon={<Square size={20} />}
-              aria-label="Add Rectangle"
-              mb={1}
-            />
-            <Box fontSize="xs" color="gray.600">Rectangle</Box>
-          </Box>
-        </Tooltip>
-
-        <Tooltip label="Add Circle">
-          <Box textAlign="center" cursor="pointer" onClick={handleAddCircle}>
-            <IconButton
-              size="sm"
-              variant="ghost"
-              icon={<Circle size={20} />}
-              aria-label="Add Circle"
-              mb={1}
-            />
-            <Box fontSize="xs" color="gray.600">Circle</Box>
-          </Box>
-        </Tooltip>
-
-        <Tooltip label="Add Triangle">
-          <Box textAlign="center" cursor="pointer" onClick={handleAddTriangle}>
-            <IconButton
-              size="sm"
-              variant="ghost"
-              icon={<Triangle size={20} />}
-              aria-label="Add Triangle"
-              mb={1}
-            />
-            <Box fontSize="xs" color="gray.600">Triangle</Box>
-          </Box>
-        </Tooltip>
+        <Menu>
+          <Tooltip label="Add Shape">
+            <Box textAlign="center">
+              <MenuButton
+                as={IconButton}
+                size="sm"
+                variant="ghost"
+                icon={<Shapes size={20} />}
+                aria-label="Add Shape"
+                mb={1}
+              />
+              <Box fontSize="xs" color="gray.600">Shapes</Box>
+            </Box>
+          </Tooltip>
+          <MenuList minW="150px">
+            <MenuItem icon={<Square size={16} />} onClick={handleAddRectangle}>
+              Rectangle
+            </MenuItem>
+            <MenuItem icon={<Circle size={16} />} onClick={handleAddCircle}>
+              Circle
+            </MenuItem>
+            <MenuItem icon={<Triangle size={16} />} onClick={handleAddTriangle}>
+              Triangle
+            </MenuItem>
+          </MenuList>
+        </Menu>
 
         <Tooltip label="Move to Back">
           <Box textAlign="center" cursor="pointer" onClick={handleMoveBack}>

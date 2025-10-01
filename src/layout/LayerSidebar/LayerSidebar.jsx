@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, VStack, Text, HStack, IconButton, Button, ButtonGroup } from '@chakra-ui/react';
-import { EyeIcon, EyeOffIcon, TrashIcon, ArrowUpIcon, ArrowDownIcon, MoveUpIcon, MoveDownIcon, GripVerticalIcon } from 'lucide-react';
+import { Box, VStack, Text, HStack, IconButton, Button, ButtonGroup, Input, useToast } from '@chakra-ui/react';
+import { EyeIcon, EyeOffIcon, TrashIcon, ArrowUpIcon, ArrowDownIcon, MoveUpIcon, MoveDownIcon, GripVerticalIcon, Lock, Unlock, Copy, Edit2 } from 'lucide-react';
 import { Drawer, Item } from '../container';
-import { selectObjects, selectSelected, selectCanvasInstance, deleteObject, changeObjectLayer, selectObject, updateObjects } from '../../store/canvasSlice';
+import { selectObjects, selectSelected, selectCanvasInstance, deleteObject, changeObjectLayer, selectObject, updateObjects, toggleObjectLock, duplicateObject } from '../../store/canvasSlice';
 
 const LayerSidebar = () => {
   const dispatch = useDispatch();
   const objects = useSelector(selectObjects);
   const selected = useSelector(selectSelected);
   const canvas = useSelector(selectCanvasInstance);
+  const toast = useToast();
   const [draggedItem, setDraggedItem] = useState(null);
   const [dragOverItem, setDragOverItem] = useState(null);
+  const [editingLayer, setEditingLayer] = useState(null);
+  const [editingName, setEditingName] = useState('');
 
   const handleDeleteObject = () => {
     dispatch(deleteObject());
@@ -72,6 +75,79 @@ const LayerSidebar = () => {
       canvas.renderAll();
       dispatch(updateObjects());
     }
+  };
+
+  const toggleLayerLock = (layerName) => {
+    dispatch(toggleObjectLock(layerName));
+  };
+
+  const handleDuplicateLayer = () => {
+    if (!selected) {
+      toast({
+        title: 'No layer selected',
+        description: 'Please select a layer to duplicate',
+        status: 'warning',
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
+    dispatch(duplicateObject());
+    toast({
+      title: 'Layer duplicated',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    });
+  };
+
+  const startEditingName = (object) => {
+    setEditingLayer(object.name);
+    setEditingName(object.name);
+  };
+
+  const saveLayerName = (oldName) => {
+    if (!canvas || !editingName || editingName === oldName) {
+      setEditingLayer(null);
+      return;
+    }
+
+    const canvasObjects = canvas.getObjects();
+    const targetObject = canvasObjects.find(obj => obj.name === oldName);
+
+    if (targetObject) {
+      // Check for duplicate names
+      let newName = editingName;
+      let counter = 1;
+      while (canvasObjects.some(obj => obj !== targetObject && obj.name === newName)) {
+        newName = `${editingName}-${counter}`;
+        counter++;
+      }
+
+      targetObject.set('name', newName);
+      canvas.fire('object:modified', { target: targetObject });
+      canvas.renderAll();
+      dispatch(updateObjects());
+      
+      if (newName !== editingName) {
+        toast({
+          title: 'Layer renamed',
+          description: `Name was changed to "${newName}" to avoid duplicates`,
+          status: 'info',
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: 'Layer renamed',
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+      }
+    }
+
+    setEditingLayer(null);
   };
 
   // Drag and drop handlers
@@ -141,7 +217,7 @@ const LayerSidebar = () => {
         {selected && (
           <Box mt={2}>
             <Text fontSize="xs" color="gray.500" mb={2}>Layer Controls:</Text>
-            <ButtonGroup size="xs" spacing={1} flexWrap="wrap">
+            <ButtonGroup size="xs" spacing={1} flexWrap="wrap" mb={2}>
               <Button onClick={() => handleLayerMove('front')} leftIcon={<MoveUpIcon size={10} />}>
                 Front
               </Button>
@@ -153,6 +229,11 @@ const LayerSidebar = () => {
               </Button>
               <Button onClick={() => handleLayerMove('back')} leftIcon={<MoveDownIcon size={10} />}>
                 Back
+              </Button>
+            </ButtonGroup>
+            <ButtonGroup size="xs" spacing={1} flexWrap="wrap">
+              <Button onClick={handleDuplicateLayer} leftIcon={<Copy size={10} />} colorScheme="blue">
+                Duplicate
               </Button>
             </ButtonGroup>
           </Box>
@@ -208,14 +289,54 @@ const LayerSidebar = () => {
                   onMouseDown={(e) => e.stopPropagation()}
                 />
                 <Box flex={1}>
-                  <Text fontSize="sm" fontWeight="medium" noOfLines={1}>
-                    {object.name || `Layer ${index + 1}`}
-                  </Text>
-                  <Text fontSize="xs" color="gray.500">
-                    {object.type} • Layer {object.index}
-                  </Text>
+                  {editingLayer === object.name ? (
+                    <Input
+                      size="xs"
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      onBlur={() => saveLayerName(object.name)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') saveLayerName(object.name);
+                        if (e.key === 'Escape') setEditingLayer(null);
+                      }}
+                      autoFocus
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <>
+                      <Text fontSize="sm" fontWeight="medium" noOfLines={1}>
+                        {object.name || `Layer ${index + 1}`}
+                        {object.locked && <Text as="span" fontSize="xs" color="orange.500" ml={1}>(Locked)</Text>}
+                      </Text>
+                      <Text fontSize="xs" color="gray.500">
+                        {object.type} • Layer {object.index}
+                      </Text>
+                    </>
+                  )}
                 </Box>
                 <HStack spacing={1}>
+                  <IconButton
+                    size="xs"
+                    variant="ghost"
+                    icon={<Edit2 size={12} />}
+                    aria-label="Edit name"
+                    color="gray.600"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startEditingName(object);
+                    }}
+                  />
+                  <IconButton
+                    size="xs"
+                    variant="ghost"
+                    icon={object.locked ? <Lock size={12} /> : <Unlock size={12} />}
+                    aria-label="Toggle lock"
+                    color={object.locked ? "orange.500" : "gray.600"}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleLayerLock(object.name);
+                    }}
+                  />
                   <IconButton
                     size="xs"
                     variant="ghost"

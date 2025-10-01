@@ -6,7 +6,7 @@ import { CanvasContainer, Layout, Loader, MainContainer, MainWrapperContainer } 
 import { useCanvas } from '../../hooks/useCanvas';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectIsLoading, selectActiveTemplate } from '../../store/templateSlice';
-import { selectDimensions, selectSelected, undo, redo, deleteObject, copyObject, cutObject, pasteObject } from '../../store/canvasSlice';
+import { selectDimensions, selectSelected, undoAction, redoAction, deleteObject, copyObject, cutObject, pasteObject } from '../../store/canvasSlice';
 import { Box } from '@chakra-ui/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -47,16 +47,16 @@ function CreateTemplate() {
             event.preventDefault();
             if (event.shiftKey) {
               // Ctrl+Shift+Z for redo
-              dispatch(redo());
+              dispatch(redoAction());
             } else {
               // Ctrl+Z for undo
-              dispatch(undo());
+              dispatch(undoAction());
             }
             break;
           case 'y':
             // Ctrl+Y for redo (alternative)
             event.preventDefault();
-            dispatch(redo());
+            dispatch(redoAction());
             break;
           case 'c':
             // Ctrl+C for copy

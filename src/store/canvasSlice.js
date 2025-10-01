@@ -448,6 +448,209 @@ export const pasteObject = createAsyncThunk(
   }
 );
 
+export const changeTextProperty = createAsyncThunk(
+  'canvas/changeTextProperty',
+  async ({ property, value }, { getState, dispatch }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    if (!canvas.instance) return;
+
+    const text = canvas.instance.getActiveObject();
+    if (!text) return;
+
+    text.set(property, value);
+    canvas.instance.fire('object:modified', { target: text }).renderAll();
+    
+    dispatch(selectObject());
+  }
+);
+
+export const changeImageProperty = createAsyncThunk(
+  'canvas/changeImageProperty',
+  async ({ property, value }, { getState, dispatch }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    if (!canvas.instance) return;
+
+    const image = canvas.instance.getActiveObject();
+    if (!image) return;
+
+    image.set(property, value);
+    canvas.instance.fire('object:modified', { target: image }).renderAll();
+    
+    dispatch(selectObject());
+  }
+);
+
+export const changeObjectDimensions = createAsyncThunk(
+  'canvas/changeObjectDimensions',
+  async ({ property, value }, { getState, dispatch }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    if (!canvas.instance) return;
+
+    const element = canvas.instance.getActiveObject();
+    if (!element) return;
+
+    const type = element.type;
+
+    switch (type) {
+      case 'textbox':
+        if (property === 'height') return;
+        element.set(property, value);
+        break;
+      case 'image':
+        const scale = property === 'height' ? value / element.height : value / element.width;
+        const key = property === 'height' ? 'scaleY' : 'scaleX';
+        element.set(key, scale);
+        break;
+      case 'rect':
+      case 'circle':
+      case 'triangle':
+        element.set(property, value);
+        break;
+    }
+
+    canvas.instance.fire('object:modified', { target: element }).renderAll();
+    
+    dispatch(selectObject());
+  }
+);
+
+export const undoAction = createAsyncThunk(
+  'canvas/undoAction',
+  async (_, { getState, dispatch }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    
+    if (canvas.undoStack.length === 0 || !canvas.instance) return;
+
+    const currentState = canvas.instance.toObject(exportedProps);
+    
+    // Get previous state
+    const previousState = canvas.undoStack[canvas.undoStack.length - 1];
+    
+    // Load the previous state
+    await new Promise((resolve) => {
+      canvas.instance.loadFromJSON(previousState, () => {
+        canvas.instance.renderAll();
+        resolve();
+      });
+    });
+
+    // Update UI state after loading
+    dispatch(updateObjects());
+    dispatch(selectObject());
+
+    // Update the stacks after successful load
+    return { currentState, previousState };
+  }
+);
+
+export const redoAction = createAsyncThunk(
+  'canvas/redoAction',
+  async (_, { getState, dispatch }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    
+    if (canvas.redoStack.length === 0 || !canvas.instance) return;
+
+    const currentState = canvas.instance.toObject(exportedProps);
+    
+    // Get next state
+    const nextState = canvas.redoStack[canvas.redoStack.length - 1];
+    
+    // Load the next state
+    await new Promise((resolve) => {
+      canvas.instance.loadFromJSON(nextState, () => {
+        canvas.instance.renderAll();
+        resolve();
+      });
+    });
+
+    // Update UI state after loading
+    dispatch(updateObjects());
+    dispatch(selectObject());
+
+    // Update the stacks after successful load
+    return { currentState, nextState };
+  }
+);
+
+export const toggleObjectLock = createAsyncThunk(
+  'canvas/toggleObjectLock',
+  async (layerName, { getState, dispatch }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    if (!canvas.instance) return;
+
+    const canvasObjects = canvas.instance.getObjects();
+    const targetObject = canvasObjects.find(obj => obj.name === layerName);
+
+    if (targetObject) {
+      const newLockState = !targetObject.lockMovementX;
+      
+      // Lock or unlock the object
+      targetObject.set({
+        lockMovementX: newLockState,
+        lockMovementY: newLockState,
+        lockScalingX: newLockState,
+        lockScalingY: newLockState,
+        lockRotation: newLockState,
+        selectable: !newLockState,
+        evented: !newLockState,
+        hasControls: !newLockState,
+        hasBorders: !newLockState,
+        hoverCursor: newLockState ? 'default' : 'move'
+      });
+
+      // If locking, deselect the object
+      if (newLockState && canvas.instance.getActiveObject() === targetObject) {
+        canvas.instance.discardActiveObject();
+        dispatch(selectObject());
+      }
+
+      canvas.instance.renderAll();
+      dispatch(updateObjects());
+      
+      return { layerName, locked: newLockState };
+    }
+  }
+);
+
+export const duplicateObject = createAsyncThunk(
+  'canvas/duplicateObject',
+  async (_, { getState, dispatch }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    if (!canvas.instance) return;
+
+    const activeObject = canvas.instance.getActiveObject();
+    if (!activeObject) return;
+
+    // Clone the object asynchronously
+    const cloned = await new Promise((resolve) => {
+      activeObject.clone((clonedObj) => {
+        clonedObj.set({
+          left: clonedObj.left + 20,
+          top: clonedObj.top + 20,
+          name: objectID(clonedObj.name || activeObject.type)
+        });
+        resolve(clonedObj);
+      }, exportedProps);
+    });
+
+    canvas.instance.add(cloned);
+    canvas.instance.setActiveObject(cloned);
+    canvas.instance.fire('object:modified', { target: cloned }).renderAll();
+    
+    dispatch(updateObjects());
+    dispatch(selectObject());
+
+    return cloned.toObject(exportedProps);
+  }
+);
+
 const intializeMetaProperties = (object, instance) => {
   const multiplier = instance?.getZoom() || 1;
 
@@ -490,7 +693,8 @@ const canvasSlice = createSlice({
           name: object.name || `Layer ${index + 1}`, 
           type: object.type, 
           index,
-          visible: object.visible !== false
+          visible: object.visible !== false,
+          locked: object.lockMovementX === true
         }));
       const activeObject = state.instance.getActiveObject();
       state.selected = activeObject ? activeObject.toObject(exportedProps) : null;
@@ -527,52 +731,6 @@ const canvasSlice = createSlice({
 
       state.width = state.instance.width;
       state.height = state.instance.height;
-    },
-    changeObjectDimensions: (state, action) => {
-      const { property, value } = action.payload;
-      if (!state.instance) return;
-
-      const element = state.instance.getActiveObject();
-      if (!element) return;
-
-      const type = element.type;
-
-      switch (type) {
-        case 'textbox':
-          if (property === 'height') return;
-          element.set(property, value);
-          break;
-        case 'image':
-          const scale = property === 'height' ? value / element.height : value / element.width;
-          const key = property === 'height' ? 'scaleY' : 'scaleX';
-          element.set(key, scale);
-          break;
-        case 'rect':
-          element.set(property, value);
-          break;
-      }
-
-      state.instance.fire('object:modified', { target: element }).renderAll();
-    },
-    changeImageProperty: (state, action) => {
-      const { property, value } = action.payload;
-      if (!state.instance) return;
-
-      const image = state.instance.getActiveObject();
-      if (!image) return;
-
-      image.set(property, value);
-      state.instance.fire('object:modified', { target: image }).renderAll();
-    },
-    changeTextProperty: (state, action) => {
-      const { property, value } = action.payload;
-      if (!state.instance) return;
-
-      const text = state.instance.getActiveObject();
-      if (!text) return;
-
-      text.set(property, value);
-      state.instance.fire('object:modified', { target: text }).renderAll();
     },
     selectObject: (state, action) => {
       if (!state.instance) return;
@@ -689,44 +847,6 @@ const canvasSlice = createSlice({
       state.undoStack = [];
       state.selected = null;
     },
-    undo: (state) => {
-      if (state.undoStack.length > 0 && state.instance) {
-        const currentState = state.instance.toObject(exportedProps);
-        state.redoStack.push(currentState);
-
-        if (state.redoStack.length > maxUndoRedoSteps) {
-          state.redoStack.splice(0, 1);
-        }
-
-        const previousState = state.undoStack.pop();
-        state.actionsEnabled = false;
-
-        // Load the previous state
-        state.instance.loadFromJSON(previousState, () => {
-          state.actionsEnabled = true;
-          state.instance.renderAll();
-        });
-      }
-    },
-    redo: (state) => {
-      if (state.redoStack.length > 0 && state.instance) {
-        const currentState = state.instance.toObject(exportedProps);
-        state.undoStack.push(currentState);
-
-        if (state.undoStack.length > maxUndoRedoSteps) {
-          state.undoStack.splice(0, 1);
-        }
-
-        const nextState = state.redoStack.pop();
-        state.actionsEnabled = false;
-
-        // Load the next state
-        state.instance.loadFromJSON(nextState, () => {
-          state.actionsEnabled = true;
-          state.instance.renderAll();
-        });
-      }
-    },
     setClipboard: (state, action) => {
       state.clipboard = action.payload;
     },
@@ -737,6 +857,64 @@ const canvasSlice = createSlice({
         state.template = action.payload;
       })
       .addCase(loadFromJSON.fulfilled, (state) => {
+        state.actionsEnabled = true;
+      })
+      .addCase(undoAction.pending, (state) => {
+        state.actionsEnabled = false;
+      })
+      .addCase(undoAction.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.redoStack.push(action.payload.currentState);
+          if (state.redoStack.length > maxUndoRedoSteps) {
+            state.redoStack.shift();
+          }
+          state.undoStack.pop();
+          
+          // Update objects list and selection
+          if (state.instance) {
+            const objects = state.instance.getObjects();
+            state.objects = objects
+              .map((object, index) => ({ 
+                name: object.name || `Layer ${index + 1}`, 
+                type: object.type, 
+                index,
+                visible: object.visible !== false,
+                locked: object.lockMovementX === true
+              }));
+            
+            const activeObject = state.instance.getActiveObject();
+            state.selected = activeObject ? activeObject.toObject(exportedProps) : null;
+          }
+        }
+        state.actionsEnabled = true;
+      })
+      .addCase(redoAction.pending, (state) => {
+        state.actionsEnabled = false;
+      })
+      .addCase(redoAction.fulfilled, (state, action) => {
+        if (action.payload) {
+          state.undoStack.push(action.payload.currentState);
+          if (state.undoStack.length > maxUndoRedoSteps) {
+            state.undoStack.shift();
+          }
+          state.redoStack.pop();
+          
+          // Update objects list and selection
+          if (state.instance) {
+            const objects = state.instance.getObjects();
+            state.objects = objects
+              .map((object, index) => ({ 
+                name: object.name || `Layer ${index + 1}`, 
+                type: object.type, 
+                index,
+                visible: object.visible !== false,
+                locked: object.lockMovementX === true
+              }));
+            
+            const activeObject = state.instance.getActiveObject();
+            state.selected = activeObject ? activeObject.toObject(exportedProps) : null;
+          }
+        }
         state.actionsEnabled = true;
       });
   }
@@ -749,9 +927,6 @@ export const {
   updateDimensions,
   changeBackground,
   changeDimensions,
-  changeObjectDimensions,
-  changeImageProperty,
-  changeTextProperty,
   selectObject,
   deselectObject,
   saveState,
@@ -761,8 +936,6 @@ export const {
   setActionsEnabled,
   setTemplate,
   clearCanvas,
-  undo,
-  redo,
   setClipboard
 } = canvasSlice.actions;
 

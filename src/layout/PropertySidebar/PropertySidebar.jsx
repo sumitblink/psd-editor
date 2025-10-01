@@ -3,14 +3,19 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, VStack, Text, Input, Select, FormLabel, FormControl } from '@chakra-ui/react';
 import { Drawer } from '../container';
-import { selectSelected, changeTextProperty, changeImageProperty, changeObjectDimensions } from '../../store/canvasSlice';
+import { selectSelected, changeTextProperty, changeImageProperty, changeObjectDimensions, changeFontFamily } from '../../store/canvasSlice';
 
 const PropertySidebar = () => {
   const dispatch = useDispatch();
   const selected = useSelector(selectSelected);
 
   const handleTextChange = (property, value) => {
-    dispatch(changeTextProperty({ property, value }));
+    // Use special thunk for font family to load fonts properly
+    if (property === 'fontFamily') {
+      dispatch(changeFontFamily(value));
+    } else {
+      dispatch(changeTextProperty({ property, value }));
+    }
   };
 
   const handleImageChange = (property, value) => {
