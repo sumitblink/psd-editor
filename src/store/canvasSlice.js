@@ -29,11 +29,12 @@ export const loadFromTemplate = createAsyncThunk(
     const { canvas } = getState();
     if (!canvas.instance) return;
 
-    const factorY = originalHeight / canvas.height;
-    const factorX = originalWidth / canvas.width;
+    // Clear existing objects first
+    canvas.instance.clear();
 
+    // Set canvas dimensions to match template
+    dispatch(changeDimensions({ height: template.height, width: template.width }));
     dispatch(changeBackground(template));
-    dispatch(changeDimensions({ height: template.height * factorY, width: template.width * factorX }));
 
     const processedElements = [];
 
@@ -57,6 +58,8 @@ export const loadFromTemplate = createAsyncThunk(
             fontFamily: fontRes.name,
             selectable: true,
             evented: true,
+            left: element.details.left || 0,
+            top: element.details.top || 0,
           });
 
           textbox.set('meta', intializeMetaProperties(textbox, canvas.instance));
@@ -86,9 +89,17 @@ export const loadFromTemplate = createAsyncThunk(
           
           // Ensure image has proper dimensions
           if (image.width > 0 && image.height > 0) {
+            // Ensure the image is positioned correctly
+            image.set({
+              left: element.details.left || 0,
+              top: element.details.top || 0,
+              selectable: true,
+              evented: true,
+            });
+            
             image.set('meta', intializeMetaProperties(image, canvas.instance));
             canvas.instance.add(image);
-            console.log('Added image:', element.name, 'Size:', image.width, 'x', image.height);
+            console.log('Added image:', element.name, 'Size:', image.width, 'x', image.height, 'Position:', image.left, image.top);
           } else {
             console.warn('Skipping image with invalid dimensions:', element.name);
           }

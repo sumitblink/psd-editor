@@ -64,6 +64,23 @@ function CreateTemplate() {
               display="flex"
               alignItems="center"
               justifyContent="center"
+              overflow="auto"
+              sx={{
+                '&::-webkit-scrollbar': {
+                  width: '8px',
+                  height: '8px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: '#f1f1f1',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: '#888',
+                  borderRadius: '4px',
+                },
+                '&::-webkit-scrollbar-thumb:hover': {
+                  background: '#555',
+                },
+              }}
             >
               <CanvasContainer
                 height={originalHeight}
@@ -75,7 +92,9 @@ function CreateTemplate() {
                   style={{ 
                     display: 'block',
                     backgroundColor: 'white',
-                    border: '1px solid #ccc'
+                    border: '1px solid #ccc',
+                    maxWidth: 'none',
+                    maxHeight: 'none'
                   }} 
                 />
               </CanvasContainer>
