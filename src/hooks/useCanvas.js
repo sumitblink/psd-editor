@@ -53,19 +53,32 @@ export function useCanvas(props) {
 
         // Load state from localStorage
         const savedState = localStorage.getItem('canvasState');
-        if (savedState) {
+        const templateData = localStorage.getItem('templateData');
+        
+        if (savedState && templateData) {
           try {
             const parsedState = JSON.parse(savedState);
+            const parsedTemplate = JSON.parse(templateData);
             
             // Check if state contains blob URLs (which become invalid on refresh)
-            const hasInvalidBlobs = JSON.stringify(parsedState).includes('blob:');
+            const stateString = JSON.stringify(parsedState);
+            const hasInvalidBlobs = stateString.includes('blob:');
             
             if (hasInvalidBlobs) {
-              console.log('Saved state contains invalid blob URLs, clearing...');
-              localStorage.removeItem('canvasState');
-              localStorage.removeItem('templateData');
-              fabric.renderAll();
-              dispatch(updateObjects());
+              console.log('Saved state contains invalid blob URLs, reloading from template...');
+              // Try to reload from template data instead
+              if (parsedTemplate && parsedTemplate.state) {
+                // Import the reload action
+                import('../store/canvasSlice.js').then(({ loadFromTemplate }) => {
+                  const { store } = require('../store/store.js');
+                  store.dispatch(loadFromTemplate(parsedTemplate));
+                });
+              } else {
+                localStorage.removeItem('canvasState');
+                localStorage.removeItem('templateData');
+                fabric.renderAll();
+                dispatch(updateObjects());
+              }
             } else {
               fabric.loadFromJSON(parsedState, () => {
                 fabric.renderAll();
@@ -76,6 +89,7 @@ export function useCanvas(props) {
           } catch (error) {
             console.warn('Error loading saved state:', error);
             localStorage.removeItem('canvasState');
+            localStorage.removeItem('templateData');
             fabric.renderAll();
             dispatch(updateObjects());
           }

@@ -73,6 +73,9 @@ export const loadFromTemplate = createAsyncThunk(
               (img) => {
                 if (img.width === 0 || img.height === 0) {
                   console.warn('Image loaded with zero dimensions:', element.name);
+                  // Try to reload from template if available
+                  reject(new Error('Invalid image dimensions'));
+                  return;
                 }
                 resolve(img);
               },
@@ -85,10 +88,13 @@ export const loadFromTemplate = createAsyncThunk(
                 evented: true,
               }
             );
+          }).catch((error) => {
+            console.warn('Failed to load image:', element.name, error);
+            return null; // Skip this image
           });
           
-          // Ensure image has proper dimensions
-          if (image.width > 0 && image.height > 0) {
+          // Only add image if it loaded successfully
+          if (image && image.width > 0 && image.height > 0) {
             // Ensure the image is positioned correctly
             image.set({
               left: element.details.left || 0,
@@ -101,7 +107,7 @@ export const loadFromTemplate = createAsyncThunk(
             canvas.instance.add(image);
             console.log('Added image:', element.name, 'Size:', image.width, 'x', image.height, 'Position:', image.left, image.top);
           } else {
-            console.warn('Skipping image with invalid dimensions:', element.name);
+            console.warn('Skipping failed image:', element.name);
           }
           break;
       }
