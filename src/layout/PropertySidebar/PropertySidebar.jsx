@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   Box, 
@@ -71,6 +71,62 @@ const CompactNumberInput = ({ label, value, onChange, icon, suffix }) => {
         </Box>
       )}
     </Flex>
+  );
+};
+
+const DebouncedColorPicker = ({ value, onChange, label }) => {
+  const [localColor, setLocalColor] = useState(value);
+  const timeoutRef = useRef(null);
+
+  // Update local color when prop changes
+  useEffect(() => {
+    setLocalColor(value);
+  }, [value]);
+
+  const handleColorChange = (newColor) => {
+    setLocalColor(newColor);
+    
+    // Clear existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
+    // Debounce the actual update
+    timeoutRef.current = setTimeout(() => {
+      onChange(newColor);
+    }, 100);
+  };
+
+  const handleBlur = () => {
+    // Immediately apply on blur
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    onChange(localColor);
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <Box mb={2}>
+      <Text fontSize="xs" color="gray.500" mb={1}>{label}</Text>
+      <Input
+        size="sm"
+        type="color"
+        value={localColor}
+        onChange={(e) => handleColorChange(e.target.value)}
+        onBlur={handleBlur}
+        borderRadius="lg"
+        h="32px"
+      />
+    </Box>
   );
 };
 
@@ -274,34 +330,22 @@ const PropertySidebar = () => {
               />
             </Box>
 
-            <Box mb={2}>
-              <Text fontSize="xs" color="gray.500" mb={1}>Color</Text>
-              <Input
-                size="sm"
-                type="color"
-                value={selected.fill || '#000000'}
-                onChange={(e) => handleTextChange('fill', e.target.value)}
-                borderRadius="lg"
-                h="32px"
-              />
-            </Box>
+            <DebouncedColorPicker
+              label="Color"
+              value={selected.fill || '#000000'}
+              onChange={(color) => handleTextChange('fill', color)}
+            />
           </>
         )}
 
         {/* Shape-specific properties */}
         {(selected.type === 'rect' || selected.type === 'circle' || selected.type === 'triangle') && (
           <>
-            <Box mb={2}>
-              <Text fontSize="xs" color="gray.500" mb={1}>Fill Color</Text>
-              <Input
-                size="sm"
-                type="color"
-                value={selected.fill || '#3182ce'}
-                onChange={(e) => handleImageChange('fill', e.target.value)}
-                borderRadius="lg"
-                h="32px"
-              />
-            </Box>
+            <DebouncedColorPicker
+              label="Fill Color"
+              value={selected.fill || '#3182ce'}
+              onChange={(color) => handleImageChange('fill', color)}
+            />
 
             {selected.type === 'circle' && (
               <Box mb={2}>
