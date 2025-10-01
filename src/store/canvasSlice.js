@@ -122,6 +122,16 @@ export const loadFromTemplate = createAsyncThunk(
         visible: object.visible !== false
       }));
 
+    // Save template to localStorage for persistence
+    try {
+      const canvasState = canvas.instance.toJSON();
+      localStorage.setItem('canvasState', JSON.stringify(canvasState));
+      localStorage.setItem('templateData', JSON.stringify(template));
+      console.log('Template state saved to localStorage');
+    } catch (error) {
+      console.warn('Failed to save template state:', error);
+    }
+
     console.log('Template loaded with objects:', updatedObjects.length);
     return { template, objects: updatedObjects };
   }

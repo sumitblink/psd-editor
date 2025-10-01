@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fabric as fabricJS } from 'fabric';
@@ -51,11 +50,22 @@ export function useCanvas(props) {
         const fabric = new fabricJS.Canvas(element, options);
         console.log('Canvas created:', fabric);
         dispatch(setInstance(fabric));
-        
-        // Immediate render
-        fabric.renderAll();
-        console.log('Canvas rendered');
-        
+
+        // Load state from localStorage
+        const savedState = localStorage.getItem('canvasState');
+        if (savedState) {
+          const parsedState = JSON.parse(savedState);
+          fabric.loadFromJSON(parsedState, () => {
+            fabric.renderAll();
+            dispatch(updateObjects());
+            console.log('Canvas state loaded from localStorage');
+          });
+        } else {
+          // Immediate render if no saved state
+          fabric.renderAll();
+          console.log('Canvas rendered');
+        }
+
         props?.onInitialize?.(fabric);
       } catch (error) {
         console.error('Canvas initialization error:', error);
@@ -85,7 +95,16 @@ export function useCanvas(props) {
       try {
         dispatch(saveState());
         dispatch(updateObjects());
-        
+
+        // Save to localStorage on every modification
+        try {
+          const canvasState = canvas.instance.toJSON();
+          localStorage.setItem('canvasState', JSON.stringify(canvasState));
+          console.log('Canvas state saved to localStorage');
+        } catch (error) {
+          console.warn('Failed to save canvas state:', error);
+        }
+
         // If this was a layer change, ensure objects are updated
         if (event.target && event.target.canvas) {
           dispatch(updateObjects());
@@ -134,7 +153,7 @@ export function useCanvas(props) {
           strokeDashArray: [5, 5]
         });
         canvas.instance.renderAll();
-        
+
         // Change cursor to pointer
         canvas.instance.defaultCursor = 'pointer';
         canvas.instance.hoverCursor = 'pointer';
@@ -150,7 +169,7 @@ export function useCanvas(props) {
           strokeDashArray: null
         });
         canvas.instance.renderAll();
-        
+
         // Reset cursor
         canvas.instance.defaultCursor = 'default';
         canvas.instance.hoverCursor = 'move';
@@ -159,6 +178,30 @@ export function useCanvas(props) {
 
     const handlePathCreated = () => {
       dispatch(updateObjects());
+    };
+    
+    const handleObjectAdded = () => {
+      dispatch(updateObjects());
+      // Save to localStorage when object is added
+      try {
+        const canvasState = canvas.instance.toJSON();
+        localStorage.setItem('canvasState', JSON.stringify(canvasState));
+        console.log('Canvas state saved to localStorage');
+      } catch (error) {
+        console.warn('Failed to save canvas state:', error);
+      }
+    };
+
+    const handleObjectRemoved = () => {
+      dispatch(updateObjects());
+      // Save to localStorage when object is removed
+      try {
+        const canvasState = canvas.instance.toJSON();
+        localStorage.setItem('canvasState', JSON.stringify(canvasState));
+        console.log('Canvas state saved to localStorage');
+      } catch (error) {
+        console.warn('Failed to save canvas state:', error);
+      }
     };
 
     canvas.instance.on('object:modified', handleObjectModified);
@@ -171,6 +214,9 @@ export function useCanvas(props) {
     canvas.instance.on('mouse:over', handleMouseOver);
     canvas.instance.on('mouse:out', handleMouseOut);
     canvas.instance.on('path:created', handlePathCreated);
+    canvas.instance.on('object:added', handleObjectAdded);
+    canvas.instance.on('object:removed', handleObjectRemoved);
+
 
     window.addEventListener('mousedown', clickAwayListener);
 
@@ -183,6 +229,14 @@ export function useCanvas(props) {
   useEffect(() => {
     return () => {
       if (canvas.instance) {
+        // Save state before disposing
+        try {
+          const canvasState = canvas.instance.toJSON();
+          localStorage.setItem('canvasState', JSON.stringify(canvasState));
+          console.log('Canvas state saved to localStorage on unmount');
+        } catch (error) {
+          console.warn('Failed to save canvas state on unmount:', error);
+        }
         try {
           canvas.instance.off();
           canvas.instance.clear();
