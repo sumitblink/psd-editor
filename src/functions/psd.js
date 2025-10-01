@@ -1,4 +1,3 @@
-
 import { readPsd } from "ag-psd";
 import _ from "lodash";
 import { objectID } from "./nanoid.js";

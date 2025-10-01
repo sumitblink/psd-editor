@@ -54,12 +54,31 @@ export function useCanvas(props) {
         // Load state from localStorage
         const savedState = localStorage.getItem('canvasState');
         if (savedState) {
-          const parsedState = JSON.parse(savedState);
-          fabric.loadFromJSON(parsedState, () => {
+          try {
+            const parsedState = JSON.parse(savedState);
+            
+            // Check if state contains blob URLs (which become invalid on refresh)
+            const hasInvalidBlobs = JSON.stringify(parsedState).includes('blob:');
+            
+            if (hasInvalidBlobs) {
+              console.log('Saved state contains invalid blob URLs, clearing...');
+              localStorage.removeItem('canvasState');
+              localStorage.removeItem('templateData');
+              fabric.renderAll();
+              dispatch(updateObjects());
+            } else {
+              fabric.loadFromJSON(parsedState, () => {
+                fabric.renderAll();
+                dispatch(updateObjects());
+                console.log('Canvas state loaded from localStorage');
+              });
+            }
+          } catch (error) {
+            console.warn('Error loading saved state:', error);
+            localStorage.removeItem('canvasState');
             fabric.renderAll();
             dispatch(updateObjects());
-            console.log('Canvas state loaded from localStorage');
-          });
+          }
         } else {
           // Immediate render if no saved state
           fabric.renderAll();
