@@ -41,6 +41,10 @@ function CreateTemplate() {
   // Add keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (event) => {
+      // Check if user is typing in an input field
+      const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName) ||
+                       event.target.isContentEditable;
+      
       if (event.ctrlKey || event.metaKey) {
         switch (event.key) {
           case 'z':
@@ -59,17 +63,21 @@ function CreateTemplate() {
             dispatch(redoAction());
             break;
           case 'c':
-            // Ctrl+C for copy
-            event.preventDefault();
-            if (selected) {
-              dispatch(copyObject());
+            // Ctrl+C for copy (only if not typing)
+            if (!isTyping) {
+              event.preventDefault();
+              if (selected) {
+                dispatch(copyObject());
+              }
             }
             break;
           case 'x':
-            // Ctrl+X for cut
-            event.preventDefault();
-            if (selected) {
-              dispatch(cutObject());
+            // Ctrl+X for cut (only if not typing)
+            if (!isTyping) {
+              event.preventDefault();
+              if (selected) {
+                dispatch(cutObject());
+              }
             }
             break;
           case 'v':
@@ -79,9 +87,9 @@ function CreateTemplate() {
             break;
         }
       } else if (event.key === 'Delete' || event.key === 'Backspace') {
-        // Delete key for deleting selected object
-        event.preventDefault();
-        if (selected) {
+        // Delete key for deleting selected object (only if not typing in an input)
+        if (!isTyping && selected) {
+          event.preventDefault();
           dispatch(deleteObject());
         }
       }
