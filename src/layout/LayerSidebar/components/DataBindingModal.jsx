@@ -37,6 +37,7 @@ const DataBindingModal = ({ isOpen, onClose, layerName, layerType, currentBindin
         { value: '', label: 'No binding' },
         { value: 'name', label: 'name' },
         { value: 'price', label: 'price' },
+        { value: 'offer', label: 'offer' },
         { value: 'availability', label: 'availability' },
         { value: 'id', label: 'id' },
       ];
