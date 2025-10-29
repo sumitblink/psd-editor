@@ -525,111 +525,95 @@ export const applyDataBindings = createAsyncThunk(
   async (data, { getState, dispatch }) => {
     const state = getState();
     const canvas = state.canvas;
-    if (!canvas.instance || !data) return;
+    const bindings = state.canvas.dataBindings;
 
-    const bindings = canvas.dataBindings;
-    const canvasObjects = canvas.instance.getObjects();
+    if (!canvas.instance || Object.keys(bindings).length === 0) return;
 
     console.log('Applying data bindings:', bindings);
     console.log('Data received:', data);
 
-    for (const [layerName, bindingValue] of Object.entries(bindings)) {
+    const canvasObjects = canvas.instance.getObjects();
+
+    for (const [layerName, apiKey] of Object.entries(bindings)) {
       const targetObject = canvasObjects.find(obj => obj.name === layerName);
+
       if (!targetObject) continue;
 
-      if (targetObject.type === 'textbox') {
-        // Check if binding contains template placeholders {{key}}
-        const templatePattern = /\{\{(\w+(?:\.\w+)*)\}\}/g;
-        
-        if (templatePattern.test(bindingValue)) {
-          // Template mode: replace all {{key}} placeholders
-          let processedText = bindingValue;
-          const matches = bindingValue.matchAll(/\{\{(\w+(?:\.\w+)*)\}\}/g);
-          
-          for (const match of matches) {
-            const placeholder = match[0]; // {{key}}
-            const key = match[1]; // key
-            
-            // Handle nested properties like "additional_image_urls.0"
-            let value;
-            if (key.includes('.')) {
-              const keys = key.split('.');
-              value = keys.reduce((obj, k) => obj?.[k], data);
-            } else {
-              value = data[key];
-            }
-            
-            if (value !== undefined && value !== null) {
-              processedText = processedText.replace(placeholder, String(value));
-              console.log(`Replaced ${placeholder} with ${value} in ${layerName}`);
-            } else {
-              console.warn(`No value found for placeholder: ${placeholder} in ${layerName}`);
-            }
-          }
-          
-          targetObject.set('text', processedText);
-        } else {
-          // Simple mode: direct key binding (legacy support)
-          let value;
-          if (bindingValue.includes('.')) {
-            const keys = bindingValue.split('.');
-            value = keys.reduce((obj, key) => obj?.[key], data);
-          } else {
-            value = data[bindingValue];
-          }
-          
-          if (value !== undefined && value !== null) {
-            targetObject.set('text', String(value));
-            console.log(`Updating ${layerName} with value from ${bindingValue}:`, value);
-          } else {
-            console.warn(`No value found for binding: ${layerName} -> ${bindingValue}`);
-          }
-        }
-      } else if (targetObject.type === 'image') {
-        // Image binding: direct key to image URL
-        let value;
-        if (bindingValue.includes('.')) {
-          const keys = bindingValue.split('.');
-          value = keys.reduce((obj, key) => obj?.[key], data);
-        } else {
-          value = data[bindingValue];
-        }
-        
-        if (!value) {
-          console.warn(`No value found for binding: ${layerName} -> ${bindingValue}`);
-          continue;
-        }
+      // Navigate through nested properties (e.g., "additional_image_urls.0")
+      const keys = apiKey.split('.');
+      let value = data;
 
-        console.log(`Updating ${layerName} (${targetObject.type}) with value from ${bindingValue}:`, value);
+      for (const key of keys) {
+        if (value && typeof value === 'object') {
+          value = value[key];
+        } else {
+          value = undefined;
+          break;
+        }
+      }
 
-        // Preserve current dimensions
-        const currentWidth = targetObject.width * targetObject.scaleX;
-        const currentHeight = targetObject.height * targetObject.scaleY;
-        
-        await new Promise((resolve) => {
-          targetObject.setSrc(value, () => {
-            // Restore the dimensions after loading new image
-            const newScaleX = currentWidth / targetObject.width;
-            const newScaleY = currentHeight / targetObject.height;
-            
-            targetObject.set({
-              scaleX: newScaleX,
-              scaleY: newScaleY
-            });
-            
-            resolve();
-          }, {
-            crossOrigin: 'anonymous'
+      if (value === undefined) continue;
+
+      // Update based on object type
+      if (targetObject.type === 'textbox' || targetObject.type === 'text') {
+        // For text objects, replace template variables or set text directly
+        let newText = targetObject.text || '';
+
+        // Check if the text contains template variables like {{offer}}
+        const templateRegex = /\{\{(\w+)\}\}/g;
+        const matches = newText.match(templateRegex);
+
+        if (matches) {
+          // Replace all template variables
+          matches.forEach(match => {
+            const key = match.replace(/\{\{|\}\}/g, '');
+            if (data[key] !== undefined) {
+              newText = newText.replace(match, data[key]);
+              console.log(`Replaced ${match} with ${data[key]} in ${layerName}`);
+            }
           });
-        });
+        } else {
+          // No template variables, set value directly
+          newText = String(value);
+        }
+
+        targetObject.set('text', newText);
+      } else if (targetObject.type === 'image') {
+        // For image objects, load the new image URL while preserving position and scale
+        console.log(`Updating ${layerName} (image) with value from ${apiKey}:`, value);
+
+        // Store original properties before loading new image
+        const originalProps = {
+          left: targetObject.left,
+          top: targetObject.top,
+          scaleX: targetObject.scaleX,
+          scaleY: targetObject.scaleY,
+          angle: targetObject.angle,
+          originX: targetObject.originX,
+          originY: targetObject.originY,
+          flipX: targetObject.flipX,
+          flipY: targetObject.flipY,
+          opacity: targetObject.opacity,
+          shadow: targetObject.shadow,
+          stroke: targetObject.stroke,
+          strokeWidth: targetObject.strokeWidth
+        };
+
+        fabricJS.Image.fromURL(value, (img) => {
+          if (img) {
+            targetObject.setElement(img.getElement());
+            // Restore all original properties
+            targetObject.set(originalProps);
+            canvas.instance.renderAll();
+          } else {
+            console.error(`Error loading ${value}`);
+          }
+        }, { crossOrigin: 'anonymous' });
       }
     }
 
-    canvas.instance.fire('object:modified', { target: null });
     canvas.instance.renderAll();
     dispatch(updateObjects());
-
-    return bindings;
   }
 );
 
