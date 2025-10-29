@@ -1040,24 +1040,30 @@ export const loadTemplateConfiguration = createAsyncThunk(
         });
       }
 
-      // Restore layer properties from saved configuration
+      // Only restore layer properties if the canvas is empty or just loaded
+      // Don't restore if objects already exist with positions (user may have moved them)
       if (config.layers && canvas.instance) {
         const canvasObjects = canvas.instance.getObjects();
+        
+        // Only restore positions if this is the initial load (objects match saved count)
+        const isInitialLoad = canvasObjects.length === config.layers.length;
         
         config.layers.forEach(savedLayer => {
           const targetObject = canvasObjects.find(obj => obj.name === savedLayer.name);
           if (!targetObject) return;
 
-          // Restore common properties
-          targetObject.set({
-            left: savedLayer.x,
-            top: savedLayer.y,
-            angle: savedLayer.rotation,
-            opacity: savedLayer.opacity / 100,
-            visible: savedLayer.visible
-          });
+          // Only restore position/transform if this is initial load
+          if (isInitialLoad) {
+            targetObject.set({
+              left: savedLayer.x,
+              top: savedLayer.y,
+              angle: savedLayer.rotation,
+              opacity: savedLayer.opacity / 100,
+              visible: savedLayer.visible
+            });
+          }
 
-          // Restore type-specific properties
+          // Always restore type-specific properties (text content, colors, etc.)
           if (savedLayer.kind === 'text' && targetObject.type === 'textbox') {
             // For text layers, restore the text value (which may include template syntax)
             if (savedLayer.text) {

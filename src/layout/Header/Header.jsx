@@ -157,7 +157,7 @@ const Header = () => {
 
       // Try to load saved configuration
       const savedConfig = await dispatch(loadTemplateConfiguration(file.name)).unwrap();
-      
+
       if (savedConfig) {
         toast({
           title: 'Configuration loaded',
@@ -244,7 +244,7 @@ const Header = () => {
 
   const handleSave = async () => {
     const result = await dispatch(saveTemplateConfiguration()).unwrap();
-    
+
     if (result?.success) {
       toast({
         title: 'Template saved',
@@ -263,6 +263,22 @@ const Header = () => {
       });
     }
   };
+
+  // Track if we've already loaded the configuration for this PSD
+  const configLoadedRef = useRef(false);
+
+  useEffect(() => {
+    if (psdLoaded && psdFileName && !configLoadedRef.current) {
+      dispatch(loadTemplateConfiguration(psdFileName));
+      configLoadedRef.current = true;
+    }
+
+    // Reset when PSD changes
+    if (!psdLoaded) {
+      configLoadedRef.current = false;
+    }
+  }, [psdLoaded, psdFileName, dispatch]);
+
 
   return (
     <HeadBar>
