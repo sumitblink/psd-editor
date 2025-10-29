@@ -15,6 +15,9 @@ const initialState = {
   clipboard: null,
   width: 0,
   height: 0,
+
+  dataBindings: {}, // Maps layer names to API response keys
+
   background: null,
   actionsEnabled: true,
   undoStack: [],
@@ -494,6 +497,45 @@ export const changeObjectDimensions = createAsyncThunk(
 
     const type = element.type;
 
+
+
+export const applyDataBindings = createAsyncThunk(
+  'canvas/applyDataBindings',
+  async (data, { getState, dispatch }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    if (!canvas.instance || !data) return;
+
+    const bindings = canvas.dataBindings;
+    const canvasObjects = canvas.instance.getObjects();
+
+    for (const [layerName, apiKey] of Object.entries(bindings)) {
+      const targetObject = canvasObjects.find(obj => obj.name === layerName);
+      if (!targetObject) continue;
+
+      const value = data[apiKey];
+      if (!value) continue;
+
+      if (targetObject.type === 'textbox') {
+        targetObject.set('text', String(value));
+      } else if (targetObject.type === 'image') {
+        await new Promise((resolve) => {
+          targetObject.setSrc(value, () => {
+            canvas.instance.renderAll();
+            resolve();
+          });
+        });
+      }
+    }
+
+    canvas.instance.fire('object:modified', { target: null });
+    canvas.instance.renderAll();
+    dispatch(updateObjects());
+
+    return bindings;
+  }
+);
+
     switch (type) {
       case 'textbox':
         if (property === 'height') return;
@@ -850,6 +892,22 @@ const canvasSlice = createSlice({
     setClipboard: (state, action) => {
       state.clipboard = action.payload;
     },
+    setLayerDataBinding: (state, action) => {
+      const { layerName, apiKey } = action.payload;
+      if (apiKey) {
+        state.dataBindings[layerName] = apiKey;
+      } else {
+        delete state.dataBindings[layerName];
+      }
+    },
+    clearLayerDataBinding: (state, action) => {
+      const layerName = action.payload;
+      delete state.dataBindings[layerName];
+    },
+    applyDataToLayers: (state, action) => {
+      const data = action.payload;
+      // This will be handled by async thunk
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -936,7 +994,10 @@ export const {
   setActionsEnabled,
   setTemplate,
   clearCanvas,
-  setClipboard
+  setClipboard,
+  setLayerDataBinding,
+  clearLayerDataBinding,
+  applyDataToLayers
 } = canvasSlice.actions;
 
 // Selectors
@@ -946,6 +1007,7 @@ export const selectObjects = (state) => state.canvas.objects;
 export const selectSelected = (state) => state.canvas.selected;
 export const selectCanUndo = (state) => state.canvas.undoStack.length > 0;
 export const selectCanRedo = (state) => state.canvas.redoStack.length > 0;
+export const selectDataBindings = (state) => state.canvas.dataBindings;
 
 // Memoized selector to prevent unnecessary re-renders
 import { createSelector } from '@reduxjs/toolkit';

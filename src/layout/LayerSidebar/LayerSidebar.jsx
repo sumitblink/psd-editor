@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Box, VStack, Text, HStack, IconButton, Button, ButtonGroup, Input, useToast } from '@chakra-ui/react';
-import { EyeIcon, EyeOffIcon, TrashIcon, ArrowUpIcon, ArrowDownIcon, MoveUpIcon, MoveDownIcon, GripVerticalIcon, Lock, Unlock, Copy, Edit2 } from 'lucide-react';
+import { Box, VStack, Text, HStack, IconButton, Button, ButtonGroup, Input, useToast, useDisclosure } from '@chakra-ui/react';
+import { EyeIcon, EyeOffIcon, TrashIcon, ArrowUpIcon, ArrowDownIcon, MoveUpIcon, MoveDownIcon, GripVerticalIcon, Lock, Unlock, Copy, Edit2, Link2 } from 'lucide-react';
 import { Drawer, Item } from '../container';
-import { selectObjects, selectSelected, selectCanvasInstance, deleteObject, changeObjectLayer, selectObject, updateObjects, toggleObjectLock, duplicateObject } from '../../store/canvasSlice';
+import { selectObjects, selectSelected, selectCanvasInstance, deleteObject, changeObjectLayer, selectObject, updateObjects, toggleObjectLock, duplicateObject, selectDataBindings, setLayerDataBinding, clearLayerDataBinding } from '../../store/canvasSlice';
+import DataBindingModal from './components/DataBindingModal';
 
 const LayerSidebar = () => {
   const dispatch = useDispatch();
   const objects = useSelector(selectObjects);
   const selected = useSelector(selectSelected);
   const canvas = useSelector(selectCanvasInstance);
+  const dataBindings = useSelector(selectDataBindings);
   const toast = useToast();
   const [draggedItem, setDraggedItem] = useState(null);
   const [dragOverItem, setDragOverItem] = useState(null);
   const [editingLayer, setEditingLayer] = useState(null);
   const [editingName, setEditingName] = useState('');
+  const [bindingLayer, setBindingLayer] = useState(null);
+  const { isOpen: isBindingModalOpen, onOpen: onBindingModalOpen, onClose: onBindingModalClose } = useDisclosure();
 
   const handleDeleteObject = () => {
     dispatch(deleteObject());
@@ -204,6 +208,19 @@ const LayerSidebar = () => {
     setDragOverItem(null);
   };
 
+  const handleOpenDataBinding = (object) => {
+    setBindingLayer(object);
+    onBindingModalOpen();
+  };
+
+  const handleSaveDataBinding = (layerName, apiKey) => {
+    dispatch(setLayerDataBinding({ layerName, apiKey }));
+  };
+
+  const handleClearDataBinding = (layerName) => {
+    dispatch(clearLayerDataBinding(layerName));
+  };
+
   // Debug: Log objects to console
   console.log('LayerSidebar objects:', objects);
   console.log('LayerSidebar selected:', selected);
@@ -211,9 +228,19 @@ const LayerSidebar = () => {
   return (
     <Drawer>
       <Box p={4} borderBottom="1px solid" borderColor="gray.200" bg="white">
-        <Text fontSize="lg" fontWeight="semibold">
-          Layers ({objects.length})
-        </Text>
+        <HStack justify="space-between">
+          <Text fontSize="lg" fontWeight="semibold">
+            Layers ({objects.length})
+          </Text>
+          {Object.keys(dataBindings).length > 0 && (
+            <HStack spacing={1}>
+              <Link2 size={14} color="green" />
+              <Text fontSize="xs" color="green.600" fontWeight="medium">
+                {Object.keys(dataBindings).length} bound
+              </Text>
+            </HStack>
+          )}
+        </HStack>
         {selected && (
           <Box mt={2}>
             <Text fontSize="xs" color="gray.500" mb={2}>Layer Controls:</Text>
@@ -318,6 +345,17 @@ const LayerSidebar = () => {
                   <IconButton
                     size="xs"
                     variant="ghost"
+                    icon={<Link2 size={12} />}
+                    aria-label="Bind data"
+                    color={dataBindings[object.name] ? "green.500" : "gray.600"}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenDataBinding(object);
+                    }}
+                  />
+                  <IconButton
+                    size="xs"
+                    variant="ghost"
                     icon={<Edit2 size={12} />}
                     aria-label="Edit name"
                     color="gray.600"
@@ -376,6 +414,18 @@ const LayerSidebar = () => {
           )}
         </VStack>
       </Box>
+
+      {bindingLayer && (
+        <DataBindingModal
+          isOpen={isBindingModalOpen}
+          onClose={onBindingModalClose}
+          layerName={bindingLayer.name}
+          layerType={bindingLayer.type}
+          currentBinding={dataBindings[bindingLayer.name]}
+          onSave={handleSaveDataBinding}
+          onClear={handleClearDataBinding}
+        />
+      )}
     </Drawer>
   );
 };

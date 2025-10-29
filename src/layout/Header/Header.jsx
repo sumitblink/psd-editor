@@ -1,10 +1,10 @@
 import React, { useRef } from 'react';
-import { Box, Button, HStack, Input, IconButton, Tooltip, Menu, MenuButton, MenuList, MenuItem } from '@chakra-ui/react';
-import { Undo, Redo, Type, Image, ArrowUp, ArrowDown, Trash2, Square, Circle, Triangle, ChevronDown, Shapes } from 'lucide-react';
+import { Box, Button, HStack, Input, IconButton, Tooltip, Menu, MenuButton, MenuList, MenuItem, ButtonGroup } from '@chakra-ui/react';
+import { Undo, Redo, Type, Image, ArrowUp, ArrowDown, Trash2, Square, Circle, Triangle, ChevronDown, Shapes, Link2 } from 'lucide-react';
 import { HeadBar, HeaderLogo } from '../container';
 import { useDispatch, useSelector } from 'react-redux';
 import { parsePSDFromFile, convertPSDTOTemplate } from '../../functions/psd';
-import { setActive as setActiveTemplate } from '../../store/templateSlice';
+import { setActive as setActiveTemplate, selectActiveTemplate, selectDataBindings, applyDataBindings } from '../../store/templateSlice';
 import { loadFromTemplate, undoAction, redoAction, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON, updateObjects, deleteObject, changeObjectLayer, selectSelected, addRectangle, addCircle, addTriangle, addText, addImage } from '../../store/canvasSlice';
 
 const Header = () => {
@@ -15,6 +15,10 @@ const Header = () => {
   const canRedo = useSelector(selectCanRedo);
   const canvas = useSelector(selectCanvasInstance);
   const selected = useSelector(selectSelected);
+  const template = useSelector(selectActiveTemplate);
+  const dataBindings = useSelector(selectDataBindings);
+  const toast = useToast();
+
 
   const handleImportPSD = () => {
     fileInputRef.current?.click();
@@ -107,6 +111,30 @@ const Header = () => {
   const handleAddTriangle = () => {
     if (!canvas) return;
     dispatch(addTriangle({}));
+  };
+
+  const handleApplyTestData = () => {
+    // Sample test data from the API response
+    const testData = {
+      id: "9561097167296403",
+      name: "Amara Clutch Bag",
+      price: "₹2,999.00",
+      availability: "out of stock",
+      image_url: "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/02A.jpg?v=1680245758&width=713",
+    };
+
+    dispatch(applyDataBindings(testData));
+    toast({
+      title: 'Test data applied',
+      description: 'Data bindings have been applied to layers',
+      status: 'success',
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
+  const handleDownload = () => {
+    if (!canvas) return;
   };
 
   return (
@@ -216,33 +244,21 @@ const Header = () => {
           </Box>
         </Tooltip>
 
-        <Tooltip label="Undo">
-          <Box textAlign="center" cursor="pointer" onClick={handleUndo}>
-            <IconButton
-              size="sm"
-              variant="ghost"
-              icon={<Undo size={20} />}
-              aria-label="Undo"
-              isDisabled={!canUndo}
-              mb={1}
-            />
-            <Box fontSize="xs" color={canUndo ? "gray.600" : "gray.400"}>Undo</Box>
-          </Box>
-        </Tooltip>
+        <ButtonGroup size="sm" variant="ghost">
+          <IconButton icon={<Undo size={16} />} aria-label="Undo" onClick={handleUndo} isDisabled={!canUndo} />
+          <IconButton icon={<Redo size={16} />} aria-label="Redo" onClick={handleRedo} isDisabled={!canRedo} />
+        </ButtonGroup>
 
-        <Tooltip label="Redo">
-          <Box textAlign="center" cursor="pointer" onClick={handleRedo}>
-            <IconButton
-              size="sm"
-              variant="ghost"
-              icon={<Redo size={20} />}
-              aria-label="Redo"
-              isDisabled={!canRedo}
-              mb={1}
-            />
-            <Box fontSize="xs" color={canRedo ? "gray.600" : "gray.400"}>Redo</Box>
-          </Box>
-        </Tooltip>
+        {Object.keys(dataBindings).length > 0 && (
+          <Button
+            size="sm"
+            colorScheme="green"
+            leftIcon={<Link2 size={16} />}
+            onClick={handleApplyTestData}
+          >
+            Apply Test Data
+          </Button>
+        )}
       </HStack>
 
       {/* Right Section */}
