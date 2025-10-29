@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Box, Button, HStack, Input, IconButton, Tooltip, Menu, MenuButton, MenuList, MenuItem, ButtonGroup, useToast, Text } from '@chakra-ui/react';
-import { Undo, Redo, Type, Image, ArrowUp, ArrowDown, Trash2, Square, Circle, Triangle, ChevronDown, Shapes, Link2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Undo, Redo, Type, Image, ArrowUp, ArrowDown, Trash2, Square, Circle, Triangle, ChevronDown, Shapes, Link2, ChevronLeft, ChevronRight, AlertTriangle } from 'lucide-react';
 import { HeadBar, HeaderLogo } from '../container';
 import { useDispatch, useSelector } from 'react-redux';
 import { parsePSDFromFile, convertPSDTOTemplate } from '../../functions/psd';
@@ -80,6 +80,7 @@ const Header = () => {
   ]);
 
   const [currentPreviewIndex, setCurrentPreviewIndex] = useState(0);
+  const [imageErrors, setImageErrors] = useState({});
   const hasDataBindings = Object.keys(dataBindings).length > 0;
 
   // Auto-apply data when preview index changes
@@ -88,6 +89,40 @@ const Header = () => {
       dispatch(applyDataBindings(productData[currentPreviewIndex]));
     }
   }, [currentPreviewIndex, hasDataBindings, productData, dispatch]);
+
+  // Check image URLs for errors
+  useEffect(() => {
+    if (hasDataBindings && productData.length > 0) {
+      const checkImageUrl = (url, index) => {
+        const img = new Image();
+        img.onload = () => {
+          setImageErrors(prev => ({ ...prev, [index]: false }));
+        };
+        img.onerror = () => {
+          setImageErrors(prev => ({ ...prev, [index]: true }));
+        };
+        img.src = url;
+      };
+
+      productData.forEach((product, index) => {
+        // Check the bound image URL based on data bindings
+        Object.entries(dataBindings).forEach(([layerName, binding]) => {
+          if (binding.includes('additional_image_urls')) {
+            const urlPath = binding.split('.');
+            if (urlPath[0] === 'additional_image_urls' && product.additional_image_urls) {
+              const imageIndex = parseInt(urlPath[1]);
+              const imageUrl = product.additional_image_urls[imageIndex];
+              if (imageUrl) {
+                checkImageUrl(imageUrl, index);
+              }
+            }
+          } else if (binding === 'image_url' && product.image_url) {
+            checkImageUrl(product.image_url, index);
+          }
+        });
+      });
+    }
+  }, [hasDataBindings, productData, dataBindings]);
 
   const handlePreviousPreview = () => {
     setCurrentPreviewIndex((prev) => (prev > 0 ? prev - 1 : productData.length - 1));
@@ -240,6 +275,13 @@ const Header = () => {
               onClick={handleNextPreview}
               aria-label="Next preview"
             />
+            {imageErrors[currentPreviewIndex] && (
+              <Tooltip label="Image URL is broken or not found">
+                <Box color="orange.500" display="flex" alignItems="center">
+                  <AlertTriangle size={18} />
+                </Box>
+              </Tooltip>
+            )}
           </HStack>
         )}
       </HStack>
