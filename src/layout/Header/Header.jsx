@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
-import { Box, Button, HStack, Input, IconButton, Tooltip, Menu, MenuButton, MenuList, MenuItem, ButtonGroup, useToast } from '@chakra-ui/react';
-import { Undo, Redo, Type, Image, ArrowUp, ArrowDown, Trash2, Square, Circle, Triangle, ChevronDown, Shapes, Link2 } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { Box, Button, HStack, Input, IconButton, Tooltip, Menu, MenuButton, MenuList, MenuItem, ButtonGroup, useToast, Text } from '@chakra-ui/react';
+import { Undo, Redo, Type, Image, ArrowUp, ArrowDown, Trash2, Square, Circle, Triangle, ChevronDown, Shapes, Link2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { HeadBar, HeaderLogo } from '../container';
 import { useDispatch, useSelector } from 'react-redux';
 import { parsePSDFromFile, convertPSDTOTemplate } from '../../functions/psd';
@@ -18,6 +18,42 @@ const Header = () => {
   const template = useSelector(selectActiveTemplate);
   const dataBindings = useSelector(selectDataBindings);
   const toast = useToast();
+
+  // Dummy product data
+  const [productData] = useState([
+    {
+      id: "9561097167296403",
+      name: "Amara Clutch Bag",
+      price: "₹2,999.00",
+      availability: "out of stock",
+      image_url: "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/02A.jpg?v=1680245758&width=713",
+    },
+    {
+      id: "9561097167296404",
+      name: "Leather Tote Bag",
+      price: "₹3,499.00",
+      availability: "in stock",
+      image_url: "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/03B.jpg?v=1680245758&width=713",
+    }
+  ]);
+
+  const [currentPreviewIndex, setCurrentPreviewIndex] = useState(0);
+  const hasDataBindings = Object.keys(dataBindings).length > 0;
+
+  // Auto-apply data when preview index changes
+  useEffect(() => {
+    if (hasDataBindings && productData.length > 0) {
+      dispatch(applyDataBindings(productData[currentPreviewIndex]));
+    }
+  }, [currentPreviewIndex, hasDataBindings, productData, dispatch]);
+
+  const handlePreviousPreview = () => {
+    setCurrentPreviewIndex((prev) => (prev > 0 ? prev - 1 : productData.length - 1));
+  };
+
+  const handleNextPreview = () => {
+    setCurrentPreviewIndex((prev) => (prev < productData.length - 1 ? prev + 1 : 0));
+  };
 
 
   const handleImportPSD = () => {
@@ -113,30 +149,6 @@ const Header = () => {
     dispatch(addTriangle({}));
   };
 
-  const handleApplyTestData = () => {
-    // Sample test data from the API response
-    const testData = {
-      id: "9561097167296403",
-      name: "Amara Clutch Bag",
-      price: "₹2,999.00",
-      availability: "out of stock",
-      image_url: "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/02A.jpg?v=1680245758&width=713",
-    };
-
-    dispatch(applyDataBindings(testData));
-    toast({
-      title: 'Test data applied',
-      description: 'Data bindings have been applied to layers',
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
-    });
-  };
-
-  const handleDownload = () => {
-    if (!canvas) return;
-  };
-
   return (
     <HeadBar>
       {/* Left Section */}
@@ -145,6 +157,49 @@ const Header = () => {
         <Box fontSize="lg" fontWeight="bold">
           PSD Editor
         </Box>
+        
+        {/* Preview Carousel - Only show when data bindings exist */}
+        {hasDataBindings && (
+          <HStack 
+            spacing={2} 
+            ml={6} 
+            px={4} 
+            py={1} 
+            bg="gray.100" 
+            borderRadius="md"
+            border="1px solid"
+            borderColor="gray.300"
+          >
+            <IconButton
+              size="sm"
+              variant="ghost"
+              icon={<ChevronLeft size={16} />}
+              onClick={handlePreviousPreview}
+              aria-label="Previous preview"
+            />
+            <HStack spacing={2} minW="120px" justify="center">
+              <Text fontSize="sm" fontWeight="medium">
+                Preview
+              </Text>
+              <Text fontSize="sm" fontWeight="bold" color="blue.600">
+                {currentPreviewIndex + 1}
+              </Text>
+              <Text fontSize="sm" color="gray.500">
+                of
+              </Text>
+              <Text fontSize="sm" fontWeight="bold">
+                {productData.length}
+              </Text>
+            </HStack>
+            <IconButton
+              size="sm"
+              variant="ghost"
+              icon={<ChevronRight size={16} />}
+              onClick={handleNextPreview}
+              aria-label="Next preview"
+            />
+          </HStack>
+        )}
       </HStack>
 
       {/* Center Toolbar */}
@@ -248,17 +303,6 @@ const Header = () => {
           <IconButton icon={<Undo size={16} />} aria-label="Undo" onClick={handleUndo} isDisabled={!canUndo} />
           <IconButton icon={<Redo size={16} />} aria-label="Redo" onClick={handleRedo} isDisabled={!canRedo} />
         </ButtonGroup>
-
-        {Object.keys(dataBindings).length > 0 && (
-          <Button
-            size="sm"
-            colorScheme="green"
-            leftIcon={<Link2 size={16} />}
-            onClick={handleApplyTestData}
-          >
-            Apply Test Data
-          </Button>
-        )}
       </HStack>
 
       {/* Right Section */}
