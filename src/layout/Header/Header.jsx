@@ -19,7 +19,7 @@ const Header = () => {
   const dataBindings = useSelector(selectDataBindings);
   const toast = useToast();
 
-  // Dummy product data
+  // Dummy product data - matches real API response structure
   const [productData] = useState([
     {
       id: "9561097167296403",
@@ -27,20 +27,22 @@ const Header = () => {
       price: "₹2,999.00",
       availability: "out of stock",
       image_url: "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/02A.jpg?v=1680245758&width=713",
+      retailer_id: "39",
       additional_image_urls: [
-        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758712378572.jpeg",
-        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758712403599.jpeg"
+        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758778065409.jpg",
+        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758778089756.jpeg"
       ]
     },
     {
-      id: "9561097167296404",
-      name: "Leather Tote Bag",
-      price: "₹3,499.00",
-      availability: "in stock",
-      image_url: "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/03B.jpg?v=1680245758&width=713",
+      id: "9718709914836084",
+      name: "Clare Laptop Case",
+      price: "₹1,500.00",
+      availability: "out of stock",
+      image_url: "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/1_37d3cbf4-e790-4bba-8691-d4a757bba94a.webp?v=1673078290&width=713",
+      retailer_id: "46",
       additional_image_urls: [
-        "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/01A.jpg?v=1680245758&width=713",
-        "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/04A.jpg?v=1680245758&width=713"
+        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758712378572.jpeg",
+        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758712403599.jpeg"
       ]
     }
   ]);
