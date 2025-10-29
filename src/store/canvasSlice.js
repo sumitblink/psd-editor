@@ -497,7 +497,28 @@ export const changeObjectDimensions = createAsyncThunk(
 
     const type = element.type;
 
+    switch (type) {
+      case 'textbox':
+        if (property === 'height') return;
+        element.set(property, value);
+        break;
+      case 'image':
+        const scale = property === 'height' ? value / element.height : value / element.width;
+        const key = property === 'height' ? 'scaleY' : 'scaleX';
+        element.set(key, scale);
+        break;
+      case 'rect':
+      case 'circle':
+      case 'triangle':
+        element.set(property, value);
+        break;
+    }
 
+    canvas.instance.fire('object:modified', { target: element }).renderAll();
+
+    dispatch(selectObject());
+  }
+);
 
 export const applyDataBindings = createAsyncThunk(
   'canvas/applyDataBindings',
@@ -533,29 +554,6 @@ export const applyDataBindings = createAsyncThunk(
     dispatch(updateObjects());
 
     return bindings;
-  }
-);
-
-    switch (type) {
-      case 'textbox':
-        if (property === 'height') return;
-        element.set(property, value);
-        break;
-      case 'image':
-        const scale = property === 'height' ? value / element.height : value / element.width;
-        const key = property === 'height' ? 'scaleY' : 'scaleX';
-        element.set(key, scale);
-        break;
-      case 'rect':
-      case 'circle':
-      case 'triangle':
-        element.set(property, value);
-        break;
-    }
-
-    canvas.instance.fire('object:modified', { target: element }).renderAll();
-
-    dispatch(selectObject());
   }
 );
 
