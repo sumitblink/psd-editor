@@ -530,12 +530,28 @@ export const applyDataBindings = createAsyncThunk(
     const bindings = canvas.dataBindings;
     const canvasObjects = canvas.instance.getObjects();
 
+    console.log('Applying data bindings:', bindings);
+    console.log('Data received:', data);
+
     for (const [layerName, apiKey] of Object.entries(bindings)) {
       const targetObject = canvasObjects.find(obj => obj.name === layerName);
       if (!targetObject) continue;
 
-      const value = data[apiKey];
-      if (!value) continue;
+      // Handle nested properties like "additional_image_urls.0"
+      let value;
+      if (apiKey.includes('.')) {
+        const keys = apiKey.split('.');
+        value = keys.reduce((obj, key) => obj?.[key], data);
+      } else {
+        value = data[apiKey];
+      }
+      
+      if (!value) {
+        console.warn(`No value found for binding: ${layerName} -> ${apiKey}`);
+        continue;
+      }
+
+      console.log(`Updating ${layerName} (${targetObject.type}) with value from ${apiKey}:`, value);
 
       if (targetObject.type === 'textbox') {
         targetObject.set('text', String(value));
