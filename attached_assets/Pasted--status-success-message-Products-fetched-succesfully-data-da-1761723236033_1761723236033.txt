@@ -1,0 +1,85 @@
+{
+    "status": "success",
+    "message": "Products fetched succesfully.",
+    "data": {
+        "data": [
+            {
+                "id": "9561097167296403",
+                "name": "Amara Clutch Bag",
+                "price": "₹2,999.00",
+                "availability": "out of stock",
+                "image_url": "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/02A.jpg?v=1680245758&width=713",
+                "retailer_id": "39",
+                "image_cdn_urls": [],
+                "additional_image_urls": [
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758778065409.jpg",
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758778089756.jpeg"
+                ],
+                "additional_image_cdn_urls": [
+                    [
+                        {
+                            "key": "requested",
+                            "value": "https://scontent.fpnq13-3.fna.fbcdn.net/v/t45.5328-4/567749292_1738461620205288_5667111623668446566_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=657aed&_nc_ohc=YfQf9NCcZeUQ7kNvwHnONZ_&_nc_oc=AdnbNLXJZ7WwCz54Ph2VedWHl83pS8gMOmnALqKgpz7ZpDd_DAMn6idMfASKtDZcqxPDbmUHI3TGqFdvQZ934VJU&_nc_zt=23&_nc_ht=scontent.fpnq13-3.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQEbMuXqZXTo0fiiO2yyupyl2QZ3XPdw14woX_4wP6Nf60iWKvPOJhMaPrdZtBOklEsPXMsU-_ytkA&oh=00_Afem4wjD2ySkHPlpnVVQtGuvZYW7CkV6kMqofPlNot37hw&oe=6907A527"
+                        },
+                        {
+                            "key": "full",
+                            "value": "https://scontent.fpnq13-3.fna.fbcdn.net/v/t45.5328-4/567749292_1738461620205288_5667111623668446566_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=657aed&_nc_ohc=YfQf9NCcZeUQ7kNvwHnONZ_&_nc_oc=AdnbNLXJZ7WwCz54Ph2VedWHl83pS8gMOmnALqKgpz7ZpDd_DAMn6idMfASKtDZcqxPDbmUHI3TGqFdvQZ934VJU&_nc_zt=23&_nc_ht=scontent.fpnq13-3.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQEbMuXqZXTo0fiiO2yyupyl2QZ3XPdw14woX_4wP6Nf60iWKvPOJhMaPrdZtBOklEsPXMsU-_ytkA&oh=00_Afem4wjD2ySkHPlpnVVQtGuvZYW7CkV6kMqofPlNot37hw&oe=6907A527"
+                        }
+                    ],
+                    [
+                        {
+                            "key": "requested",
+                            "value": "https://scontent.fpnq13-5.fna.fbcdn.net/v/t45.5328-4/569290992_1165006765573680_4898675716210063781_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=657aed&_nc_ohc=0HmSHsYxxjEQ7kNvwFwRk9F&_nc_oc=AdmtQ2SDuEn-SRsB79CgcgzcJo9yp63tUydNYNN7IVvcJETfHlns3BVa6IJ_dPSpRHvnCST7n93iPtP0bQiRYv6o&_nc_zt=23&_nc_ht=scontent.fpnq13-5.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQGYAuNPu9NyhdbMHUmIKu05VIuKTOE72dVMwvk5pRI1gcqrCHYu-WC52YzpeMicLDtGzTlQ8_-I4g&oh=00_AfeA0fagYCwhKyblUmSt4ytVsrC_Wcf6NNvPeRWngIWqsg&oe=6907789A"
+                        },
+                        {
+                            "key": "full",
+                            "value": "https://scontent.fpnq13-5.fna.fbcdn.net/v/t45.5328-4/569290992_1165006765573680_4898675716210063781_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=657aed&_nc_ohc=0HmSHsYxxjEQ7kNvwFwRk9F&_nc_oc=AdmtQ2SDuEn-SRsB79CgcgzcJo9yp63tUydNYNN7IVvcJETfHlns3BVa6IJ_dPSpRHvnCST7n93iPtP0bQiRYv6o&_nc_zt=23&_nc_ht=scontent.fpnq13-5.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQGYAuNPu9NyhdbMHUmIKu05VIuKTOE72dVMwvk5pRI1gcqrCHYu-WC52YzpeMicLDtGzTlQ8_-I4g&oh=00_AfeA0fagYCwhKyblUmSt4ytVsrC_Wcf6NNvPeRWngIWqsg&oe=6907789A"
+                        }
+                    ]
+                ]
+            },
+            {
+                "id": "9718709914836084",
+                "name": "Clare Laptop Case",
+                "price": "₹1,500.00",
+                "availability": "out of stock",
+                "image_url": "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/1_37d3cbf4-e790-4bba-8691-d4a757bba94a.webp?v=1673078290&width=713",
+                "retailer_id": "46",
+                "image_cdn_urls": [],
+                "additional_image_urls": [
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758712378572.jpeg",
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758712403599.jpeg"
+                ],
+                "additional_image_cdn_urls": [
+                    [
+                        {
+                            "key": "requested",
+                            "value": "https://scontent.fpnq13-1.fna.fbcdn.net/v/t45.5328-4/568120165_703517195528550_710492264385656487_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=657aed&_nc_ohc=s41DoBDeq2YQ7kNvwFbS0Ov&_nc_oc=Adk9iNPkD5d2dGipYiGk8RRwmZuDBQ2-JIOcX07YGjIl0lsrTAu6gGspQUUpqxOTYNPAj4nIi9O4bycMN2mUonYf&_nc_zt=23&_nc_ht=scontent.fpnq13-1.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQFM3NsJZ_zod0nECCwHi5Sutun4WRwolQJBdBRXCVkJeKKT0Fu6F-w12U9nYvqeDFNJhR-JRjNbcg&oh=00_AfcEZ_uzd0-bu4qAwlEckDBGWeD1JxTSbLVVBWBo1NWNhg&oe=69078604"
+                        },
+                        {
+                            "key": "full",
+                            "value": "https://scontent.fpnq13-1.fna.fbcdn.net/v/t45.5328-4/568120165_703517195528550_710492264385656487_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=657aed&_nc_ohc=s41DoBDeq2YQ7kNvwFbS0Ov&_nc_oc=Adk9iNPkD5d2dGipYiGk8RRwmZuDBQ2-JIOcX07YGjIl0lsrTAu6gGspQUUpqxOTYNPAj4nIi9O4bycMN2mUonYf&_nc_zt=23&_nc_ht=scontent.fpnq13-1.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQFM3NsJZ_zod0nECCwHi5Sutun4WRwolQJBdBRXCVkJeKKT0Fu6F-w12U9nYvqeDFNJhR-JRjNbcg&oh=00_AfcEZ_uzd0-bu4qAwlEckDBGWeD1JxTSbLVVBWBo1NWNhg&oe=69078604"
+                        }
+                    ],
+                    [
+                        {
+                            "key": "requested",
+                            "value": "https://scontent.fpnq13-6.fna.fbcdn.net/v/t45.5328-4/567892677_1156689645905398_7375251448864544745_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=657aed&_nc_ohc=5upM4rRYGgoQ7kNvwHqVU_K&_nc_oc=Adlx_EwusW_naTDoz4sT5PfXZj3g7GrlXIhM43zguq9YTkjeoGdMQDb7hYKopj7mm1j7HMN1oMOLTVfLKpNdTddE&_nc_zt=23&_nc_ht=scontent.fpnq13-6.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQFh0z91YygjILSN8qKOcztNTgdn8vd54VEVaCMxbNZimsF0lbsZTsXnjkkGTeCAW1il6ixWfbqQ0A&oh=00_AffizBc3ZfeGEVUNxLNRo6-HtMU6p8QqtHDtCiop4uLfQA&oe=69077084"
+                        },
+                        {
+                            "key": "full",
+                            "value": "https://scontent.fpnq13-6.fna.fbcdn.net/v/t45.5328-4/567892677_1156689645905398_7375251448864544745_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=657aed&_nc_ohc=5upM4rRYGgoQ7kNvwHqVU_K&_nc_oc=Adlx_EwusW_naTDoz4sT5PfXZj3g7GrlXIhM43zguq9YTkjeoGdMQDb7hYKopj7mm1j7HMN1oMOLTVfLKpNdTddE&_nc_zt=23&_nc_ht=scontent.fpnq13-6.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQFh0z91YygjILSN8qKOcztNTgdn8vd54VEVaCMxbNZimsF0lbsZTsXnjkkGTeCAW1il6ixWfbqQ0A&oh=00_AffizBc3ZfeGEVUNxLNRo6-HtMU6p8QqtHDtCiop4uLfQA&oe=69077084"
+                        }
+                    ]
+                ]
+            }
+        ],
+        "meta": {
+            "pageSize": "2",
+            "after": "QVFIU0NNOHE3TEZAMOXpadmkzLVM2eWFTSGdZASGhqTmtVT0l3T0FNbHZA0bXNuZAnlrOUxxM3g2aU9VS3lHaERJYzFWTXFhc19mZAF9CRk1rNlVNaTRLOW56S1Rn",
+            "hasNextPage": true,
+            "before": "QVFIU21KQVNLS09GbXFXZAkhxTWJOR3JtR2VPOFZAPTWNlS2FzQzVWNFk5Q3lzMEd1R1gyM1RBbXNFSjV0enh2V1FlcEhGRGgxOFZASRkEwdzdPNzE3cFA5dHF3",
+            "hasPrevPage": true
+        }
+    }
+}
