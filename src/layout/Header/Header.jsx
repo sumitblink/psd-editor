@@ -27,6 +27,10 @@ const Header = () => {
       price: "₹2,999.00",
       availability: "out of stock",
       image_url: "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/02A.jpg?v=1680245758&width=713",
+      additional_image_urls: [
+        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758712378572.jpeg",
+        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758712403599.jpeg"
+      ]
     },
     {
       id: "9561097167296404",
@@ -34,6 +38,10 @@ const Header = () => {
       price: "₹3,499.00",
       availability: "in stock",
       image_url: "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/03B.jpg?v=1680245758&width=713",
+      additional_image_urls: [
+        "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/01A.jpg?v=1680245758&width=713",
+        "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/04A.jpg?v=1680245758&width=713"
+      ]
     }
   ]);
 
