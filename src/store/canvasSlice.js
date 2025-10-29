@@ -533,6 +533,16 @@ export const applyDataBindings = createAsyncThunk(
     console.log('Applying data bindings:', bindings);
     console.log('Data received:', data);
 
+    // Helper function to validate image URL
+    const isValidImageUrl = (url) => {
+      return new Promise((resolve) => {
+        const img = new window.Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+      });
+    };
+
     for (const [layerName, bindingValue] of Object.entries(bindings)) {
       const targetObject = canvasObjects.find(obj => obj.name === layerName);
       if (!targetObject) continue;
@@ -540,16 +550,16 @@ export const applyDataBindings = createAsyncThunk(
       if (targetObject.type === 'textbox') {
         // Check if binding contains template placeholders {{key}}
         const templatePattern = /\{\{(\w+(?:\.\w+)*)\}\}/g;
-        
+
         if (templatePattern.test(bindingValue)) {
           // Template mode: replace all {{key}} placeholders
           let processedText = bindingValue;
           const matches = bindingValue.matchAll(/\{\{(\w+(?:\.\w+)*)\}\}/g);
-          
+
           for (const match of matches) {
             const placeholder = match[0]; // {{key}}
             const key = match[1]; // key
-            
+
             // Handle nested properties like "additional_image_urls.0"
             let value;
             if (key.includes('.')) {
@@ -558,7 +568,7 @@ export const applyDataBindings = createAsyncThunk(
             } else {
               value = data[key];
             }
-            
+
             if (value !== undefined && value !== null) {
               processedText = processedText.replace(placeholder, String(value));
               console.log(`Replaced ${placeholder} with ${value} in ${layerName}`);
@@ -566,7 +576,7 @@ export const applyDataBindings = createAsyncThunk(
               console.warn(`No value found for placeholder: ${placeholder} in ${layerName}`);
             }
           }
-          
+
           targetObject.set('text', processedText);
         } else {
           // Simple mode: direct key binding (legacy support)
@@ -577,7 +587,7 @@ export const applyDataBindings = createAsyncThunk(
           } else {
             value = data[bindingValue];
           }
-          
+
           if (value !== undefined && value !== null) {
             targetObject.set('text', String(value));
             console.log(`Updating ${layerName} with value from ${bindingValue}:`, value);
@@ -594,7 +604,7 @@ export const applyDataBindings = createAsyncThunk(
         } else {
           value = data[bindingValue];
         }
-        
+
         if (!value) {
           console.warn(`No value found for binding: ${layerName} -> ${bindingValue}`);
           continue;
@@ -602,21 +612,30 @@ export const applyDataBindings = createAsyncThunk(
 
         console.log(`Updating ${layerName} (${targetObject.type}) with value from ${bindingValue}:`, value);
 
-        // Preserve current dimensions
+        // Validate image URL before loading
+        const isValid = await isValidImageUrl(value);
+        if (!isValid) {
+          console.error(`Invalid or broken image URL for ${layerName}: ${value}`);
+          continue;
+        }
+
+        // Preserve ALL current properties
         const currentWidth = targetObject.width * targetObject.scaleX;
         const currentHeight = targetObject.height * targetObject.scaleY;
-        
+
         await new Promise((resolve) => {
           targetObject.setSrc(value, () => {
-            // Restore the dimensions after loading new image
+            // Restore the exact dimensions after loading new image
             const newScaleX = currentWidth / targetObject.width;
             const newScaleY = currentHeight / targetObject.height;
-            
+
             targetObject.set({
               scaleX: newScaleX,
               scaleY: newScaleY
             });
-            
+
+            canvas.instance.renderAll();
+            console.log(`Successfully loaded image for ${layerName}`);
             resolve();
           }, {
             crossOrigin: 'anonymous'
