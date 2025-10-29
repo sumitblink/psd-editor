@@ -127,15 +127,7 @@ export function useCanvas(props) {
 
     const handleMouseOver = (event) => {
       if (event.target && event.target !== canvas.instance.getActiveObject()) {
-        // Show hover effect - add a subtle border
-        event.target.set({
-          stroke: '#3182ce',
-          strokeWidth: 2,
-          strokeDashArray: [5, 5]
-        });
-        canvas.instance.renderAll();
-        
-        // Change cursor to pointer
+        // Change cursor to pointer for hover feedback
         canvas.instance.defaultCursor = 'pointer';
         canvas.instance.hoverCursor = 'pointer';
       }
@@ -143,14 +135,6 @@ export function useCanvas(props) {
 
     const handleMouseOut = (event) => {
       if (event.target && event.target !== canvas.instance.getActiveObject()) {
-        // Remove hover effect
-        event.target.set({
-          stroke: null,
-          strokeWidth: 0,
-          strokeDashArray: null
-        });
-        canvas.instance.renderAll();
-        
         // Reset cursor
         canvas.instance.defaultCursor = 'default';
         canvas.instance.hoverCursor = 'move';
