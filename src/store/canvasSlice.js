@@ -970,10 +970,21 @@ export const saveTemplateConfiguration = createAsyncThunk(
       }).catch(() => {
         // Simulate success for now since endpoint doesn't exist
         console.log('✓ Template saved successfully (simulated)');
-        return { ok: true, json: async () => ({ success: true, id: template.id }) };
+        return { ok: true };
       });
 
-      const result = await response.json();
+      let result;
+      if (response.ok) {
+        try {
+          result = await response.json();
+        } catch {
+          // If JSON parsing fails, simulate success
+          result = { success: true, id: template.id };
+        }
+      } else {
+        result = { success: false, error: 'Save failed' };
+      }
+      
       console.log('=== SAVE RESPONSE ===');
       console.log(result);
       console.log('=== END ===');
