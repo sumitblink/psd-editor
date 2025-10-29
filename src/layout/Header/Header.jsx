@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
-import { Box, Button, HStack, Input, IconButton, Tooltip, Menu, MenuButton, MenuList, MenuItem, ButtonGroup } from '@chakra-ui/react';
+import { Box, Button, HStack, Input, IconButton, Tooltip, Menu, MenuButton, MenuList, MenuItem, ButtonGroup, useToast } from '@chakra-ui/react';
 import { Undo, Redo, Type, Image, ArrowUp, ArrowDown, Trash2, Square, Circle, Triangle, ChevronDown, Shapes, Link2 } from 'lucide-react';
 import { HeadBar, HeaderLogo } from '../container';
 import { useDispatch, useSelector } from 'react-redux';
 import { parsePSDFromFile, convertPSDTOTemplate } from '../../functions/psd';
-import { setActive as setActiveTemplate, selectActiveTemplate, selectDataBindings, applyDataBindings } from '../../store/templateSlice';
-import { loadFromTemplate, undoAction, redoAction, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON, updateObjects, deleteObject, changeObjectLayer, selectSelected, addRectangle, addCircle, addTriangle, addText, addImage } from '../../store/canvasSlice';
+import { setActive as setActiveTemplate, selectActiveTemplate } from '../../store/templateSlice';
+import { loadFromTemplate, undoAction, redoAction, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON, updateObjects, deleteObject, changeObjectLayer, selectSelected, addRectangle, addCircle, addTriangle, addText, addImage, selectDataBindings, applyDataBindings } from '../../store/canvasSlice';
 
 const Header = () => {
   const dispatch = useDispatch();
