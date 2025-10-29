@@ -533,6 +533,16 @@ export const applyDataBindings = createAsyncThunk(
     console.log('Applying data bindings:', bindings);
     console.log('Data received:', data);
 
+    // Helper function to validate image URL
+    const isValidImageUrl = (url) => {
+      return new Promise((resolve) => {
+        const img = new window.Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+      });
+    };
+
     for (const [layerName, bindingValue] of Object.entries(bindings)) {
       const targetObject = canvasObjects.find(obj => obj.name === layerName);
       if (!targetObject) continue;
@@ -602,25 +612,43 @@ export const applyDataBindings = createAsyncThunk(
 
         console.log(`Updating ${layerName} (${targetObject.type}) with value from ${bindingValue}:`, value);
 
-        // Preserve current dimensions
-        const currentWidth = targetObject.width * targetObject.scaleX;
-        const currentHeight = targetObject.height * targetObject.scaleY;
-        
+        // Validate image URL before loading
+        const isValid = await isValidImageUrl(value);
+        if (!isValid) {
+          console.error(`Invalid or broken image URL for ${layerName}: ${value}`);
+          continue;
+        }
+
+        // Store original properties before loading new image
+        const originalProps = {
+          left: targetObject.left,
+          top: targetObject.top,
+          scaleX: targetObject.scaleX,
+          scaleY: targetObject.scaleY,
+          angle: targetObject.angle,
+          originX: targetObject.originX,
+          originY: targetObject.originY,
+          flipX: targetObject.flipX,
+          flipY: targetObject.flipY,
+          opacity: targetObject.opacity,
+          shadow: targetObject.shadow,
+          stroke: targetObject.stroke,
+          strokeWidth: targetObject.strokeWidth
+        };
+
         await new Promise((resolve) => {
-          targetObject.setSrc(value, () => {
-            // Restore the dimensions after loading new image
-            const newScaleX = currentWidth / targetObject.width;
-            const newScaleY = currentHeight / targetObject.height;
-            
-            targetObject.set({
-              scaleX: newScaleX,
-              scaleY: newScaleY
-            });
-            
+          fabricJS.Image.fromURL(value, (img) => {
+            if (img && img.getElement()) {
+              targetObject.setElement(img.getElement());
+              // Restore all original properties
+              targetObject.set(originalProps);
+              canvas.instance.renderAll();
+              console.log(`Successfully loaded image for ${layerName}`);
+            } else {
+              console.error(`Error loading image for ${layerName}: ${value}`);
+            }
             resolve();
-          }, {
-            crossOrigin: 'anonymous'
-          });
+          }, { crossOrigin: 'anonymous' });
         });
       }
     }
