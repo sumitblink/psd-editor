@@ -1030,11 +1030,50 @@ export const loadTemplateConfiguration = createAsyncThunk(
       console.log(config);
       console.log('=== END ===');
 
+      const state = getState();
+      const canvas = state.canvas;
+
       // Apply the configuration
       if (config.dataBindings) {
         Object.entries(config.dataBindings).forEach(([layerName, binding]) => {
           dispatch(setLayerDataBinding({ layerName, apiKey: binding }));
         });
+      }
+
+      // Restore layer properties from saved configuration
+      if (config.layers && canvas.instance) {
+        const canvasObjects = canvas.instance.getObjects();
+        
+        config.layers.forEach(savedLayer => {
+          const targetObject = canvasObjects.find(obj => obj.name === savedLayer.name);
+          if (!targetObject) return;
+
+          // Restore common properties
+          targetObject.set({
+            left: savedLayer.x,
+            top: savedLayer.y,
+            angle: savedLayer.rotation,
+            opacity: savedLayer.opacity / 100,
+            visible: savedLayer.visible
+          });
+
+          // Restore type-specific properties
+          if (savedLayer.kind === 'text' && targetObject.type === 'textbox') {
+            // For text layers, restore the text value (which may include template syntax)
+            if (savedLayer.text) {
+              targetObject.set('text', savedLayer.text);
+            }
+            if (savedLayer.textColor?.value?.value) {
+              targetObject.set('fill', savedLayer.textColor.value.value);
+            }
+            if (savedLayer.fontSize) {
+              targetObject.set('fontSize', savedLayer.fontSize);
+            }
+          }
+        });
+
+        canvas.instance.renderAll();
+        dispatch(updateObjects());
       }
 
       return config;
