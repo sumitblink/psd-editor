@@ -96,7 +96,7 @@ const Header = () => {
   useEffect(() => {
     if (hasDataBindings && productData.length > 0) {
       const checkImageUrl = (url, index) => {
-        const img = document.createElement('img');
+        const img = new window.Image();
         img.onload = () => {
           setImageErrors(prev => ({ ...prev, [index]: false }));
         };
