@@ -5,7 +5,7 @@ import { HeadBar, HeaderLogo } from '../container';
 import { useDispatch, useSelector } from 'react-redux';
 import { parsePSDFromFile, convertPSDTOTemplate } from '../../functions/psd';
 import { setActive as setActiveTemplate, selectActiveTemplate } from '../../store/templateSlice';
-import { loadFromTemplate, undoAction, redoAction, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON, updateObjects, deleteObject, changeObjectLayer, selectSelected, addRectangle, addCircle, addTriangle, addText, addImage, selectDataBindings, applyDataBindings, exportLayersToBackendFormat } from '../../store/canvasSlice';
+import { loadFromTemplate, undoAction, redoAction, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON, updateObjects, deleteObject, changeObjectLayer, selectSelected, addRectangle, addCircle, addTriangle, addText, addImage, selectDataBindings, applyDataBindings, saveTemplateConfiguration, loadTemplateConfiguration, setPSDFileName, selectPSDLoaded, selectPSDFileName } from '../../store/canvasSlice';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -17,6 +17,8 @@ const Header = () => {
   const selected = useSelector(selectSelected);
   const template = useSelector(selectActiveTemplate);
   const dataBindings = useSelector(selectDataBindings);
+  const psdLoaded = useSelector(selectPSDLoaded);
+  const psdFileName = useSelector(selectPSDFileName);
   const toast = useToast();
 
   // Test API response data
@@ -150,7 +152,21 @@ const Header = () => {
 
       // Set as active template and load into canvas
       dispatch(setActiveTemplate(template));
+      dispatch(setPSDFileName(file.name));
       await dispatch(loadFromTemplate(template));
+
+      // Try to load saved configuration
+      const savedConfig = await dispatch(loadTemplateConfiguration(file.name)).unwrap();
+      
+      if (savedConfig) {
+        toast({
+          title: 'Configuration loaded',
+          description: 'Previously saved layer configuration has been applied',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
 
       // Force update objects list after import
       setTimeout(() => {
@@ -226,15 +242,26 @@ const Header = () => {
     dispatch(addTriangle({}));
   };
 
-  const handleSave = () => {
-    dispatch(exportLayersToBackendFormat());
-    toast({
-      title: 'Layers exported',
-      description: 'Check the console for the formatted layer data',
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
-    });
+  const handleSave = async () => {
+    const result = await dispatch(saveTemplateConfiguration()).unwrap();
+    
+    if (result?.success) {
+      toast({
+        title: 'Template saved',
+        description: 'Your layer configuration has been saved successfully',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        title: 'Save failed',
+        description: result?.error || 'Failed to save template configuration',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
@@ -416,13 +443,17 @@ const Header = () => {
           onChange={handleImageUpload}
           display="none"
         />
-        <Button size="sm" variant="outline" onClick={handleImportPSD}>
-          Import PSD
-        </Button>
-        <Button size="sm" variant="outline">
-          Export
-        </Button>
-        <Button size="sm" colorScheme="blue" onClick={handleSave}>
+        {!psdLoaded && (
+          <Button size="sm" variant="outline" onClick={handleImportPSD}>
+            Import PSD
+          </Button>
+        )}
+        {psdLoaded && psdFileName && (
+          <Text fontSize="sm" color="gray.600" fontWeight="medium">
+            {psdFileName}
+          </Text>
+        )}
+        <Button size="sm" colorScheme="blue" onClick={handleSave} isDisabled={!psdLoaded}>
           Save
         </Button>
       </HStack>

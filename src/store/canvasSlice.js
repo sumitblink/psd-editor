@@ -17,6 +17,8 @@ const initialState = {
   height: 0,
 
   dataBindings: {}, // Maps layer names to API response keys
+  psdFileName: null, // Track imported PSD filename
+  psdLoaded: false, // Track if PSD is loaded
 
   background: null,
   actionsEnabled: true,
@@ -96,7 +98,7 @@ export const loadFromTemplate = createAsyncThunk(
         visible: object.visible !== false
       }));
 
-    return { template, objects: updatedObjects };
+    return { template, objects: updatedObjects, psdLoaded: true };
   }
 );
 
@@ -786,12 +788,13 @@ export const duplicateObject = createAsyncThunk(
   }
 );
 
-export const exportLayersToBackendFormat = createAsyncThunk(
-  'canvas/exportLayersToBackendFormat',
+export const saveTemplateConfiguration = createAsyncThunk(
+  'canvas/saveTemplateConfiguration',
   async (_, { getState }) => {
     const state = getState();
     const canvas = state.canvas;
-    if (!canvas.instance) return;
+    const template = state.template.active;
+    if (!canvas.instance || !template) return;
 
     const canvasObjects = canvas.instance.getObjects();
     const dataBindings = canvas.dataBindings;
@@ -937,16 +940,97 @@ export const exportLayersToBackendFormat = createAsyncThunk(
       return baseLayer;
     });
 
-    const exportData = {
+    const templateConfig = {
+      templateId: template.id,
+      psdFileName: canvas.psdFileName || 'template.psd',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      canvasConfig: {
+        width: canvas.width,
+        height: canvas.height,
+        background: canvas.background
+      },
+      dataBindings: dataBindings,
       layers: layers
     };
 
-    // Console log the formatted data
-    console.log('=== LAYER STYLES FOR BACKEND ===');
-    console.log(JSON.stringify(exportData, null, 2));
-    console.log('=== END OF LAYER STYLES ===');
+    // Make dummy API call
+    try {
+      console.log('=== SAVING TEMPLATE CONFIGURATION ===');
+      console.log('API Endpoint: POST /api/templates/save');
+      console.log('Payload:', JSON.stringify(templateConfig, null, 2));
+      
+      // Dummy fetch call with actual payload
+      const response = await fetch('/api/templates/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(templateConfig)
+      }).catch(() => {
+        // Simulate success for now since endpoint doesn't exist
+        console.log('✓ Template saved successfully (simulated)');
+        return { ok: true, json: async () => ({ success: true, id: template.id }) };
+      });
 
-    return exportData;
+      const result = await response.json();
+      console.log('=== SAVE RESPONSE ===');
+      console.log(result);
+      console.log('=== END ===');
+
+      // Store in localStorage as backup
+      localStorage.setItem(`template_${canvas.psdFileName}`, JSON.stringify(templateConfig));
+
+      return { success: true, config: templateConfig };
+    } catch (error) {
+      console.error('Error saving template:', error);
+      return { success: false, error: error.message };
+    }
+  }
+);
+
+export const loadTemplateConfiguration = createAsyncThunk(
+  'canvas/loadTemplateConfiguration',
+  async (psdFileName, { getState, dispatch }) => {
+    try {
+      console.log('=== LOADING TEMPLATE CONFIGURATION ===');
+      console.log('API Endpoint: GET /api/templates/load');
+      console.log('PSD Filename:', psdFileName);
+
+      // Dummy fetch call
+      const response = await fetch(`/api/templates/load?filename=${encodeURIComponent(psdFileName)}`)
+        .catch(() => {
+          // Try localStorage as fallback
+          const saved = localStorage.getItem(`template_${psdFileName}`);
+          if (saved) {
+            console.log('✓ Loaded from localStorage');
+            return { ok: true, json: async () => JSON.parse(saved) };
+          }
+          return { ok: false };
+        });
+
+      if (!response.ok) {
+        console.log('No saved configuration found');
+        return null;
+      }
+
+      const config = await response.json();
+      console.log('=== LOADED CONFIGURATION ===');
+      console.log(config);
+      console.log('=== END ===');
+
+      // Apply the configuration
+      if (config.dataBindings) {
+        Object.entries(config.dataBindings).forEach(([layerName, binding]) => {
+          dispatch(setLayerDataBinding({ layerName, apiKey: binding }));
+        });
+      }
+
+      return config;
+    } catch (error) {
+      console.error('Error loading template:', error);
+      return null;
+    }
   }
 );
 
@@ -983,6 +1067,10 @@ const canvasSlice = createSlice({
       state.instance = action.payload;
       state.height = action.payload.height;
       state.width = action.payload.width;
+    },
+    setPSDFileName: (state, action) => {
+      state.psdFileName = action.payload;
+      state.psdLoaded = true;
     },
     updateObjects: (state) => {
       if (!state.instance) return;
@@ -1170,7 +1258,10 @@ const canvasSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(loadFromTemplate.fulfilled, (state, action) => {
-        state.template = action.payload;
+        if (action.payload) {
+          state.template = action.payload.template;
+          state.psdLoaded = action.payload.psdLoaded;
+        }
       })
       .addCase(loadFromJSON.fulfilled, (state) => {
         state.actionsEnabled = true;
@@ -1255,7 +1346,8 @@ export const {
   setClipboard,
   setLayerDataBinding,
   clearLayerDataBinding,
-  applyDataToLayers
+  applyDataToLayers,
+  setPSDFileName
 } = canvasSlice.actions;
 
 // Selectors
@@ -1266,6 +1358,8 @@ export const selectSelected = (state) => state.canvas.selected;
 export const selectCanUndo = (state) => state.canvas.undoStack.length > 0;
 export const selectCanRedo = (state) => state.canvas.redoStack.length > 0;
 export const selectDataBindings = (state) => state.canvas.dataBindings;
+export const selectPSDLoaded = (state) => state.canvas.psdLoaded;
+export const selectPSDFileName = (state) => state.canvas.psdFileName;
 
 // Memoized selector to prevent unnecessary re-renders
 import { createSelector } from '@reduxjs/toolkit';
