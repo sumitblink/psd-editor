@@ -19,7 +19,7 @@ const Header = () => {
   const dataBindings = useSelector(selectDataBindings);
   const toast = useToast();
 
-  // Dummy product data - matches real API response structure
+  // Test API response data
   const [productData, setProductData] = useState([
     {
       "id": "9561097167296403",
@@ -59,8 +59,8 @@ const Header = () => {
       "retailer_id": "52",
       "image_cdn_urls": [],
       "additional_image_urls": [
-        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758712378572.jpeg",
-        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758712403599.jpeg"
+        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758823456789.jpg",
+        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758823478901.jpeg"
       ]
     },
     {
@@ -73,8 +73,8 @@ const Header = () => {
       "retailer_id": "58",
       "image_cdn_urls": [],
       "additional_image_urls": [
-        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758778065409.jpg",
-        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758778089756.jpeg"
+        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758934567890.jpg",
+        "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758934589012.jpeg"
       ]
     }
   ]);
@@ -94,7 +94,7 @@ const Header = () => {
   useEffect(() => {
     if (hasDataBindings && productData.length > 0) {
       const checkImageUrl = (url, index) => {
-        const img = new Image();
+        const img = new window.Image();
         img.onload = () => {
           setImageErrors(prev => ({ ...prev, [index]: false }));
         };
