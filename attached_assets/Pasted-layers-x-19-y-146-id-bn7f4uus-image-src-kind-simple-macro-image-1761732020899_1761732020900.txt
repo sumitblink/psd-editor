@@ -1,0 +1,210 @@
+layers": [
+{
+"x": 19,
+"y": 146,
+"id": "bn7f4uus-image",
+"src": {
+"kind": "simple",
+"macro": "{{image_link}}"
+},
+"kind": "image",
+"name": "Image",
+"width": 1045,
+"aiSpec": null,
+"filter": null,
+"height": 805,
+"locked": false,
+"opacity": 100,
+"shadows": [],
+"visible": true,
+"autoTrim": false,
+"cropSpec": null,
+"rotation": 0,
+"trimSpec": null,
+"itemIndex": 0,
+"objectFit": "contain",
+"variations": {},
+"borderColor": {
+"kind": "solid",
+"value": {
+"kind": "static",
+"value": "rgba(0, 0, 0, 1)"
+}
+},
+"borderWidth": 0,
+"exitUrlSpec": null,
+"borderRadius": 0,
+"fixedAspectRatio": false,
+"lockedAspectRatio": false
+},
+{
+"x": 851.5,
+"y": 45.064,
+"id": "7be1d4f7-fb83-49f2-9ca3-c5d039d747bf",
+"font": {
+"kind": {
+"style": "normal",
+"family": "Gilroy-Bold",
+"source": "custom",
+"weight": 400,
+"variant": "regular"
+},
+"style": "normal",
+"weight": 400,
+"assetLibraryId": "72af4301-d78f-4bd8-9033-ee750f9ac344"
+},
+"kind": "text",
+"name": "10% off",
+"width": 201.5,
+"filter": null,
+"height": 73.872,
+"locked": false,
+"content": [
+{
+"insert": "10% off",
+"attributes": {
+"font": {
+"kind": {
+"style": "normal",
+"family": "Gilroy-Bold",
+"source": "custom",
+"weight": 400,
+"variant": "regular"
+},
+"style": "normal",
+"weight": 400,
+"assetLibraryId": "72af4301-d78f-4bd8-9033-ee750f9ac344"
+},
+"shadows": [],
+"fontSize": 61.56,
+"textColor": {
+"kind": "solid",
+"value": {
+"kind": "static",
+"value": "rgba(253.9953, 203.99745, 179.00235, 1)"
+}
+},
+"lineHeight": 73.872,
+"letterSpacing": 0.5,
+"textTransform": "none",
+"highlightColor": {
+"kind": "solid",
+"value": {
+"kind": "static",
+"value": "rgba(0, 0, 0, 0)"
+}
+},
+"textDecoration": {
+"line": {
+"overline": false,
+"underline": false,
+"lineThrough": false
+},
+"color": {
+"kind": "static",
+"value": "rgba(0,0,0,0)"
+},
+"style": "solid"
+},
+"highlightRadius": 0,
+"textStrokeColor": {
+"kind": "solid",
+"value": {
+"kind": "static",
+"value": "rgba(102,102,111, 1)"
+}
+},
+"textStrokeWidth": 0,
+"highlightPadding": {
+"top": 0,
+"left": 2,
+"right": 2,
+"bottom": 0
+}
+}
+}
+],
+"opacity": 100,
+"padding": {
+"top": 0,
+"left": 0,
+"right": 0,
+"bottom": 0
+},
+"refitV2": false,
+"shadows": [],
+"visible": true,
+"fontSize": 61.56,
+"rotation": 0,
+"itemIndex": 0,
+"multiLine": true,
+"textColor": {
+"kind": "solid",
+"value": {
+"kind": "static",
+"value": "rgba(253.9953, 203.99745, 179.00235, 1)"
+}
+},
+"truncated": false,
+"lineHeight": 73.872,
+"variations": {},
+"borderColor": {
+"kind": "solid",
+"value": {
+"kind": "static",
+"value": "rgba(0, 0, 0, 1)"
+}
+},
+"borderWidth": 0,
+"exitUrlSpec": null,
+"unicodeBidi": "plaintext",
+"borderRadius": 0,
+"mixBlendMode": "normal",
+"letterSpacing": 0.5,
+"textTransform": "none",
+"highlightColor": {
+"kind": "solid",
+"value": {
+"kind": "static",
+"value": "rgba(0, 0, 0, 0)"
+}
+},
+"textDecoration": {
+"line": {
+"overline": false,
+"underline": false,
+"lineThrough": false
+},
+"color": {
+"kind": "static",
+"value": "rgba(0,0,0,0)"
+},
+"style": "solid"
+},
+"backgroundColor": {
+"kind": "solid",
+"value": {
+"kind": "static",
+"value": "rgba(0, 0, 0, 0)"
+}
+},
+"highlightRadius": 0,
+"textStrokeColor": {
+"kind": "solid",
+"value": {
+"kind": "static",
+"value": "rgba(102,102,111, 1)"
+}
+},
+"textStrokeWidth": 0,
+"fixedAspectRatio": false,
+"highlightPadding": {
+"top": 0,
+"left": 2,
+"right": 2,
+"bottom": 0
+},
+"textVerticalAlign": "middle",
+"textHorizontalAlign": "center"
+},
+]
