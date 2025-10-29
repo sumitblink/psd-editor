@@ -533,29 +533,75 @@ export const applyDataBindings = createAsyncThunk(
     console.log('Applying data bindings:', bindings);
     console.log('Data received:', data);
 
-    for (const [layerName, apiKey] of Object.entries(bindings)) {
+    for (const [layerName, bindingValue] of Object.entries(bindings)) {
       const targetObject = canvasObjects.find(obj => obj.name === layerName);
       if (!targetObject) continue;
 
-      // Handle nested properties like "additional_image_urls.0"
-      let value;
-      if (apiKey.includes('.')) {
-        const keys = apiKey.split('.');
-        value = keys.reduce((obj, key) => obj?.[key], data);
-      } else {
-        value = data[apiKey];
-      }
-      
-      if (!value) {
-        console.warn(`No value found for binding: ${layerName} -> ${apiKey}`);
-        continue;
-      }
-
-      console.log(`Updating ${layerName} (${targetObject.type}) with value from ${apiKey}:`, value);
-
       if (targetObject.type === 'textbox') {
-        targetObject.set('text', String(value));
+        // Check if binding contains template placeholders {{key}}
+        const templatePattern = /\{\{(\w+(?:\.\w+)*)\}\}/g;
+        
+        if (templatePattern.test(bindingValue)) {
+          // Template mode: replace all {{key}} placeholders
+          let processedText = bindingValue;
+          const matches = bindingValue.matchAll(/\{\{(\w+(?:\.\w+)*)\}\}/g);
+          
+          for (const match of matches) {
+            const placeholder = match[0]; // {{key}}
+            const key = match[1]; // key
+            
+            // Handle nested properties like "additional_image_urls.0"
+            let value;
+            if (key.includes('.')) {
+              const keys = key.split('.');
+              value = keys.reduce((obj, k) => obj?.[k], data);
+            } else {
+              value = data[key];
+            }
+            
+            if (value !== undefined && value !== null) {
+              processedText = processedText.replace(placeholder, String(value));
+              console.log(`Replaced ${placeholder} with ${value} in ${layerName}`);
+            } else {
+              console.warn(`No value found for placeholder: ${placeholder} in ${layerName}`);
+            }
+          }
+          
+          targetObject.set('text', processedText);
+        } else {
+          // Simple mode: direct key binding (legacy support)
+          let value;
+          if (bindingValue.includes('.')) {
+            const keys = bindingValue.split('.');
+            value = keys.reduce((obj, key) => obj?.[key], data);
+          } else {
+            value = data[bindingValue];
+          }
+          
+          if (value !== undefined && value !== null) {
+            targetObject.set('text', String(value));
+            console.log(`Updating ${layerName} with value from ${bindingValue}:`, value);
+          } else {
+            console.warn(`No value found for binding: ${layerName} -> ${bindingValue}`);
+          }
+        }
       } else if (targetObject.type === 'image') {
+        // Image binding: direct key to image URL
+        let value;
+        if (bindingValue.includes('.')) {
+          const keys = bindingValue.split('.');
+          value = keys.reduce((obj, key) => obj?.[key], data);
+        } else {
+          value = data[bindingValue];
+        }
+        
+        if (!value) {
+          console.warn(`No value found for binding: ${layerName} -> ${bindingValue}`);
+          continue;
+        }
+
+        console.log(`Updating ${layerName} (${targetObject.type}) with value from ${bindingValue}:`, value);
+
         // Preserve current dimensions
         const currentWidth = targetObject.width * targetObject.scaleX;
         const currentHeight = targetObject.height * targetObject.scaleY;
