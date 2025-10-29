@@ -95,7 +95,7 @@ export const loadFromTemplate = createAsyncThunk(
         index,
         visible: object.visible !== false
       }));
-    
+
     return { template, objects: updatedObjects };
   }
 );
@@ -463,7 +463,7 @@ export const changeTextProperty = createAsyncThunk(
 
     text.set(property, value);
     canvas.instance.fire('object:modified', { target: text }).renderAll();
-    
+
     dispatch(selectObject());
   }
 );
@@ -480,7 +480,7 @@ export const changeImageProperty = createAsyncThunk(
 
     image.set(property, value);
     canvas.instance.fire('object:modified', { target: image }).renderAll();
-    
+
     dispatch(selectObject());
   }
 );
@@ -554,7 +554,7 @@ export const applyDataBindings = createAsyncThunk(
     }
 
     canvas.instance.fire('object:modified', { target: element }).renderAll();
-    
+
     dispatch(selectObject());
   }
 );
@@ -564,14 +564,14 @@ export const undoAction = createAsyncThunk(
   async (_, { getState, dispatch }) => {
     const state = getState();
     const canvas = state.canvas;
-    
+
     if (canvas.undoStack.length === 0 || !canvas.instance) return;
 
     const currentState = canvas.instance.toObject(exportedProps);
-    
+
     // Get previous state
     const previousState = canvas.undoStack[canvas.undoStack.length - 1];
-    
+
     // Load the previous state
     await new Promise((resolve) => {
       canvas.instance.loadFromJSON(previousState, () => {
@@ -594,14 +594,14 @@ export const redoAction = createAsyncThunk(
   async (_, { getState, dispatch }) => {
     const state = getState();
     const canvas = state.canvas;
-    
+
     if (canvas.redoStack.length === 0 || !canvas.instance) return;
 
     const currentState = canvas.instance.toObject(exportedProps);
-    
+
     // Get next state
     const nextState = canvas.redoStack[canvas.redoStack.length - 1];
-    
+
     // Load the next state
     await new Promise((resolve) => {
       canvas.instance.loadFromJSON(nextState, () => {
@@ -631,7 +631,7 @@ export const toggleObjectLock = createAsyncThunk(
 
     if (targetObject) {
       const newLockState = !targetObject.lockMovementX;
-      
+
       // Lock or unlock the object
       targetObject.set({
         lockMovementX: newLockState,
@@ -654,7 +654,7 @@ export const toggleObjectLock = createAsyncThunk(
 
       canvas.instance.renderAll();
       dispatch(updateObjects());
-      
+
       return { layerName, locked: newLockState };
     }
   }
@@ -685,7 +685,7 @@ export const duplicateObject = createAsyncThunk(
     canvas.instance.add(cloned);
     canvas.instance.setActiveObject(cloned);
     canvas.instance.fire('object:modified', { target: cloned }).renderAll();
-    
+
     dispatch(updateObjects());
     dispatch(selectObject());
 
@@ -856,7 +856,7 @@ const canvasSlice = createSlice({
       state.selected = activeObject ? activeObject.toObject(exportedProps) : null;
 
       state.instance.fire('object:modified', { target: element }).renderAll();
-      
+
       // Force state update to trigger re-render
       state.objects = [...state.objects];
     },
@@ -884,10 +884,11 @@ const canvasSlice = createSlice({
       state.template = action.payload;
     },
     clearCanvas: (state) => {
-      state.objects = [];
-      state.redoStack = [];
-      state.undoStack = [];
-      state.selected = null;
+      if (state.instance) {
+        state.instance.clear();
+        state.objects = [];
+        state.selected = null;
+      }
     },
     setClipboard: (state, action) => {
       state.clipboard = action.payload;
@@ -927,7 +928,7 @@ const canvasSlice = createSlice({
             state.redoStack.shift();
           }
           state.undoStack.pop();
-          
+
           // Update objects list and selection
           if (state.instance) {
             const objects = state.instance.getObjects();
@@ -939,7 +940,7 @@ const canvasSlice = createSlice({
                 visible: object.visible !== false,
                 locked: object.lockMovementX === true
               }));
-            
+
             const activeObject = state.instance.getActiveObject();
             state.selected = activeObject ? activeObject.toObject(exportedProps) : null;
           }
@@ -956,7 +957,7 @@ const canvasSlice = createSlice({
             state.undoStack.shift();
           }
           state.redoStack.pop();
-          
+
           // Update objects list and selection
           if (state.instance) {
             const objects = state.instance.getObjects();
@@ -968,7 +969,7 @@ const canvasSlice = createSlice({
                 visible: object.visible !== false,
                 locked: object.lockMovementX === true
               }));
-            
+
             const activeObject = state.instance.getActiveObject();
             state.selected = activeObject ? activeObject.toObject(exportedProps) : null;
           }
