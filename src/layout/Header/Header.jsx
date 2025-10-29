@@ -5,7 +5,7 @@ import { HeadBar, HeaderLogo } from '../container';
 import { useDispatch, useSelector } from 'react-redux';
 import { parsePSDFromFile, convertPSDTOTemplate } from '../../functions/psd';
 import { setActive as setActiveTemplate, selectActiveTemplate } from '../../store/templateSlice';
-import { loadFromTemplate, undoAction, redoAction, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON, updateObjects, deleteObject, changeObjectLayer, selectSelected, addRectangle, addCircle, addTriangle, addText, addImage, selectDataBindings, applyDataBindings } from '../../store/canvasSlice';
+import { loadFromTemplate, undoAction, redoAction, selectCanUndo, selectCanRedo, selectCanvasInstance, loadFromJSON, updateObjects, deleteObject, changeObjectLayer, selectSelected, addRectangle, addCircle, addTriangle, addText, addImage, selectDataBindings, applyDataBindings, exportLayersToBackendFormat } from '../../store/canvasSlice';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -226,6 +226,17 @@ const Header = () => {
     dispatch(addTriangle({}));
   };
 
+  const handleSave = () => {
+    dispatch(exportLayersToBackendFormat());
+    toast({
+      title: 'Layers exported',
+      description: 'Check the console for the formatted layer data',
+      status: 'success',
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
   return (
     <HeadBar>
       {/* Left Section */}
@@ -411,7 +422,7 @@ const Header = () => {
         <Button size="sm" variant="outline">
           Export
         </Button>
-        <Button size="sm" colorScheme="blue">
+        <Button size="sm" colorScheme="blue" onClick={handleSave}>
           Save
         </Button>
       </HStack>

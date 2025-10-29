@@ -786,6 +786,170 @@ export const duplicateObject = createAsyncThunk(
   }
 );
 
+export const exportLayersToBackendFormat = createAsyncThunk(
+  'canvas/exportLayersToBackendFormat',
+  async (_, { getState }) => {
+    const state = getState();
+    const canvas = state.canvas;
+    if (!canvas.instance) return;
+
+    const canvasObjects = canvas.instance.getObjects();
+    const dataBindings = canvas.dataBindings;
+
+    const layers = canvasObjects.map((obj, index) => {
+      const baseLayer = {
+        x: Math.round(obj.left),
+        y: Math.round(obj.top),
+        id: obj.name,
+        kind: obj.type === 'textbox' ? 'text' : obj.type,
+        name: obj.name,
+        width: Math.round(obj.type === 'image' ? obj.width * obj.scaleX : obj.width),
+        height: Math.round(obj.type === 'image' ? obj.height * obj.scaleY : obj.height),
+        locked: obj.lockMovementX === true,
+        opacity: Math.round(obj.opacity * 100),
+        visible: obj.visible !== false,
+        rotation: Math.round(obj.angle),
+        itemIndex: index,
+        filter: null,
+        shadows: [],
+        variations: {},
+        borderColor: {
+          kind: "solid",
+          value: {
+            kind: "static",
+            value: "rgba(0, 0, 0, 1)"
+          }
+        },
+        borderWidth: 0,
+        borderRadius: 0
+      };
+
+      if (obj.type === 'image') {
+        // Check if this layer has a data binding
+        const binding = dataBindings[obj.name];
+        
+        return {
+          ...baseLayer,
+          src: binding ? {
+            kind: "simple",
+            macro: `{{${binding}}}`
+          } : {
+            kind: "simple",
+            macro: obj.getSrc()
+          },
+          aiSpec: null,
+          autoTrim: false,
+          cropSpec: null,
+          trimSpec: null,
+          objectFit: "contain",
+          exitUrlSpec: null,
+          fixedAspectRatio: false,
+          lockedAspectRatio: false
+        };
+      } else if (obj.type === 'textbox') {
+        // Check if this layer has a data binding
+        const binding = dataBindings[obj.name];
+        const textValue = binding || obj.text;
+
+        return {
+          ...baseLayer,
+          font: {
+            kind: {
+              style: "normal",
+              family: obj.fontFamily || "Arial",
+              source: "system",
+              weight: 400,
+              variant: "regular"
+            },
+            style: "normal",
+            weight: 400
+          },
+          padding: {
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0
+          },
+          refitV2: false,
+          fontSize: Math.round(obj.fontSize),
+          textColor: {
+            kind: "solid",
+            value: {
+              kind: "static",
+              value: obj.fill || "rgba(0, 0, 0, 1)"
+            }
+          },
+          truncated: false,
+          lineHeight: obj.lineHeight || 1.16,
+          multiLine: true,
+          letterSpacing: obj.charSpacing || 0,
+          textTransform: "none",
+          highlightColor: {
+            kind: "solid",
+            value: {
+              kind: "static",
+              value: "rgba(0, 0, 0, 0)"
+            }
+          },
+          textDecoration: {
+            line: {
+              overline: obj.overline || false,
+              underline: obj.underline || false,
+              lineThrough: obj.linethrough || false
+            },
+            color: {
+              kind: "static",
+              value: "rgba(0,0,0,0)"
+            },
+            style: "solid"
+          },
+          backgroundColor: {
+            kind: "solid",
+            value: {
+              kind: "static",
+              value: obj.backgroundColor || "rgba(0, 0, 0, 0)"
+            }
+          },
+          exitUrlSpec: null,
+          unicodeBidi: "plaintext",
+          mixBlendMode: "normal",
+          textVerticalAlign: "middle",
+          textHorizontalAlign: obj.textAlign || "left",
+          // Store the text value (with binding if exists)
+          text: textValue
+        };
+      } else if (obj.type === 'rect' || obj.type === 'circle' || obj.type === 'triangle') {
+        return {
+          ...baseLayer,
+          kind: obj.type === 'rect' ? 'rectangle' : obj.type,
+          fill: {
+            kind: "solid",
+            value: {
+              kind: "static",
+              value: obj.fill || "rgba(0, 0, 0, 1)"
+            }
+          },
+          stroke: obj.stroke || null,
+          strokeWidth: obj.strokeWidth || 0
+        };
+      }
+
+      return baseLayer;
+    });
+
+    const exportData = {
+      layers: layers
+    };
+
+    // Console log the formatted data
+    console.log('=== LAYER STYLES FOR BACKEND ===');
+    console.log(JSON.stringify(exportData, null, 2));
+    console.log('=== END OF LAYER STYLES ===');
+
+    return exportData;
+  }
+);
+
 const intializeMetaProperties = (object, instance) => {
   const multiplier = instance?.getZoom() || 1;
 
