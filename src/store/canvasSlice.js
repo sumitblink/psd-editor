@@ -540,10 +540,24 @@ export const applyDataBindings = createAsyncThunk(
       if (targetObject.type === 'textbox') {
         targetObject.set('text', String(value));
       } else if (targetObject.type === 'image') {
+        // Preserve current dimensions
+        const currentWidth = targetObject.width * targetObject.scaleX;
+        const currentHeight = targetObject.height * targetObject.scaleY;
+        
         await new Promise((resolve) => {
           targetObject.setSrc(value, () => {
-            canvas.instance.renderAll();
+            // Restore the dimensions after loading new image
+            const newScaleX = currentWidth / targetObject.width;
+            const newScaleY = currentHeight / targetObject.height;
+            
+            targetObject.set({
+              scaleX: newScaleX,
+              scaleY: newScaleY
+            });
+            
             resolve();
+          }, {
+            crossOrigin: 'anonymous'
           });
         });
       }
