@@ -1,0 +1,71 @@
+{
+    "status": "success",
+    "message": "Products fetched succesfully.",
+    "data": {
+        "data": [
+            {
+                "id": "9561097167296403",
+                "name": "Amara Clutch Bag",
+                "price": "₹2,999.00",
+                "offer": "15",
+                "availability": "out of stock",
+                "image_url": "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/02A.jpg?v=1680245758&width=713",
+                "retailer_id": "39",
+                "image_cdn_urls": [],
+                "additional_image_urls": [
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758778065409.jpg",
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758778089756.jpeg"
+                ]
+            },
+            {
+                "id": "9718709914836084",
+                "name": "Clare Laptop Case",
+                "price": "₹1,500.00",
+                "offer": "25",
+                "availability": "out of stock",
+                "image_url": "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/1_37d3cbf4-e790-4bba-8691-d4a757bba94a.webp?v=1673078290&width=713",
+                "retailer_id": "46",
+                "image_cdn_urls": [],
+                "additional_image_urls": [
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758712378572.jpeg",
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758712403599.jpeg"
+                ]
+            },
+            {
+                "id": "9823456789012345",
+                "name": "Bella Leather Wallet",
+                "price": "₹899.00",
+                "offer": "30",
+                "availability": "in stock",
+                "image_url": "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/wallet-brown.jpg?v=1680245890&width=713",
+                "retailer_id": "52",
+                "image_cdn_urls": [],
+                "additional_image_urls": [
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758823456789.jpg",
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758823478901.jpeg"
+                ]
+            },
+            {
+                "id": "9934567890123456",
+                "name": "Diana Crossbody Bag",
+                "price": "₹3,499.00",
+                "offer": "10",
+                "availability": "in stock",
+                "image_url": "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/crossbody-black.webp?v=1680246012&width=713",
+                "retailer_id": "58",
+                "image_cdn_urls": [],
+                "additional_image_urls": [
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758934567890.jpg",
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758934589012.jpeg"
+                ]
+            }
+        ],
+        "meta": {
+            "pageSize": "4",
+            "after": "QVFIU0NNOHE3TEZAMOXpadmkzLVM2eWFTSGdZASGhqTmtVT0l3T0FNbHZA0bXNuZAnlrOUxxM3g2aU9VS3lHaERJYzFWTXFhc19mZAF9CRk1rNlVNaTRLOW56S1Rn",
+            "hasNextPage": true,
+            "before": "QVFIU21KQVNLS09GbXFXZAkhxTWJOR3JtR2VPOFZAPTWNlS2FzQzVWNFk5Q3lzMEd1R1gyM1RBbXNFSjV0enh2V1FlcEhGRGgxOFZASRkEwdzdPNzE3cFA5dHF3",
+            "hasPrevPage": true
+        }
+    }
+}
