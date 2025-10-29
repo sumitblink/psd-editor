@@ -1,0 +1,310 @@
+
+Sachin Salgar
+,
+Oct 1, 2025, 12:19 PM
+,
+clone layer
+,Oct 1, 2025, 12:19 PM,
+lock layer
+,Oct 1, 2025, 12:20 PM,
+Sachin Salgar
+,
+Oct 1, 12:23 PM
+,
+add image layer
+add text layer
+,Oct 1, 12:23 PM,
+You
+,
+Oct 1, 12:23 PM
+,
+thik hai abhi mayur k saath call pe h fir krte hai connect
+,Oct 1, 12:23 PM,
+Sachin Salgar
+,
+Oct 1, 12:24 PM
+,
+thik hai
+,Oct 1, 12:24 PM,
+You
+,
+Oct 1, 1:54 PM
+,
+msg kro jab available
+
+,Oct 1, 1:54 PM,
+Sachin Salgar
+,
+Oct 1, 5:09 PM
+,
+sumit
+,Oct 1, 5:09 PM,
+lets connnect
+,Oct 1, 5:09 PM,
+You
+,
+Oct 1, 5:13 PM
+,
+okay
+,Oct 1, 5:13 PM,
+Sachin Salgar
+,
+Oct 1, 5:13 PM
+,
+Video meeting
+Google Meet
+Join video meeting
+,Oct 1, 5:13 PM,
+Sachin Salgar
+,
+Oct 1, 5:36 PM
+,
+Screenshot 2025-10-01 at 5.36.25 PM.png
+,Oct 1, 5:36 PM,
+Sachin Salgar
+,
+Oct 1, 7:19 PM
+,
+Screenshot 2025-10-01 at 7.19.44 PM.png
+,Oct 1, 7:19 PM,
+Screenshot 2025-10-01 at 7.20.38 PM.png
+,Oct 1, 7:20 PM,
+Sachin Salgar
+,
+Oct 1, 7:35 PM
+,
+https://app.smartly.io/filestore/fonts/8625e56d-c4b9-4432-9516-064363754030/woff
+,Oct 1, 7:35 PM,
+You
+,
+Oct 1, 8:06 PM
+,
+https://psd-editor.replit.app
+,Oct 1, 8:06 PM,
+Monday, Oct 27
+Sachin Salgar
+,
+Mon 5:17 PM
+,
+sumit
+,Mon 5:17 PM,
+psd editor ka catalog integration ke liye baithna hai
+,Mon 5:17 PM,
+You
+,
+Mon 5:20 PM
+,
+okay
+,Mon 5:20 PM,
+Sachin Salgar
+,
+Mon 5:21 PM
+,
+layer ke sath catalog field mapping aur usse image generation
+,Mon 5:21 PM,
+kal dekhte hai
+,Mon 5:21 PM,
+You
+,
+Mon 5:26 PM
+,
+Thik hai ek oculus me Comfort ka event setup test krna hai. Uske baad baithte hai.
+
+,Mon 5:26 PM,
+Yesterday
+You
+,
+Yesterday 11:31 AM
+,
+lets connect
+,Yesterday 11:31 AM,
+Sachin Salgar
+,
+Yesterday 11:35 AM
+,
+Abhi travelling
+,Yesterday 11:35 AM,
+In train
+,Yesterday 11:35 AM,
+Will be home by 12:30
+,Yesterday 11:35 AM,
+You
+,
+Yesterday 11:35 AM
+,
+thik hai
+,Yesterday 11:35 AM,
+Sachin Salgar
+,
+Yesterday 6:02 PM
+,
+sumit
+,Yesterday 6:02 PM,
+lets connect
+,Yesterday 6:02 PM,
+?
+,Yesterday 6:02 PM,
+You
+,
+Yesterday 6:02 PM
+,
+abhi bahar h nkle
+,Yesterday 6:02 PM,
+msg krte h
+,Yesterday 6:02 PM,
+Sachin Salgar
+,
+Yesterday 6:03 PM
+,
+aaneke baad thodi der overview lete hai
+,Yesterday 6:03 PM,
+You
+,
+Yesterday 6:03 PM
+,
+thik hai
+
+,Yesterday 6:03 PM,
+Today
+Sachin Salgar
+,
+58 min
+,
+ajao
+,58 min,
+gm
+,58 min,
+You
+,
+58 min
+,
+2 min
+,58 min,
+You
+,
+53 min
+,
+join
+,53 min,
+Sachin Salgar
+,
+53 min
+,
+Video meeting
+Google Meet
+Join video meeting
+,53 min,
+Sachin Salgar
+,
+41 min
+,
+https://app.smartly.io/creative-templates/v1/template_projects/49b14f08-5215-49ff-b5a5-a813547339d1?templateKind=imageTemplate
+,41 min,
+Sachin Salgar
+,
+25 min
+,
+https://public.smartly.io/image-previews/a15f32a9-9076-4be7-898e-f8d2467cc640
+,25 min,
+Sachin Salgar
+,
+21 min
+,
+https://app.smartly.io/#/companies/63c1314b3c17e8eb1c4ea5c0/editor/image/library/4f7f4e92-7d99-438a-86b1-c6aab9c106f6/template/573661d8-d720-4c22-9ce9-afe47d10f7c3
+,21 min,
+BlinkTech@2025
+,21 min,
+Sachin Salgar
+,
+2 min
+,
+{
+    "status": "success",
+    "message": "Products fetched succesfully.",
+    "data": {
+        "data": [
+            {
+                "id": "9561097167296403",
+                "name": "Amara Clutch Bag",
+                "price": "₹2,999.00",
+                "availability": "out of stock",
+                "image_url": "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/02A.jpg?v=1680245758&width=713",
+                "retailer_id": "39",
+                "image_cdn_urls": [],
+                "additional_image_urls": [
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758778065409.jpg",
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758778089756.jpeg"
+                ],
+                "additional_image_cdn_urls": [
+                    [
+                        {
+                            "key": "requested",
+                            "value": "https://scontent.fpnq13-3.fna.fbcdn.net/v/t45.5328-4/567749292_1738461620205288_5667111623668446566_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=657aed&_nc_ohc=YfQf9NCcZeUQ7kNvwHnONZ_&_nc_oc=AdnbNLXJZ7WwCz54Ph2VedWHl83pS8gMOmnALqKgpz7ZpDd_DAMn6idMfASKtDZcqxPDbmUHI3TGqFdvQZ934VJU&_nc_zt=23&_nc_ht=scontent.fpnq13-3.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQEbMuXqZXTo0fiiO2yyupyl2QZ3XPdw14woX_4wP6Nf60iWKvPOJhMaPrdZtBOklEsPXMsU-_ytkA&oh=00_Afem4wjD2ySkHPlpnVVQtGuvZYW7CkV6kMqofPlNot37hw&oe=6907A527"
+                        },
+                        {
+                            "key": "full",
+                            "value": "https://scontent.fpnq13-3.fna.fbcdn.net/v/t45.5328-4/567749292_1738461620205288_5667111623668446566_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=657aed&_nc_ohc=YfQf9NCcZeUQ7kNvwHnONZ_&_nc_oc=AdnbNLXJZ7WwCz54Ph2VedWHl83pS8gMOmnALqKgpz7ZpDd_DAMn6idMfASKtDZcqxPDbmUHI3TGqFdvQZ934VJU&_nc_zt=23&_nc_ht=scontent.fpnq13-3.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQEbMuXqZXTo0fiiO2yyupyl2QZ3XPdw14woX_4wP6Nf60iWKvPOJhMaPrdZtBOklEsPXMsU-_ytkA&oh=00_Afem4wjD2ySkHPlpnVVQtGuvZYW7CkV6kMqofPlNot37hw&oe=6907A527"
+                        }
+                    ],
+                    [
+                        {
+                            "key": "requested",
+                            "value": "https://scontent.fpnq13-5.fna.fbcdn.net/v/t45.5328-4/569290992_1165006765573680_4898675716210063781_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=657aed&_nc_ohc=0HmSHsYxxjEQ7kNvwFwRk9F&_nc_oc=AdmtQ2SDuEn-SRsB79CgcgzcJo9yp63tUydNYNN7IVvcJETfHlns3BVa6IJ_dPSpRHvnCST7n93iPtP0bQiRYv6o&_nc_zt=23&_nc_ht=scontent.fpnq13-5.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQGYAuNPu9NyhdbMHUmIKu05VIuKTOE72dVMwvk5pRI1gcqrCHYu-WC52YzpeMicLDtGzTlQ8_-I4g&oh=00_AfeA0fagYCwhKyblUmSt4ytVsrC_Wcf6NNvPeRWngIWqsg&oe=6907789A"
+                        },
+                        {
+                            "key": "full",
+                            "value": "https://scontent.fpnq13-5.fna.fbcdn.net/v/t45.5328-4/569290992_1165006765573680_4898675716210063781_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=657aed&_nc_ohc=0HmSHsYxxjEQ7kNvwFwRk9F&_nc_oc=AdmtQ2SDuEn-SRsB79CgcgzcJo9yp63tUydNYNN7IVvcJETfHlns3BVa6IJ_dPSpRHvnCST7n93iPtP0bQiRYv6o&_nc_zt=23&_nc_ht=scontent.fpnq13-5.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQGYAuNPu9NyhdbMHUmIKu05VIuKTOE72dVMwvk5pRI1gcqrCHYu-WC52YzpeMicLDtGzTlQ8_-I4g&oh=00_AfeA0fagYCwhKyblUmSt4ytVsrC_Wcf6NNvPeRWngIWqsg&oe=6907789A"
+                        }
+                    ]
+                ]
+            },
+            {
+                "id": "9718709914836084",
+                "name": "Clare Laptop Case",
+                "price": "₹1,500.00",
+                "availability": "out of stock",
+                "image_url": "https://cdn.shopify.com/s/files/1/0704/1030/5849/products/1_37d3cbf4-e790-4bba-8691-d4a757bba94a.webp?v=1673078290&width=713",
+                "retailer_id": "46",
+                "image_cdn_urls": [],
+                "additional_image_urls": [
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758712378572.jpeg",
+                    "https://forex-media-space.ams3.digitaloceanspaces.com/ai-video-files/6593d66d11ae13ea69d8c13d/files-1758712403599.jpeg"
+                ],
+                "additional_image_cdn_urls": [
+                    [
+                        {
+                            "key": "requested",
+                            "value": "https://scontent.fpnq13-1.fna.fbcdn.net/v/t45.5328-4/568120165_703517195528550_710492264385656487_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=657aed&_nc_ohc=s41DoBDeq2YQ7kNvwFbS0Ov&_nc_oc=Adk9iNPkD5d2dGipYiGk8RRwmZuDBQ2-JIOcX07YGjIl0lsrTAu6gGspQUUpqxOTYNPAj4nIi9O4bycMN2mUonYf&_nc_zt=23&_nc_ht=scontent.fpnq13-1.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQFM3NsJZ_zod0nECCwHi5Sutun4WRwolQJBdBRXCVkJeKKT0Fu6F-w12U9nYvqeDFNJhR-JRjNbcg&oh=00_AfcEZ_uzd0-bu4qAwlEckDBGWeD1JxTSbLVVBWBo1NWNhg&oe=69078604"
+                        },
+                        {
+                            "key": "full",
+                            "value": "https://scontent.fpnq13-1.fna.fbcdn.net/v/t45.5328-4/568120165_703517195528550_710492264385656487_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=657aed&_nc_ohc=s41DoBDeq2YQ7kNvwFbS0Ov&_nc_oc=Adk9iNPkD5d2dGipYiGk8RRwmZuDBQ2-JIOcX07YGjIl0lsrTAu6gGspQUUpqxOTYNPAj4nIi9O4bycMN2mUonYf&_nc_zt=23&_nc_ht=scontent.fpnq13-1.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQFM3NsJZ_zod0nECCwHi5Sutun4WRwolQJBdBRXCVkJeKKT0Fu6F-w12U9nYvqeDFNJhR-JRjNbcg&oh=00_AfcEZ_uzd0-bu4qAwlEckDBGWeD1JxTSbLVVBWBo1NWNhg&oe=69078604"
+                        }
+                    ],
+                    [
+                        {
+                            "key": "requested",
+                            "value": "https://scontent.fpnq13-6.fna.fbcdn.net/v/t45.5328-4/567892677_1156689645905398_7375251448864544745_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=657aed&_nc_ohc=5upM4rRYGgoQ7kNvwHqVU_K&_nc_oc=Adlx_EwusW_naTDoz4sT5PfXZj3g7GrlXIhM43zguq9YTkjeoGdMQDb7hYKopj7mm1j7HMN1oMOLTVfLKpNdTddE&_nc_zt=23&_nc_ht=scontent.fpnq13-6.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQFh0z91YygjILSN8qKOcztNTgdn8vd54VEVaCMxbNZimsF0lbsZTsXnjkkGTeCAW1il6ixWfbqQ0A&oh=00_AffizBc3ZfeGEVUNxLNRo6-HtMU6p8QqtHDtCiop4uLfQA&oe=69077084"
+                        },
+                        {
+                            "key": "full",
+                            "value": "https://scontent.fpnq13-6.fna.fbcdn.net/v/t45.5328-4/567892677_1156689645905398_7375251448864544745_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=657aed&_nc_ohc=5upM4rRYGgoQ7kNvwHqVU_K&_nc_oc=Adlx_EwusW_naTDoz4sT5PfXZj3g7GrlXIhM43zguq9YTkjeoGdMQDb7hYKopj7mm1j7HMN1oMOLTVfLKpNdTddE&_nc_zt=23&_nc_ht=scontent.fpnq13-6.fna&edm=ABodE4kEAAAA&_nc_gid=dZafNQxEhEQR6UcliROLXQ&_nc_tpa=Q5bMBQFh0z91YygjILSN8qKOcztNTgdn8vd54VEVaCMxbNZimsF0lbsZTsXnjkkGTeCAW1il6ixWfbqQ0A&oh=00_AffizBc3ZfeGEVUNxLNRo6-HtMU6p8QqtHDtCiop4uLfQA&oe=69077084"
+                        }
+                    ]
+                ]
+            }
+        ],
+        "meta": {
+            "pageSize": "2",
+            "after": "QVFIU0NNOHE3TEZAMOXpadmkzLVM2eWFTSGdZASGhqTmtVT0l3T0FNbHZA0bXNuZAnlrOUxxM3g2aU9VS3lHaERJYzFWTXFhc19mZAF9CRk1rNlVNaTRLOW56S1Rn",
+            "hasNextPage": true,
+            "before": "QVFIU21KQVNLS09GbXFXZAkhxTWJOR3JtR2VPOFZAPTWNlS2FzQzVWNFk5Q3lzMEd1R1gyM1RBbXNFSjV0enh2V1FlcEhGRGgxOFZASRkEwdzdPNzE3cFA5dHF3",
+            "hasPrevPage": true
+        }
+    }
+}
+Message read by Sachin Salgar
+
+,2 min,
+History is on
+
