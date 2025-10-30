@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Box, VStack, Text, HStack, IconButton, Button, ButtonGroup, Input, useToast, useDisclosure } from '@chakra-ui/react';
 import { EyeIcon, EyeOffIcon, TrashIcon, ArrowUpIcon, ArrowDownIcon, MoveUpIcon, MoveDownIcon, GripVerticalIcon, Lock, Unlock, Copy, Edit2, Link2 } from 'lucide-react';
@@ -19,6 +19,18 @@ const LayerSidebar = () => {
   const [editingName, setEditingName] = useState('');
   const [bindingLayer, setBindingLayer] = useState(null);
   const { isOpen: isBindingModalOpen, onOpen: onBindingModalOpen, onClose: onBindingModalClose } = useDisclosure();
+  const selectedLayerRef = useRef(null);
+
+  // Auto-scroll to selected layer when selection changes
+  useEffect(() => {
+    if (selected && selectedLayerRef.current) {
+      selectedLayerRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'nearest'
+      });
+    }
+  }, [selected?.name]);
 
   const handleDeleteObject = () => {
     dispatch(deleteObject());
@@ -271,6 +283,7 @@ const LayerSidebar = () => {
           {[...objects].reverse().map((object, index) => (
             <Item
               key={`${object.name}-${object.index}-${index}`}
+              ref={selected?.name === object.name ? selectedLayerRef : null}
               width="full"
               bg={
                 dragOverItem?.name === object.name 
