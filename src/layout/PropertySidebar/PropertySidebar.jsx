@@ -650,8 +650,9 @@ const PropertySidebar = () => {
               />
             </Grid>
 
-            {/* Font Size with increment/decrement */}
-            <Box mb={1}>
+            {/* Font Size, Letter Spacing, and Line Height - Inline */}
+            <Grid templateColumns="1fr 1fr 1fr" gap={1} mb={1}>
+              {/* Font Size */}
               <Flex
                 align="center"
                 border="1px solid"
@@ -661,7 +662,7 @@ const PropertySidebar = () => {
                 h="32px"
                 overflow="hidden"
               >
-                <Box px={2} fontWeight="bold" color="gray.600" fontSize="sm">
+                <Box px={1} fontWeight="bold" color="gray.600" fontSize="2xs" minW="16px" textAlign="center">
                   TT
                 </Box>
                 <Input
@@ -683,7 +684,7 @@ const PropertySidebar = () => {
                     onClick={() => handleTextChange('fontSize', (selected.fontSize || 16) + 1)}
                     aria-label="Increase font size"
                     h="15px"
-                    minW="24px"
+                    minW="20px"
                     borderRadius="0"
                     _hover={{ bg: 'gray.100' }}
                   />
@@ -694,7 +695,7 @@ const PropertySidebar = () => {
                     onClick={() => handleTextChange('fontSize', Math.max(1, (selected.fontSize || 16) - 1))}
                     aria-label="Decrease font size"
                     h="15px"
-                    minW="24px"
+                    minW="20px"
                     borderRadius="0"
                     borderTop="1px solid"
                     borderColor="gray.200"
@@ -702,10 +703,8 @@ const PropertySidebar = () => {
                   />
                 </Flex>
               </Flex>
-            </Box>
 
-            {/* Letter Spacing */}
-            <Box mb={1}>
+              {/* Letter Spacing */}
               <Flex
                 align="center"
                 border="1px solid"
@@ -715,7 +714,7 @@ const PropertySidebar = () => {
                 h="32px"
                 overflow="hidden"
               >
-                <Box px={2} fontWeight="bold" color="gray.600" fontSize="sm">
+                <Box px={1} fontWeight="bold" color="gray.600" fontSize="2xs" minW="16px" textAlign="center">
                   ₮
                 </Box>
                 <Input
@@ -737,7 +736,7 @@ const PropertySidebar = () => {
                     onClick={() => handleTextChange('charSpacing', (selected.charSpacing || 0) + 10)}
                     aria-label="Increase letter spacing"
                     h="15px"
-                    minW="24px"
+                    minW="20px"
                     borderRadius="0"
                     _hover={{ bg: 'gray.100' }}
                   />
@@ -748,7 +747,7 @@ const PropertySidebar = () => {
                     onClick={() => handleTextChange('charSpacing', (selected.charSpacing || 0) - 10)}
                     aria-label="Decrease letter spacing"
                     h="15px"
-                    minW="24px"
+                    minW="20px"
                     borderRadius="0"
                     borderTop="1px solid"
                     borderColor="gray.200"
@@ -756,10 +755,8 @@ const PropertySidebar = () => {
                   />
                 </Flex>
               </Flex>
-            </Box>
 
-            {/* Line Height */}
-            <Box mb={1}>
+              {/* Line Height */}
               <Flex
                 align="center"
                 border="1px solid"
@@ -769,7 +766,7 @@ const PropertySidebar = () => {
                 h="32px"
                 overflow="hidden"
               >
-                <Box px={2} fontWeight="bold" color="gray.600" fontSize="sm">
+                <Box px={1} fontWeight="bold" color="gray.600" fontSize="2xs" minW="16px" textAlign="center">
                   Â
                 </Box>
                 <Input
@@ -792,7 +789,7 @@ const PropertySidebar = () => {
                     onClick={() => handleTextChange('lineHeight', Math.round(((selected.lineHeight || 1.16) + 0.1) * 100) / 100)}
                     aria-label="Increase line height"
                     h="15px"
-                    minW="24px"
+                    minW="20px"
                     borderRadius="0"
                     _hover={{ bg: 'gray.100' }}
                   />
@@ -803,7 +800,7 @@ const PropertySidebar = () => {
                     onClick={() => handleTextChange('lineHeight', Math.max(0.1, Math.round(((selected.lineHeight || 1.16) - 0.1) * 100) / 100))}
                     aria-label="Decrease line height"
                     h="15px"
-                    minW="24px"
+                    minW="20px"
                     borderRadius="0"
                     borderTop="1px solid"
                     borderColor="gray.200"
@@ -811,7 +808,7 @@ const PropertySidebar = () => {
                   />
                 </Flex>
               </Flex>
-            </Box>
+            </Grid>
 
             {/* Text Color */}
             <Box mb={1}>
@@ -837,42 +834,69 @@ const PropertySidebar = () => {
               </Flex>
             </Box>
 
-            {/* Text Alignment */}
-            <HStack spacing={1} mb={1}>
+            {/* Text Alignment and Justify */}
+            <Grid templateColumns="repeat(6, 1fr)" gap={1} mb={1}>
               <IconButton
-                icon={<AlignLeft size={16} />}
+                icon={<AlignLeft size={14} />}
                 size="sm"
                 variant={selected.textAlign === 'left' ? 'solid' : 'outline'}
                 colorScheme={selected.textAlign === 'left' ? 'blue' : 'gray'}
                 onClick={() => handleTextChange('textAlign', 'left')}
                 aria-label="Align left"
                 borderRadius="md"
-                flex={1}
                 h="32px"
               />
               <IconButton
-                icon={<AlignCenter size={16} />}
+                icon={<AlignCenter size={14} />}
                 size="sm"
                 variant={selected.textAlign === 'center' ? 'solid' : 'outline'}
                 colorScheme={selected.textAlign === 'center' ? 'blue' : 'gray'}
                 onClick={() => handleTextChange('textAlign', 'center')}
                 aria-label="Align center"
                 borderRadius="md"
-                flex={1}
                 h="32px"
               />
               <IconButton
-                icon={<AlignRight size={16} />}
+                icon={<AlignRight size={14} />}
                 size="sm"
                 variant={selected.textAlign === 'right' ? 'solid' : 'outline'}
                 colorScheme={selected.textAlign === 'right' ? 'blue' : 'gray'}
                 onClick={() => handleTextChange('textAlign', 'right')}
                 aria-label="Align right"
                 borderRadius="md"
-                flex={1}
                 h="32px"
               />
-            </HStack>
+              <IconButton
+                icon={<AlignVerticalSpaceAround size={14} style={{ transform: 'rotate(180deg)' }} />}
+                size="sm"
+                variant="outline"
+                colorScheme="gray"
+                onClick={() => {}}
+                aria-label="Vertical align top"
+                borderRadius="md"
+                h="32px"
+              />
+              <IconButton
+                icon={<AlignVerticalJustifyCenter size={14} />}
+                size="sm"
+                variant="outline"
+                colorScheme="gray"
+                onClick={() => {}}
+                aria-label="Vertical align middle"
+                borderRadius="md"
+                h="32px"
+              />
+              <IconButton
+                icon={<AlignVerticalSpaceAround size={14} />}
+                size="sm"
+                variant="outline"
+                colorScheme="gray"
+                onClick={() => {}}
+                aria-label="Vertical align bottom"
+                borderRadius="md"
+                h="32px"
+              />
+            </Grid>
 
             {/* Text Transform */}
             <HStack spacing={1} mb={1}>
@@ -986,48 +1010,7 @@ const PropertySidebar = () => {
               </Tooltip>
             </HStack>
 
-            {/* Vertical Alignment */}
-            <HStack spacing={1} mb={1}>
-              <Tooltip label="Align top">
-                <IconButton
-                  icon={<AlignVerticalSpaceAround size={16} style={{ transform: 'rotate(180deg)' }} />}
-                  size="sm"
-                  variant="outline"
-                  colorScheme="gray"
-                  onClick={() => {}}
-                  aria-label="Vertical align top"
-                  borderRadius="md"
-                  h="32px"
-                  flex={1}
-                />
-              </Tooltip>
-              <Tooltip label="Align middle">
-                <IconButton
-                  icon={<AlignVerticalJustifyCenter size={16} />}
-                  size="sm"
-                  variant="outline"
-                  colorScheme="gray"
-                  onClick={() => {}}
-                  aria-label="Vertical align middle"
-                  borderRadius="md"
-                  h="32px"
-                  flex={1}
-                />
-              </Tooltip>
-              <Tooltip label="Align bottom">
-                <IconButton
-                  icon={<AlignVerticalSpaceAround size={16} />}
-                  size="sm"
-                  variant="outline"
-                  colorScheme="gray"
-                  onClick={() => {}}
-                  aria-label="Vertical align bottom"
-                  borderRadius="md"
-                  h="32px"
-                  flex={1}
-                />
-              </Tooltip>
-            </HStack>
+            
 
             {/* Underline and Strikethrough */}
             <HStack spacing={1} mb={1}>
