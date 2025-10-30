@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Canvas hover effect - subtle visual feedback without interfering with object properties */
+.canvas-container {
+  position: relative;
+}
+
+.canvas-container canvas {
+  cursor: crosshair;
+}
+
+/* Fabric.js sets cursor dynamically, this provides fallback hover styling */
+.canvas-container:hover canvas {
+  cursor: pointer;
+}

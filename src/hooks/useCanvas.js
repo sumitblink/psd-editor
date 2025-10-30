@@ -190,54 +190,6 @@ export function useCanvas(props) {
       }
     };
 
-    const handleMouseOver = (event) => {
-      if (event.target && event.target !== canvas.instance.getActiveObject()) {
-        const obj = event.target;
-        
-        // Cache original stroke properties if not already cached
-        if (!obj._originalStroke) {
-          obj._originalStroke = {
-            stroke: obj.stroke,
-            strokeWidth: obj.strokeWidth,
-            strokeDashArray: obj.strokeDashArray
-          };
-        }
-        
-        // Show hover border on the canvas element
-        obj.set({
-          stroke: '#fbbf24', // Amber color for hover (different from selection)
-          strokeWidth: 3,
-          strokeDashArray: null
-        });
-        canvas.instance.renderAll();
-        
-        // Change cursor to pointer for hover feedback
-        canvas.instance.defaultCursor = 'pointer';
-        canvas.instance.hoverCursor = 'pointer';
-      }
-    };
-
-    const handleMouseOut = (event) => {
-      if (event.target && event.target !== canvas.instance.getActiveObject()) {
-        const obj = event.target;
-        
-        // Restore original stroke properties
-        if (obj._originalStroke) {
-          obj.set({
-            stroke: obj._originalStroke.stroke,
-            strokeWidth: obj._originalStroke.strokeWidth,
-            strokeDashArray: obj._originalStroke.strokeDashArray
-          });
-          delete obj._originalStroke; // Clean up cache
-        }
-        canvas.instance.renderAll();
-        
-        // Reset cursor
-        canvas.instance.defaultCursor = 'default';
-        canvas.instance.hoverCursor = 'move';
-      }
-    };
-
     const handlePathCreated = () => {
       dispatch(updateObjects());
     };
@@ -250,8 +202,6 @@ export function useCanvas(props) {
     canvas.instance.on('selection:cleared', handleSelectionCleared);
     canvas.instance.on('mouse:down', handleMouseDown);
     canvas.instance.on('mouse:up', handleMouseUp);
-    canvas.instance.on('mouse:over', handleMouseOver);
-    canvas.instance.on('mouse:out', handleMouseOut);
     canvas.instance.on('path:created', handlePathCreated);
 
     window.addEventListener('mousedown', clickAwayListener);
