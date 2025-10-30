@@ -3,7 +3,12 @@
 ## Overview
 A React-based PSD (Photoshop Document) editor application that allows users to import, edit, and manipulate PSD files in a web interface. Built with React, TypeScript, Vite, and Fabric.js for canvas manipulation.
 
-## Recent Changes (October 1, 2025)
+## Recent Changes (October 30, 2025)
+- ✅ Implemented canvas hover detection - shows amber border when hovering over elements in the editor
+- ✅ Changed selection border to 5px solid (from 2px dashed) for better visibility
+- ✅ Fixed hover effect to preserve original stroke properties on objects
+
+## Previous Changes (October 1, 2025)
 - ✅ Fixed deployment port mismatch - configured Vite preview to use port 5000
 - ✅ Fixed color picker lag with debounced updates and onBlur handling
 - ✅ Fixed keyboard shortcuts to prevent interference with input fields
