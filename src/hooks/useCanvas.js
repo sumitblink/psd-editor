@@ -33,7 +33,10 @@ export function useCanvas(props) {
         height: originalHeight,
         preserveObjectStacking: true,
         backgroundColor: 'white',
-        selection: true,
+        selection: true, // Enable selection box for multi-select
+        selectionBorderColor: '#3182ce',
+        selectionLineWidth: 2,
+        selectionColor: 'rgba(49, 130, 206, 0.1)',
         centredRotation: true,
         interactive: true,
         selectable: true,
@@ -80,7 +83,11 @@ export function useCanvas(props) {
 
     const handleObjectModified = (event) => {
       try {
-        dispatch(saveState());
+        // Only save state for meaningful modifications, not during continuous operations
+        // Save state only when modification is complete (mouse up)
+        if (event.target && !event.target.__isMoving && !event.target.__isScaling) {
+          dispatch(saveState());
+        }
         dispatch(updateObjects());
         
         // If this was a layer change, ensure objects are updated
@@ -91,7 +98,10 @@ export function useCanvas(props) {
         console.warn('Error in object modified handler:', error);
       }
     };
-    const handleObjectScaling = (event) => dispatch(scaleObject(event));
+    const handleObjectScaling = (event) => {
+      event.target.__isScaling = true;
+      dispatch(scaleObject(event));
+    };
     const handleSelectionCreated = () => {
       try {
         dispatch(selectObject());
@@ -117,21 +127,37 @@ export function useCanvas(props) {
       }
     };
     const handleMouseDown = (event) => {
-      if (!event.target) {
-        // Clicked on empty canvas area - deselect all
-        dispatch(deselectObject());
-        canvas.instance.discardActiveObject().renderAll();
+      // Only deselect if clicking on truly empty canvas (not starting a selection box drag)
+      if (!event.target && !event.e.shiftKey) {
+        // Check if this is the start of a selection drag by checking mouse movement
+        const isSelectionDrag = event.e.type === 'mousedown' && !event.e.ctrlKey;
+        if (!isSelectionDrag) {
+          dispatch(deselectObject());
+          canvas.instance.discardActiveObject().renderAll();
+        }
       }
-      // Don't interfere with object selection - let Fabric.js handle it naturally
     };
 
     const handleObjectMoving = (event) => {
-      // Prevent other objects from being selected during move
+      // Mark object as moving to prevent undo state save during drag
+      event.target.__isMoving = true;
       const activeObject = canvas.instance.getActiveObject();
       if (activeObject && event.target === activeObject) {
-        // Ensure the moving object stays selected
         dispatch(selectObject());
       }
+    };
+
+    const handleMouseUp = (event) => {
+      // Clear movement flags and save state after movement completes
+      const objects = canvas.instance.getObjects();
+      objects.forEach(obj => {
+        if (obj.__isMoving || obj.__isScaling) {
+          delete obj.__isMoving;
+          delete obj.__isScaling;
+          // Save state after movement/scaling is complete
+          dispatch(saveState());
+        }
+      });
     };
 
     const handleMouseOver = (event) => {
@@ -193,6 +219,7 @@ export function useCanvas(props) {
     canvas.instance.on('selection:updated', handleSelectionUpdated);
     canvas.instance.on('selection:cleared', handleSelectionCleared);
     canvas.instance.on('mouse:down', handleMouseDown);
+    canvas.instance.on('mouse:up', handleMouseUp);
     canvas.instance.on('mouse:over', handleMouseOver);
     canvas.instance.on('mouse:out', handleMouseOut);
     canvas.instance.on('path:created', handlePathCreated);
