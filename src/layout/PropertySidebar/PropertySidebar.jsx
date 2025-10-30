@@ -162,7 +162,7 @@ const PropertySidebar = () => {
     : ['name', 'price', 'offer', 'availability', 'id'];
 
   // Check if cursor is inside {{}} and show autocomplete
-  const checkAutocomplete = (text, cursorPosition) => {
+  const checkAutocomplete = (text, cursorPosition, preserveSelection = false) => {
     // Find the last {{ before cursor
     const beforeCursor = text.substring(0, cursorPosition);
     const lastOpenBrace = beforeCursor.lastIndexOf('{{');
@@ -194,7 +194,10 @@ const PropertySidebar = () => {
       if (filtered.length > 0) {
         setCurrentPrefix(prefix);
         setFilteredKeys(filtered);
-        setSelectedIndex(0);
+        // Only reset selectedIndex if not preserving selection
+        if (!preserveSelection) {
+          setSelectedIndex(0);
+        }
         setShowAutocomplete(true);
       } else {
         setShowAutocomplete(false);
@@ -634,8 +637,10 @@ const PropertySidebar = () => {
                 }}
                 onKeyUp={(e) => {
                   // Check autocomplete on key up to handle deletion
+                  // Don't reset selection on arrow keys
+                  const isArrowKey = e.key === 'ArrowDown' || e.key === 'ArrowUp';
                   const cursorPosition = e.target.selectionStart;
-                  checkAutocomplete(e.target.value, cursorPosition);
+                  checkAutocomplete(e.target.value, cursorPosition, isArrowKey);
                 }}
                 borderRadius="lg"
                 fontSize="sm"
