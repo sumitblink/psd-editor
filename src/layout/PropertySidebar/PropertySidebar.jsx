@@ -581,6 +581,81 @@ const PropertySidebar = () => {
         {/* Text-specific properties */}
         {selected.type === 'textbox' && (
           <>
+            {/* Text Content */}
+            <Box position="relative" mb={2}>
+              <HStack justify="space-between" mb={1}>
+                <Text fontSize="xs" fontWeight="bold" letterSpacing="wide" color="gray.600">TEXT CONTENT</Text> 
+                <Tooltip label="Type {{ to insert variables" placement="top">
+                  <Text fontSize="2xs" color="blue.500" cursor="help">Insert variable</Text>
+                </Tooltip>
+              </HStack>
+              <Textarea
+                ref={textInputRef}
+                size="sm"
+                value={dataBindings[selected.name] || selected.text || ''}
+                onChange={(e) => {
+                  handleTextChange('text', e.target.value);
+                  setTimeout(() => {
+                    if (textInputRef.current) {
+                      const cursorPosition = textInputRef.current.selectionStart;
+                      checkAutocomplete(e.target.value, cursorPosition);
+                    }
+                  }, 0);
+                }}
+                onKeyDown={handleKeyDown}
+                onClick={(e) => {
+                  const cursorPosition = e.target.selectionStart;
+                  checkAutocomplete(e.target.value, cursorPosition);
+                }}
+                onKeyUp={(e) => {
+                  const isArrowKey = e.key === 'ArrowDown' || e.key === 'ArrowUp';
+                  const cursorPosition = e.target.selectionStart;
+                  checkAutocomplete(e.target.value, cursorPosition, isArrowKey);
+                }}
+                borderRadius="md"
+                fontSize="xs"
+                minH="48px"
+                resize="vertical"
+              />
+
+              {/* Autocomplete Dropdown */}
+              {showAutocomplete && filteredKeys.length > 0 && (
+                <Box
+                  position="absolute"
+                  top="100%"
+                  left={0}
+                  right={0}
+                  mt={1}
+                  bg="white"
+                  border="1px solid"
+                  borderColor="gray.200"
+                  borderRadius="md"
+                  boxShadow="lg"
+                  maxH="200px"
+                  overflowY="auto"
+                  zIndex={1000}
+                >
+                  {filteredKeys.map((key, index) => (
+                    <Box
+                      key={key}
+                      px={3}
+                      py={2}
+                      cursor="pointer"
+                      bg={index === selectedIndex ? 'blue.50' : 'white'}
+                      color={index === selectedIndex ? 'blue.600' : 'gray.700'}
+                      _hover={{ bg: 'blue.50', color: 'blue.600' }}
+                      onClick={() => insertAutocompleteKey(key)}
+                      fontSize="sm"
+                    >
+                      {key}
+                    </Box>
+                  ))}
+                </Box>
+              )}
+            </Box>
+
+            <Divider my={2} />
+
             {/* Font Family */}
             <Box mb={1} mt={1}>
               <Text fontSize="xs" fontWeight="bold" letterSpacing="wide" color="gray.600" mb={1}>
@@ -589,7 +664,10 @@ const PropertySidebar = () => {
               <Select
                 size="sm"
                 value={selected.fontFamily || 'Arial'}
-                onChange={(e) => handleTextChange('fontFamily', e.target.value)}
+                onChange={(e) => {
+                  const newFontFamily = e.target.value;
+                  dispatch(changeFontFamily(newFontFamily));
+                }}
                 borderRadius="md"
                 fontSize="xs"
                 h="32px"
@@ -1038,80 +1116,7 @@ const PropertySidebar = () => {
               />
             </HStack>
 
-            <Divider my={2} />
-
-            {/* Text Content */}
-            <Box position="relative">
-              <HStack justify="space-between" mb={1}>
-                <Text fontSize="2xs" color="gray.500">Text Content</Text> 
-                <Tooltip label="Type {{ to insert variables" placement="top">
-                  <Text fontSize="2xs" color="blue.500" cursor="help">Insert variable</Text>
-                </Tooltip>
-              </HStack>
-              <Textarea
-                ref={textInputRef}
-                size="sm"
-                value={dataBindings[selected.name] || selected.text || ''}
-                onChange={(e) => {
-                  handleTextChange('text', e.target.value);
-                  setTimeout(() => {
-                    if (textInputRef.current) {
-                      const cursorPosition = textInputRef.current.selectionStart;
-                      checkAutocomplete(e.target.value, cursorPosition);
-                    }
-                  }, 0);
-                }}
-                onKeyDown={handleKeyDown}
-                onClick={(e) => {
-                  const cursorPosition = e.target.selectionStart;
-                  checkAutocomplete(e.target.value, cursorPosition);
-                }}
-                onKeyUp={(e) => {
-                  const isArrowKey = e.key === 'ArrowDown' || e.key === 'ArrowUp';
-                  const cursorPosition = e.target.selectionStart;
-                  checkAutocomplete(e.target.value, cursorPosition, isArrowKey);
-                }}
-                borderRadius="md"
-                fontSize="xs"
-                minH="48px"
-                resize="vertical"
-              />
-
-              {/* Autocomplete Dropdown */}
-              {showAutocomplete && filteredKeys.length > 0 && (
-                <Box
-                  position="absolute"
-                  top="100%"
-                  left={0}
-                  right={0}
-                  mt={1}
-                  bg="white"
-                  border="1px solid"
-                  borderColor="gray.200"
-                  borderRadius="md"
-                  boxShadow="lg"
-                  maxH="200px"
-                  overflowY="auto"
-                  zIndex={1000}
-                >
-                  {filteredKeys.map((key, index) => (
-                    <Box
-                      key={key}
-                      px={3}
-                      py={2}
-                      cursor="pointer"
-                      bg={index === selectedIndex ? 'blue.50' : 'white'}
-                      color={index === selectedIndex ? 'blue.600' : 'gray.700'}
-                      _hover={{ bg: 'blue.50', color: 'blue.600' }}
-                      onClick={() => insertAutocompleteKey(key)}
-                      fontSize="sm"
-                    >
-                      {key}
-                    </Box>
-                  ))}
-                </Box>
-              )}
-            </Box>
+            
           </>
         )}
 
