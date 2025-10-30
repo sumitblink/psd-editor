@@ -151,13 +151,8 @@ const PropertySidebar = () => {
     if (property === 'fontFamily') {
       dispatch(changeFontFamily(value));
     } else if (property === 'text') {
-      // Update the binding template if this is a bound layer
-      if (dataBindings[selected.name]) {
-        dispatch(setLayerDataBinding({ layerName: selected.name, apiKey: value }));
-      }
-      
-      // Update the text on canvas
-      dispatch(changeTextProperty({ property, value }));
+      // Always update the binding template when text changes
+      dispatch(setLayerDataBinding({ layerName: selected.name, apiKey: value }));
       
       // If there's binding data in localStorage, immediately re-render with it
       const savedData = localStorage.getItem('api_data');
@@ -169,6 +164,9 @@ const PropertySidebar = () => {
         } catch (error) {
           console.error('Error applying data bindings:', error);
         }
+      } else {
+        // If no saved data, just update the text directly
+        dispatch(changeTextProperty({ property, value }));
       }
     } else {
       dispatch(changeTextProperty({ property, value }));
