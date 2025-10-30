@@ -208,27 +208,6 @@ const PropertySidebar = () => {
     if (property === 'fontFamily') {
       dispatch(changeFontFamily(value));
     } else if (property === 'text') {
-      // Auto-close brackets first
-      if (textInputRef.current) {
-        const cursorPosition = textInputRef.current.selectionStart;
-        
-        if (value.endsWith('{{') && !value.endsWith('{{}}')) {
-          const newValue = value + '}}';
-          dispatch(setLayerDataBinding({ layerName: selected.name, apiKey: newValue }));
-          dispatch(changeTextProperty({ property, value: newValue }));
-          
-          // Set cursor between braces and show autocomplete
-          setTimeout(() => {
-            if (textInputRef.current) {
-              textInputRef.current.selectionStart = cursorPosition;
-              textInputRef.current.selectionEnd = cursorPosition;
-              checkAutocomplete(newValue, cursorPosition);
-            }
-          }, 0);
-          return;
-        }
-      }
-      
       // Always update the binding template when text changes
       dispatch(setLayerDataBinding({ layerName: selected.name, apiKey: value }));
       
@@ -268,31 +247,18 @@ const PropertySidebar = () => {
     const lastOpenBrace = beforeCursor.lastIndexOf('{{');
     
     if (lastOpenBrace !== -1) {
-      // Find if there's already a closing }} after the cursor
-      const afterCursor = currentText.substring(cursorPosition);
-      const closeBraceIndex = afterCursor.indexOf('}}');
-      
-      let newText;
-      if (closeBraceIndex !== -1 && closeBraceIndex < 10) {
-        // There's a closing brace nearby, replace everything between {{ and }}
-        newText = currentText.substring(0, lastOpenBrace + 2) + 
-                 key + 
-                 currentText.substring(cursorPosition + closeBraceIndex);
-      } else {
-        // No closing brace found, add one
-        newText = currentText.substring(0, lastOpenBrace + 2) + 
-                 key + 
-                 '}}' + 
-                 currentText.substring(cursorPosition);
-      }
+      // Replace from {{ to cursor position with {{key}}
+      const newText = currentText.substring(0, lastOpenBrace) + 
+                     '{{' + key + '}}' + 
+                     currentText.substring(cursorPosition);
       
       handleTextChange('text', newText);
       setShowAutocomplete(false);
       
-      // Set cursor after the inserted key
+      // Set cursor after the inserted {{key}}
       setTimeout(() => {
         if (textInputRef.current) {
-          const newCursorPos = lastOpenBrace + 2 + key.length + 2;
+          const newCursorPos = lastOpenBrace + 4 + key.length;
           textInputRef.current.selectionStart = newCursorPos;
           textInputRef.current.selectionEnd = newCursorPos;
           textInputRef.current.focus();
