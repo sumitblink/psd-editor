@@ -268,10 +268,23 @@ const PropertySidebar = () => {
     const lastOpenBrace = beforeCursor.lastIndexOf('{{');
     
     if (lastOpenBrace !== -1) {
-      const newText = currentText.substring(0, lastOpenBrace + 2) + 
-                     key + 
-                     '}}' + 
-                     currentText.substring(cursorPosition);
+      // Find if there's already a closing }} after the cursor
+      const afterCursor = currentText.substring(cursorPosition);
+      const closeBraceIndex = afterCursor.indexOf('}}');
+      
+      let newText;
+      if (closeBraceIndex !== -1 && closeBraceIndex < 10) {
+        // There's a closing brace nearby, replace everything between {{ and }}
+        newText = currentText.substring(0, lastOpenBrace + 2) + 
+                 key + 
+                 currentText.substring(cursorPosition + closeBraceIndex);
+      } else {
+        // No closing brace found, add one
+        newText = currentText.substring(0, lastOpenBrace + 2) + 
+                 key + 
+                 '}}' + 
+                 currentText.substring(cursorPosition);
+      }
       
       handleTextChange('text', newText);
       setShowAutocomplete(false);
