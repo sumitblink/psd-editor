@@ -46,6 +46,15 @@ export function useCanvas(props) {
       };
 
       const fabric = new fabricJS.Canvas(element, options);
+      
+      // Configure selection border style - 5px solid
+      fabricJS.Object.prototype.borderColor = '#3182ce';
+      fabricJS.Object.prototype.borderScaleFactor = 5;
+      fabricJS.Object.prototype.borderDashArray = null; // Remove dashed line
+      fabricJS.Object.prototype.cornerColor = '#3182ce';
+      fabricJS.Object.prototype.cornerStrokeColor = '#ffffff';
+      fabricJS.Object.prototype.transparentCorners = false;
+      
       dispatch(setInstance(fabric));
       props?.onInitialize?.(fabric);
     }
@@ -127,6 +136,25 @@ export function useCanvas(props) {
 
     const handleMouseOver = (event) => {
       if (event.target && event.target !== canvas.instance.getActiveObject()) {
+        const obj = event.target;
+        
+        // Cache original stroke properties if not already cached
+        if (!obj._originalStroke) {
+          obj._originalStroke = {
+            stroke: obj.stroke,
+            strokeWidth: obj.strokeWidth,
+            strokeDashArray: obj.strokeDashArray
+          };
+        }
+        
+        // Show hover border on the canvas element
+        obj.set({
+          stroke: '#fbbf24', // Amber color for hover (different from selection)
+          strokeWidth: 3,
+          strokeDashArray: null
+        });
+        canvas.instance.renderAll();
+        
         // Change cursor to pointer for hover feedback
         canvas.instance.defaultCursor = 'pointer';
         canvas.instance.hoverCursor = 'pointer';
@@ -135,6 +163,19 @@ export function useCanvas(props) {
 
     const handleMouseOut = (event) => {
       if (event.target && event.target !== canvas.instance.getActiveObject()) {
+        const obj = event.target;
+        
+        // Restore original stroke properties
+        if (obj._originalStroke) {
+          obj.set({
+            stroke: obj._originalStroke.stroke,
+            strokeWidth: obj._originalStroke.strokeWidth,
+            strokeDashArray: obj._originalStroke.strokeDashArray
+          });
+          delete obj._originalStroke; // Clean up cache
+        }
+        canvas.instance.renderAll();
+        
         // Reset cursor
         canvas.instance.defaultCursor = 'default';
         canvas.instance.hoverCursor = 'move';
