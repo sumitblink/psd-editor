@@ -51,18 +51,18 @@ const CompactNumberInput = ({ label, value, onChange, icon, suffix }) => {
       align="center"
       border="1px solid"
       borderColor="gray.200"
-      borderRadius="lg"
+      borderRadius="md"
       bg="white"
-      h="32px"
-      fontSize="sm"
+      h="28px"
+      fontSize="xs"
       overflow="hidden"
     >
       <Box
-        px={2}
+        px={1.5}
         fontWeight="bold"
         color="gray.600"
-        fontSize="xs"
-        minW="24px"
+        fontSize="2xs"
+        minW="20px"
         textAlign="center"
       >
         {icon || label}
@@ -72,13 +72,13 @@ const CompactNumberInput = ({ label, value, onChange, icon, suffix }) => {
         onChange={(e) => onChange(parseInt(e.target.value) || 0)}
         type="number"
         border="none"
-        h="30px"
-        fontSize="sm"
-        px={2}
+        h="26px"
+        fontSize="xs"
+        px={1}
         _focus={{ outline: 'none', boxShadow: 'none' }}
       />
       {suffix && (
-        <Box px={2} color="gray.500" fontSize="xs">
+        <Box px={1.5} color="gray.500" fontSize="2xs">
           {suffix}
         </Box>
       )}
@@ -415,42 +415,42 @@ const PropertySidebar = () => {
 
   return (
     <Drawer>
-      <Box p={3} borderBottom="1px solid" borderColor="gray.200">
-        <HStack justify="space-between" mb={3}>
-          <Text fontSize="sm" fontWeight="bold" letterSpacing="wide" color="gray.600">
+      <Box p={2} borderBottom="1px solid" borderColor="gray.200">
+        <HStack justify="space-between" mb={2}>
+          <Text fontSize="xs" fontWeight="bold" letterSpacing="wide" color="gray.600">
             LAYER
           </Text>
-          <HStack spacing={1}>
+          <HStack spacing={0}>
             <IconButton
-              icon={selected.visible === false ? <EyeOff size={16} /> : <Eye size={16} />}
+              icon={selected.visible === false ? <EyeOff size={14} /> : <Eye size={14} />}
               size="xs"
               variant="ghost"
               onClick={toggleVisibility}
               aria-label="Toggle visibility"
             />
             <IconButton
-              icon={<Copy size={16} />}
+              icon={<Copy size={14} />}
               size="xs"
               variant="ghost"
               onClick={() => dispatch(duplicateObject())}
               aria-label="Duplicate"
             />
             <IconButton
-              icon={<Trash2 size={16} />}
+              icon={<Trash2 size={14} />}
               size="xs"
               variant="ghost"
               onClick={() => dispatch(deleteObject())}
               aria-label="Delete"
             />
             <IconButton
-              icon={selected.locked ? <Lock size={16} /> : <Unlock size={16} />}
+              icon={selected.locked ? <Lock size={14} /> : <Unlock size={14} />}
               size="xs"
               variant="ghost"
               onClick={() => dispatch(toggleObjectLock(selected.name))}
               aria-label="Toggle lock"
             />
             <IconButton
-              icon={<MoreHorizontal size={16} />}
+              icon={<MoreHorizontal size={14} />}
               size="xs"
               variant="ghost"
               aria-label="More options"
@@ -460,12 +460,12 @@ const PropertySidebar = () => {
         
         {/* Alignment controls for multiple selection */}
         {isMultipleSelection && (
-          <Box mb={3}>
-            <HStack spacing={1} justify="center">
+          <Box mb={2}>
+            <HStack spacing={0} justify="center">
               <Tooltip label="Align Left">
                 <IconButton
-                  icon={<AlignLeft size={18} />}
-                  size="sm"
+                  icon={<AlignLeft size={16} />}
+                  size="xs"
                   variant="ghost"
                   onClick={() => handleAlign('left')}
                   aria-label="Align left"
@@ -473,8 +473,8 @@ const PropertySidebar = () => {
               </Tooltip>
               <Tooltip label="Align Center Horizontally">
                 <IconButton
-                  icon={<AlignCenter size={18} />}
-                  size="sm"
+                  icon={<AlignCenter size={16} />}
+                  size="xs"
                   variant="ghost"
                   onClick={() => handleAlign('center-h')}
                   aria-label="Align center horizontally"
@@ -482,18 +482,18 @@ const PropertySidebar = () => {
               </Tooltip>
               <Tooltip label="Align Right">
                 <IconButton
-                  icon={<AlignRight size={18} />}
-                  size="sm"
+                  icon={<AlignRight size={16} />}
+                  size="xs"
                   variant="ghost"
                   onClick={() => handleAlign('right')}
                   aria-label="Align right"
                 />
               </Tooltip>
-              <Box w="1px" h="24px" bg="gray.300" mx={1} />
+              <Box w="1px" h="20px" bg="gray.300" mx={1} />
               <Tooltip label="Align Top">
                 <IconButton
-                  icon={<AlignVerticalSpaceAround size={18} style={{ transform: 'rotate(180deg)' }} />}
-                  size="sm"
+                  icon={<AlignVerticalSpaceAround size={16} style={{ transform: 'rotate(180deg)' }} />}
+                  size="xs"
                   variant="ghost"
                   onClick={() => handleAlign('top')}
                   aria-label="Align top"
@@ -501,8 +501,8 @@ const PropertySidebar = () => {
               </Tooltip>
               <Tooltip label="Align Center Vertically">
                 <IconButton
-                  icon={<AlignVerticalJustifyCenter size={18} />}
-                  size="sm"
+                  icon={<AlignVerticalJustifyCenter size={16} />}
+                  size="xs"
                   variant="ghost"
                   onClick={() => handleAlign('center-v')}
                   aria-label="Align center vertically"
@@ -510,32 +510,32 @@ const PropertySidebar = () => {
               </Tooltip>
               <Tooltip label="Align Bottom">
                 <IconButton
-                  icon={<AlignVerticalSpaceAround size={18} />}
-                  size="sm"
+                  icon={<AlignVerticalSpaceAround size={16} />}
+                  size="xs"
                   variant="ghost"
                   onClick={() => handleAlign('bottom')}
                   aria-label="Align bottom"
                 />
               </Tooltip>
             </HStack>
-            <Divider mt={3} />
+            <Divider mt={2} />
           </Box>
         )}
         
-        <Text fontSize="xs" color="gray.500" mb={1}>Layer name</Text>
         <Input
           size="sm"
           value={selected.name || ''}
           onChange={(e) => handlePropertyChange('name', e.target.value)}
-          borderRadius="lg"
+          borderRadius="md"
           bg="white"
-          fontSize="sm"
+          fontSize="xs"
+          h="28px"
         />
       </Box>
 
-      <Box p={3}>
+      <Box p={2}>
         {/* Position - X and Y */}
-        <Grid templateColumns="1fr 1fr" gap={2} mb={2}>
+        <Grid templateColumns="1fr 1fr" gap={1} mb={1}>
           <CompactNumberInput
             icon="X"
             value={Math.round(selected.left || 0)}
@@ -549,7 +549,7 @@ const PropertySidebar = () => {
         </Grid>
 
         {/* Size - Width and Height */}
-        <Grid templateColumns="1fr 1fr" gap={2} mb={2}>
+        <Grid templateColumns="1fr 1fr" gap={1} mb={1}>
           <CompactNumberInput
             icon="↔"
             value={Math.round(selected.width || 0)}
@@ -563,7 +563,7 @@ const PropertySidebar = () => {
         </Grid>
 
         {/* Rotation and Opacity */}
-        <Grid templateColumns="1fr 1fr" gap={2} mb={2}>
+        <Grid templateColumns="1fr 1fr" gap={1} mb={1}>
           <CompactNumberInput
             icon="↻"
             value={Math.round(selected.angle || 0)}
@@ -580,19 +580,19 @@ const PropertySidebar = () => {
         {/* Text-specific properties */}
         {selected.type === 'textbox' && (
           <>
-            <Text fontSize="xs" fontWeight="bold" letterSpacing="wide" color="gray.600" mb={3}>
+            <Text fontSize="xs" fontWeight="bold" letterSpacing="wide" color="gray.600" mb={1} mt={1}>
               APPEARANCE
             </Text>
 
             {/* Font Family */}
-            <Box mb={2}>
+            <Box mb={1}>
               <Select
                 size="sm"
                 value={selected.fontFamily || 'Arial'}
                 onChange={(e) => handleTextChange('fontFamily', e.target.value)}
-                borderRadius="lg"
-                fontSize="sm"
-                h="40px"
+                borderRadius="md"
+                fontSize="xs"
+                h="32px"
               >
                 <option value="Arial">Arial</option>
                 <option value="Helvetica">Helvetica</option>
@@ -603,14 +603,14 @@ const PropertySidebar = () => {
             </Box>
 
             {/* Font Weight */}
-            <Box mb={2}>
+            <Box mb={1}>
               <Select
                 size="sm"
                 value={selected.fontWeight || 'normal'}
                 onChange={(e) => handleTextChange('fontWeight', e.target.value)}
-                borderRadius="lg"
-                fontSize="sm"
-                h="40px"
+                borderRadius="md"
+                fontSize="xs"
+                h="32px"
               >
                 <option value="normal">Normal</option>
                 <option value="bold">Bold</option>
@@ -627,41 +627,41 @@ const PropertySidebar = () => {
             </Box>
 
             {/* Bold and Italic buttons */}
-            <Grid templateColumns="1fr 1fr" gap={2} mb={2}>
+            <Grid templateColumns="1fr 1fr" gap={1} mb={1}>
               <IconButton
-                icon={<Text fontWeight="bold" fontSize="md">B</Text>}
-                size="md"
+                icon={<Text fontWeight="bold" fontSize="sm">B</Text>}
+                size="sm"
                 variant={selected.fontWeight === 'bold' || selected.fontWeight === '700' ? 'solid' : 'outline'}
                 colorScheme={selected.fontWeight === 'bold' || selected.fontWeight === '700' ? 'blue' : 'gray'}
                 onClick={() => handleTextChange('fontWeight', selected.fontWeight === 'bold' ? 'normal' : 'bold')}
                 aria-label="Bold"
-                borderRadius="lg"
-                h="40px"
+                borderRadius="md"
+                h="32px"
               />
               <IconButton
-                icon={<Text fontStyle="italic" fontSize="md">I</Text>}
-                size="md"
+                icon={<Text fontStyle="italic" fontSize="sm">I</Text>}
+                size="sm"
                 variant={selected.fontStyle === 'italic' ? 'solid' : 'outline'}
                 colorScheme={selected.fontStyle === 'italic' ? 'blue' : 'gray'}
                 onClick={() => handleTextChange('fontStyle', selected.fontStyle === 'italic' ? 'normal' : 'italic')}
                 aria-label="Italic"
-                borderRadius="lg"
-                h="40px"
+                borderRadius="md"
+                h="32px"
               />
             </Grid>
 
             {/* Font Size with increment/decrement */}
-            <Box mb={2}>
+            <Box mb={1}>
               <Flex
                 align="center"
                 border="1px solid"
                 borderColor="gray.200"
-                borderRadius="lg"
+                borderRadius="md"
                 bg="white"
-                h="40px"
+                h="32px"
                 overflow="hidden"
               >
-                <Box px={3} fontWeight="bold" color="gray.600" fontSize="md">
+                <Box px={2} fontWeight="bold" color="gray.600" fontSize="sm">
                   TT
                 </Box>
                 <Input
@@ -669,32 +669,32 @@ const PropertySidebar = () => {
                   onChange={(e) => handleTextChange('fontSize', parseInt(e.target.value) || 16)}
                   type="number"
                   border="none"
-                  h="38px"
-                  fontSize="sm"
-                  px={2}
+                  h="30px"
+                  fontSize="xs"
+                  px={1}
                   _focus={{ outline: 'none', boxShadow: 'none' }}
                   flex={1}
                 />
                 <Flex direction="column" borderLeft="1px solid" borderColor="gray.200">
                   <IconButton
-                    icon={<Text fontSize="xs">▲</Text>}
+                    icon={<Text fontSize="2xs">▲</Text>}
                     size="xs"
                     variant="ghost"
                     onClick={() => handleTextChange('fontSize', (selected.fontSize || 16) + 1)}
                     aria-label="Increase font size"
-                    h="19px"
-                    minW="30px"
+                    h="15px"
+                    minW="24px"
                     borderRadius="0"
                     _hover={{ bg: 'gray.100' }}
                   />
                   <IconButton
-                    icon={<Text fontSize="xs">▼</Text>}
+                    icon={<Text fontSize="2xs">▼</Text>}
                     size="xs"
                     variant="ghost"
                     onClick={() => handleTextChange('fontSize', Math.max(1, (selected.fontSize || 16) - 1))}
                     aria-label="Decrease font size"
-                    h="19px"
-                    minW="30px"
+                    h="15px"
+                    minW="24px"
                     borderRadius="0"
                     borderTop="1px solid"
                     borderColor="gray.200"
@@ -705,17 +705,17 @@ const PropertySidebar = () => {
             </Box>
 
             {/* Letter Spacing */}
-            <Box mb={2}>
+            <Box mb={1}>
               <Flex
                 align="center"
                 border="1px solid"
                 borderColor="gray.200"
-                borderRadius="lg"
+                borderRadius="md"
                 bg="white"
-                h="40px"
+                h="32px"
                 overflow="hidden"
               >
-                <Box px={3} fontWeight="bold" color="gray.600" fontSize="md">
+                <Box px={2} fontWeight="bold" color="gray.600" fontSize="sm">
                   ₮
                 </Box>
                 <Input
@@ -723,32 +723,32 @@ const PropertySidebar = () => {
                   onChange={(e) => handleTextChange('charSpacing', parseInt(e.target.value) || 0)}
                   type="number"
                   border="none"
-                  h="38px"
-                  fontSize="sm"
-                  px={2}
+                  h="30px"
+                  fontSize="xs"
+                  px={1}
                   _focus={{ outline: 'none', boxShadow: 'none' }}
                   flex={1}
                 />
                 <Flex direction="column" borderLeft="1px solid" borderColor="gray.200">
                   <IconButton
-                    icon={<Text fontSize="xs">▲</Text>}
+                    icon={<Text fontSize="2xs">▲</Text>}
                     size="xs"
                     variant="ghost"
                     onClick={() => handleTextChange('charSpacing', (selected.charSpacing || 0) + 10)}
                     aria-label="Increase letter spacing"
-                    h="19px"
-                    minW="30px"
+                    h="15px"
+                    minW="24px"
                     borderRadius="0"
                     _hover={{ bg: 'gray.100' }}
                   />
                   <IconButton
-                    icon={<Text fontSize="xs">▼</Text>}
+                    icon={<Text fontSize="2xs">▼</Text>}
                     size="xs"
                     variant="ghost"
                     onClick={() => handleTextChange('charSpacing', (selected.charSpacing || 0) - 10)}
                     aria-label="Decrease letter spacing"
-                    h="19px"
-                    minW="30px"
+                    h="15px"
+                    minW="24px"
                     borderRadius="0"
                     borderTop="1px solid"
                     borderColor="gray.200"
@@ -759,17 +759,17 @@ const PropertySidebar = () => {
             </Box>
 
             {/* Line Height */}
-            <Box mb={2}>
+            <Box mb={1}>
               <Flex
                 align="center"
                 border="1px solid"
                 borderColor="gray.200"
-                borderRadius="lg"
+                borderRadius="md"
                 bg="white"
-                h="40px"
+                h="32px"
                 overflow="hidden"
               >
-                <Box px={3} fontWeight="bold" color="gray.600" fontSize="md">
+                <Box px={2} fontWeight="bold" color="gray.600" fontSize="sm">
                   Â
                 </Box>
                 <Input
@@ -778,32 +778,32 @@ const PropertySidebar = () => {
                   type="number"
                   step="0.1"
                   border="none"
-                  h="38px"
-                  fontSize="sm"
-                  px={2}
+                  h="30px"
+                  fontSize="xs"
+                  px={1}
                   _focus={{ outline: 'none', boxShadow: 'none' }}
                   flex={1}
                 />
                 <Flex direction="column" borderLeft="1px solid" borderColor="gray.200">
                   <IconButton
-                    icon={<Text fontSize="xs">▲</Text>}
+                    icon={<Text fontSize="2xs">▲</Text>}
                     size="xs"
                     variant="ghost"
                     onClick={() => handleTextChange('lineHeight', Math.round(((selected.lineHeight || 1.16) + 0.1) * 100) / 100)}
                     aria-label="Increase line height"
-                    h="19px"
-                    minW="30px"
+                    h="15px"
+                    minW="24px"
                     borderRadius="0"
                     _hover={{ bg: 'gray.100' }}
                   />
                   <IconButton
-                    icon={<Text fontSize="xs">▼</Text>}
+                    icon={<Text fontSize="2xs">▼</Text>}
                     size="xs"
                     variant="ghost"
                     onClick={() => handleTextChange('lineHeight', Math.max(0.1, Math.round(((selected.lineHeight || 1.16) - 0.1) * 100) / 100))}
                     aria-label="Decrease line height"
-                    h="19px"
-                    minW="30px"
+                    h="15px"
+                    minW="24px"
                     borderRadius="0"
                     borderTop="1px solid"
                     borderColor="gray.200"
@@ -814,14 +814,14 @@ const PropertySidebar = () => {
             </Box>
 
             {/* Text Color */}
-            <Box mb={2}>
+            <Box mb={1}>
               <Flex
                 align="center"
                 border="1px solid"
                 borderColor="gray.200"
-                borderRadius="lg"
+                borderRadius="md"
                 bg="white"
-                h="40px"
+                h="32px"
                 overflow="hidden"
               >
                 <Input
@@ -829,7 +829,7 @@ const PropertySidebar = () => {
                   value={selected.fill || '#000000'}
                   onChange={(e) => handleTextChange('fill', e.target.value)}
                   border="none"
-                  h="38px"
+                  h="30px"
                   w="full"
                   cursor="pointer"
                   _focus={{ outline: 'none', boxShadow: 'none' }}
@@ -838,61 +838,61 @@ const PropertySidebar = () => {
             </Box>
 
             {/* Text Alignment */}
-            <HStack spacing={2} mb={2}>
+            <HStack spacing={1} mb={1}>
               <IconButton
-                icon={<AlignLeft size={18} />}
-                size="md"
+                icon={<AlignLeft size={16} />}
+                size="sm"
                 variant={selected.textAlign === 'left' ? 'solid' : 'outline'}
                 colorScheme={selected.textAlign === 'left' ? 'blue' : 'gray'}
                 onClick={() => handleTextChange('textAlign', 'left')}
                 aria-label="Align left"
-                borderRadius="lg"
+                borderRadius="md"
                 flex={1}
-                h="40px"
+                h="32px"
               />
               <IconButton
-                icon={<AlignCenter size={18} />}
-                size="md"
+                icon={<AlignCenter size={16} />}
+                size="sm"
                 variant={selected.textAlign === 'center' ? 'solid' : 'outline'}
                 colorScheme={selected.textAlign === 'center' ? 'blue' : 'gray'}
                 onClick={() => handleTextChange('textAlign', 'center')}
                 aria-label="Align center"
-                borderRadius="lg"
+                borderRadius="md"
                 flex={1}
-                h="40px"
+                h="32px"
               />
               <IconButton
-                icon={<AlignRight size={18} />}
-                size="md"
+                icon={<AlignRight size={16} />}
+                size="sm"
                 variant={selected.textAlign === 'right' ? 'solid' : 'outline'}
                 colorScheme={selected.textAlign === 'right' ? 'blue' : 'gray'}
                 onClick={() => handleTextChange('textAlign', 'right')}
                 aria-label="Align right"
-                borderRadius="lg"
+                borderRadius="md"
                 flex={1}
-                h="40px"
+                h="32px"
               />
             </HStack>
 
             {/* Text Transform */}
-            <HStack spacing={2} mb={2}>
+            <HStack spacing={1} mb={1}>
               <Tooltip label="Dash">
                 <IconButton
-                  icon={<Text fontSize="md">—</Text>}
-                  size="md"
+                  icon={<Text fontSize="sm">—</Text>}
+                  size="sm"
                   variant="outline"
                   colorScheme="gray"
                   onClick={() => {}}
                   aria-label="Dash"
-                  borderRadius="lg"
-                  h="40px"
+                  borderRadius="md"
+                  h="32px"
                   flex={1}
                 />
               </Tooltip>
               <Tooltip label="Uppercase">
                 <IconButton
-                  icon={<Flex align="center"><Text fontSize="sm" fontWeight="bold">A</Text><Text fontSize="xs">↑</Text></Flex>}
-                  size="md"
+                  icon={<Flex align="center"><Text fontSize="xs" fontWeight="bold">A</Text><Text fontSize="2xs">↑</Text></Flex>}
+                  size="sm"
                   variant="outline"
                   colorScheme="gray"
                   onClick={() => {
@@ -900,15 +900,15 @@ const PropertySidebar = () => {
                     handleTextChange('text', upperText);
                   }}
                   aria-label="Uppercase"
-                  borderRadius="lg"
-                  h="40px"
+                  borderRadius="md"
+                  h="32px"
                   flex={1}
                 />
               </Tooltip>
               <Tooltip label="Lowercase">
                 <IconButton
-                  icon={<Flex align="center"><Text fontSize="sm">a</Text><Text fontSize="xs">↓</Text></Flex>}
-                  size="md"
+                  icon={<Flex align="center"><Text fontSize="xs">a</Text><Text fontSize="2xs">↓</Text></Flex>}
+                  size="sm"
                   variant="outline"
                   colorScheme="gray"
                   onClick={() => {
@@ -916,15 +916,15 @@ const PropertySidebar = () => {
                     handleTextChange('text', lowerText);
                   }}
                   aria-label="Lowercase"
-                  borderRadius="lg"
-                  h="40px"
+                  borderRadius="md"
+                  h="32px"
                   flex={1}
                 />
               </Tooltip>
               <Tooltip label="Title Case">
                 <IconButton
-                  icon={<Text fontSize="sm" fontWeight="medium">Tt</Text>}
-                  size="md"
+                  icon={<Text fontSize="xs" fontWeight="medium">Tt</Text>}
+                  size="sm"
                   variant="outline"
                   colorScheme="gray"
                   onClick={() => {
@@ -936,133 +936,133 @@ const PropertySidebar = () => {
                     handleTextChange('text', titleText);
                   }}
                   aria-label="Title case"
-                  borderRadius="lg"
-                  h="40px"
+                  borderRadius="md"
+                  h="32px"
                   flex={1}
                 />
               </Tooltip>
             </HStack>
 
             {/* Line Spacing Options */}
-            <HStack spacing={2} mb={2}>
+            <HStack spacing={1} mb={1}>
               <Tooltip label="Line spacing 1.0">
                 <IconButton
-                  icon={<Text fontSize="xl" lineHeight="1">≡</Text>}
-                  size="md"
+                  icon={<Text fontSize="lg" lineHeight="1">≡</Text>}
+                  size="sm"
                   variant={selected.lineHeight === 1.0 ? 'solid' : 'outline'}
                   colorScheme={selected.lineHeight === 1.0 ? 'blue' : 'gray'}
                   onClick={() => handleTextChange('lineHeight', 1.0)}
                   aria-label="Line spacing tight"
-                  borderRadius="lg"
-                  h="40px"
+                  borderRadius="md"
+                  h="32px"
                   flex={1}
                 />
               </Tooltip>
               <Tooltip label="Line spacing 1.5">
                 <IconButton
-                  icon={<Flex direction="column" align="center" justify="center" h="full"><Text fontSize="xs">↕</Text><Text fontSize="xs">*</Text></Flex>}
-                  size="md"
+                  icon={<Flex direction="column" align="center" justify="center" h="full"><Text fontSize="2xs">↕</Text><Text fontSize="2xs">*</Text></Flex>}
+                  size="sm"
                   variant={selected.lineHeight === 1.5 ? 'solid' : 'outline'}
                   colorScheme={selected.lineHeight === 1.5 ? 'blue' : 'gray'}
                   onClick={() => handleTextChange('lineHeight', 1.5)}
                   aria-label="Line spacing medium"
-                  borderRadius="lg"
-                  h="40px"
+                  borderRadius="md"
+                  h="32px"
                   flex={1}
                 />
               </Tooltip>
               <Tooltip label="Line spacing 2.0">
                 <IconButton
-                  icon={<Text fontSize="xl" lineHeight="2">≡</Text>}
-                  size="md"
+                  icon={<Text fontSize="lg" lineHeight="2">≡</Text>}
+                  size="sm"
                   variant={selected.lineHeight === 2.0 ? 'solid' : 'outline'}
                   colorScheme={selected.lineHeight === 2.0 ? 'blue' : 'gray'}
                   onClick={() => handleTextChange('lineHeight', 2.0)}
                   aria-label="Line spacing loose"
-                  borderRadius="lg"
-                  h="40px"
+                  borderRadius="md"
+                  h="32px"
                   flex={1}
                 />
               </Tooltip>
             </HStack>
 
             {/* Vertical Alignment */}
-            <HStack spacing={2} mb={2}>
+            <HStack spacing={1} mb={1}>
               <Tooltip label="Align top">
                 <IconButton
-                  icon={<AlignVerticalSpaceAround size={18} style={{ transform: 'rotate(180deg)' }} />}
-                  size="md"
+                  icon={<AlignVerticalSpaceAround size={16} style={{ transform: 'rotate(180deg)' }} />}
+                  size="sm"
                   variant="outline"
                   colorScheme="gray"
                   onClick={() => {}}
                   aria-label="Vertical align top"
-                  borderRadius="lg"
-                  h="40px"
+                  borderRadius="md"
+                  h="32px"
                   flex={1}
                 />
               </Tooltip>
               <Tooltip label="Align middle">
                 <IconButton
-                  icon={<AlignVerticalJustifyCenter size={18} />}
-                  size="md"
+                  icon={<AlignVerticalJustifyCenter size={16} />}
+                  size="sm"
                   variant="outline"
                   colorScheme="gray"
                   onClick={() => {}}
                   aria-label="Vertical align middle"
-                  borderRadius="lg"
-                  h="40px"
+                  borderRadius="md"
+                  h="32px"
                   flex={1}
                 />
               </Tooltip>
               <Tooltip label="Align bottom">
                 <IconButton
-                  icon={<AlignVerticalSpaceAround size={18} />}
-                  size="md"
+                  icon={<AlignVerticalSpaceAround size={16} />}
+                  size="sm"
                   variant="outline"
                   colorScheme="gray"
                   onClick={() => {}}
                   aria-label="Vertical align bottom"
-                  borderRadius="lg"
-                  h="40px"
+                  borderRadius="md"
+                  h="32px"
                   flex={1}
                 />
               </Tooltip>
             </HStack>
 
             {/* Underline and Strikethrough */}
-            <HStack spacing={2} mb={2}>
+            <HStack spacing={1} mb={1}>
               <IconButton
-                icon={<Text fontSize="md" textDecoration="underline" fontWeight="bold">U</Text>}
-                size="md"
+                icon={<Text fontSize="sm" textDecoration="underline" fontWeight="bold">U</Text>}
+                size="sm"
                 variant={selected.underline ? 'solid' : 'outline'}
                 colorScheme={selected.underline ? 'blue' : 'gray'}
                 onClick={() => handleTextChange('underline', !selected.underline)}
                 aria-label="Underline"
-                borderRadius="lg"
-                h="40px"
+                borderRadius="md"
+                h="32px"
                 flex={1}
               />
               <IconButton
-                icon={<Text fontSize="md" textDecoration="line-through" fontWeight="bold">S</Text>}
-                size="md"
+                icon={<Text fontSize="sm" textDecoration="line-through" fontWeight="bold">S</Text>}
+                size="sm"
                 variant={selected.linethrough ? 'solid' : 'outline'}
                 colorScheme={selected.linethrough ? 'blue' : 'gray'}
                 onClick={() => handleTextChange('linethrough', !selected.linethrough)}
                 aria-label="Strikethrough"
-                borderRadius="lg"
-                h="40px"
+                borderRadius="md"
+                h="32px"
                 flex={1}
               />
             </HStack>
 
-            <Divider my={3} />
+            <Divider my={2} />
 
             {/* Text Content */}
             <Box position="relative">
               <HStack justify="space-between" mb={1}>
-                <Text fontSize="xs" color="gray.500">Text</Text>
+                <Text fontSize="2xs" color="gray.500">Text</Text>
                 <Tooltip label="Type {{ to insert variables" placement="top">
-                  <Text fontSize="xs" color="blue.500" cursor="help">Insert variable</Text>
+                  <Text fontSize="2xs" color="blue.500" cursor="help">Insert variable</Text>
                 </Tooltip>
               </HStack>
               <Textarea
@@ -1088,9 +1088,9 @@ const PropertySidebar = () => {
                   const cursorPosition = e.target.selectionStart;
                   checkAutocomplete(e.target.value, cursorPosition, isArrowKey);
                 }}
-                borderRadius="lg"
-                fontSize="sm"
-                minH="60px"
+                borderRadius="md"
+                fontSize="xs"
+                minH="48px"
                 resize="vertical"
               />
               
