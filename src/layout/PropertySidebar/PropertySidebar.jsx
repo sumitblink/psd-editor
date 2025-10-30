@@ -187,38 +187,63 @@ const PropertySidebar = () => {
     const objects = activeObject.getObjects();
     if (objects.length < 2) return;
 
-    // Get bounding box of the selection
-    const group = activeObject;
+    // Calculate the bounds of all selected objects in absolute canvas coordinates
+    const bounds = objects.reduce((acc, obj) => {
+      const objLeft = obj.left + activeObject.left;
+      const objTop = obj.top + activeObject.top;
+      const objRight = objLeft + obj.width * obj.scaleX;
+      const objBottom = objTop + obj.height * obj.scaleY;
+      
+      return {
+        left: Math.min(acc.left, objLeft),
+        top: Math.min(acc.top, objTop),
+        right: Math.max(acc.right, objRight),
+        bottom: Math.max(acc.bottom, objBottom)
+      };
+    }, { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity });
+
+    const centerX = (bounds.left + bounds.right) / 2;
+    const centerY = (bounds.top + bounds.bottom) / 2;
     
     switch (alignment) {
       case 'left':
         objects.forEach(obj => {
-          obj.set('left', group.left - group.width / 2);
+          const currentAbsoluteLeft = obj.left + activeObject.left;
+          obj.set('left', obj.left + (bounds.left - currentAbsoluteLeft));
         });
         break;
       case 'center-h':
         objects.forEach(obj => {
-          obj.set('left', group.left);
+          const currentAbsoluteLeft = obj.left + activeObject.left;
+          const objCenterOffset = (obj.width * obj.scaleX) / 2;
+          obj.set('left', obj.left + (centerX - objCenterOffset - currentAbsoluteLeft));
         });
         break;
       case 'right':
         objects.forEach(obj => {
-          obj.set('left', group.left + group.width / 2);
+          const currentAbsoluteLeft = obj.left + activeObject.left;
+          const objWidth = obj.width * obj.scaleX;
+          obj.set('left', obj.left + (bounds.right - objWidth - currentAbsoluteLeft));
         });
         break;
       case 'top':
         objects.forEach(obj => {
-          obj.set('top', group.top - group.height / 2);
+          const currentAbsoluteTop = obj.top + activeObject.top;
+          obj.set('top', obj.top + (bounds.top - currentAbsoluteTop));
         });
         break;
       case 'center-v':
         objects.forEach(obj => {
-          obj.set('top', group.top);
+          const currentAbsoluteTop = obj.top + activeObject.top;
+          const objCenterOffset = (obj.height * obj.scaleY) / 2;
+          obj.set('top', obj.top + (centerY - objCenterOffset - currentAbsoluteTop));
         });
         break;
       case 'bottom':
         objects.forEach(obj => {
-          obj.set('top', group.top + group.height / 2);
+          const currentAbsoluteTop = obj.top + activeObject.top;
+          const objHeight = obj.height * obj.scaleY;
+          obj.set('top', obj.top + (bounds.bottom - objHeight - currentAbsoluteTop));
         });
         break;
     }
