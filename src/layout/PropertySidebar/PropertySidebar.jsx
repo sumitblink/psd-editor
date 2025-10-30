@@ -179,12 +179,14 @@ const PropertySidebar = () => {
     // If we're between {{ and }} or no closing brace yet
     if (closeBraceIndex === -1 || closeBraceIndex > (cursorPosition - lastOpenBrace)) {
       const textAfterBrace = beforeCursor.substring(lastOpenBrace + 2);
-      const prefix = textAfterBrace;
+      const prefix = textAfterBrace.trim();
       
-      // Filter keys that start with the prefix
-      const filtered = availableKeys.filter(key => 
-        key.toLowerCase().startsWith(prefix.toLowerCase())
-      );
+      // Filter keys that start with the prefix (show all if prefix is empty)
+      const filtered = prefix === '' 
+        ? availableKeys 
+        : availableKeys.filter(key => 
+            key.toLowerCase().startsWith(prefix.toLowerCase())
+          );
       
       if (filtered.length > 0) {
         setCurrentPrefix(prefix);
