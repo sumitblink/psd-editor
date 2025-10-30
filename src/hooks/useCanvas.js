@@ -157,43 +157,45 @@ export function useCanvas(props) {
         window.addEventListener('mousemove', onMouseMove);
         window.addEventListener('mouseup', onMouseUp);
       } else {
-        // If clicking on an object with Shift key, it's multi-select mode
-        // Otherwise, if the object is not already selected, prevent drag until we know it's not a selection box attempt
+        // Check if the clicked object is already selected
         const isShiftPressed = event.e.shiftKey;
         const activeObject = canvas.instance.getActiveObject();
         const isAlreadySelected = activeObject === event.target || 
           (activeObject && activeObject.type === 'activeSelection' && activeObject.contains(event.target));
         
+        // If the object is NOT already selected and NOT shift-clicking for multi-select
+        // Disable its movability temporarily to allow selection box to work
         if (!isShiftPressed && !isAlreadySelected) {
-          // Temporarily disable object selection to allow selection box to start
+          const originalEvented = event.target.evented;
           const originalSelectable = event.target.selectable;
+          
+          // Disable the object temporarily
+          event.target.evented = false;
           event.target.selectable = false;
           
           const startX = event.e.clientX;
           const startY = event.e.clientY;
-          let hasMovedEnough = false;
+          let isDragging = false;
           
           const onMouseMove = (e) => {
-            const moved = Math.abs(e.clientX - startX) > 5 || Math.abs(e.clientY - startY) > 5;
-            if (moved && !hasMovedEnough) {
-              hasMovedEnough = true;
-              // User is dragging, restore selectability and select the object
-              event.target.selectable = originalSelectable;
-              canvas.instance.setActiveObject(event.target);
-              canvas.instance.renderAll();
-              cleanup();
+            const moved = Math.abs(e.clientX - startX) > 3 || Math.abs(e.clientY - startY) > 3;
+            if (moved) {
+              isDragging = true;
             }
           };
           
           const onMouseUp = () => {
-            // Restore selectability
+            // Restore object properties
+            event.target.evented = originalEvented;
             event.target.selectable = originalSelectable;
-            if (!hasMovedEnough) {
+            
+            if (!isDragging) {
               // It was a click, select the object
               canvas.instance.setActiveObject(event.target);
               canvas.instance.renderAll();
               dispatch(selectObject());
             }
+            
             cleanup();
           };
           
