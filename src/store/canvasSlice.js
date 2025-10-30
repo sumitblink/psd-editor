@@ -163,7 +163,7 @@ export const changeImageSource = createAsyncThunk(
 
 export const changeFontFamily = createAsyncThunk(
   'canvas/changeFontFamily',
-  async (fontFamily = defaultFont, { getState }) => {
+  async (fontFamily = defaultFont, { getState, dispatch }) => {
     const state = getState();
     const canvas = state.canvas;
     if (!canvas.instance) return;
@@ -178,6 +178,9 @@ export const changeFontFamily = createAsyncThunk(
 
     text.set('fontFamily', res.name);
     canvas.instance.fire('object:modified', { target: text }).renderAll();
+
+    // Update the selected object in Redux state
+    dispatch(selectObject());
 
     return res.name;
   }
