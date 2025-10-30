@@ -127,31 +127,38 @@ export function useCanvas(props) {
       }
     };
     const handleMouseDown = (event) => {
-      // Let Fabric.js handle selection naturally - only deselect on empty canvas click
-      // Don't interfere with drag selection at all
+      // Only deselect when clicking on empty canvas (not dragging)
+      // Let Fabric.js handle all drag operations naturally
       if (!event.target) {
-        // Wait a bit to see if this becomes a drag selection
-        const mouseDownX = event.e.clientX;
-        const mouseDownY = event.e.clientY;
+        // Store click position to detect if it's a click vs drag
+        const startX = event.e.clientX;
+        const startY = event.e.clientY;
+        let isDragging = false;
         
-        const checkForDrag = (e) => {
-          const moved = Math.abs(e.clientX - mouseDownX) > 5 || Math.abs(e.clientY - mouseDownY) > 5;
-          if (!moved) {
-            // It's a click, not a drag - deselect
+        const onMouseMove = (e) => {
+          const moved = Math.abs(e.clientX - startX) > 3 || Math.abs(e.clientY - startY) > 3;
+          if (moved) {
+            isDragging = true;
+            cleanup();
+          }
+        };
+        
+        const onMouseUp = () => {
+          if (!isDragging) {
+            // It was a click, not a drag - deselect objects
             dispatch(deselectObject());
             canvas.instance.discardActiveObject().renderAll();
           }
-          window.removeEventListener('mousemove', checkForDrag);
-          window.removeEventListener('mouseup', cleanupDragCheck);
+          cleanup();
         };
         
-        const cleanupDragCheck = () => {
-          window.removeEventListener('mousemove', checkForDrag);
-          window.removeEventListener('mouseup', cleanupDragCheck);
+        const cleanup = () => {
+          window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mouseup', onMouseUp);
         };
         
-        window.addEventListener('mousemove', checkForDrag);
-        window.addEventListener('mouseup', cleanupDragCheck);
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
       }
     };
 
