@@ -815,10 +815,16 @@ export const saveTemplateConfiguration = createAsyncThunk(
         width: Math.round(obj.type === 'image' ? obj.width * obj.scaleX : obj.width),
         height: Math.round(obj.type === 'image' ? obj.height * obj.scaleY : obj.height),
         locked: obj.lockMovementX === true,
-        opacity: Math.round(obj.opacity * 100),
+        opacity: Math.round((obj.opacity || 1) * 100),
         visible: obj.visible !== false,
-        rotation: Math.round(obj.angle),
+        rotation: Math.round(obj.angle || 0),
         itemIndex: index,
+        scaleX: obj.scaleX || 1,
+        scaleY: obj.scaleY || 1,
+        flipX: obj.flipX || false,
+        flipY: obj.flipY || false,
+        skewX: obj.skewX || 0,
+        skewY: obj.skewY || 0,
         filter: null,
         shadows: [],
         variations: {},
@@ -826,10 +832,10 @@ export const saveTemplateConfiguration = createAsyncThunk(
           kind: "solid",
           value: {
             kind: "static",
-            value: "rgba(0, 0, 0, 1)"
+            value: obj.stroke || "rgba(0, 0, 0, 1)"
           }
         },
-        borderWidth: 0,
+        borderWidth: obj.strokeWidth || 0,
         borderRadius: 0
       };
 
@@ -848,12 +854,16 @@ export const saveTemplateConfiguration = createAsyncThunk(
           },
           aiSpec: null,
           autoTrim: false,
-          cropSpec: null,
+          cropSpec: obj.cropX || obj.cropY ? {
+            x: obj.cropX || 0,
+            y: obj.cropY || 0
+          } : null,
           trimSpec: null,
           objectFit: "contain",
           exitUrlSpec: null,
           fixedAspectRatio: false,
-          lockedAspectRatio: false
+          lockedAspectRatio: false,
+          crossOrigin: obj.crossOrigin || "anonymous"
         };
       } else if (obj.type === 'textbox') {
         // Check if this layer has a data binding
@@ -864,14 +874,14 @@ export const saveTemplateConfiguration = createAsyncThunk(
           ...baseLayer,
           font: {
             kind: {
-              style: "normal",
+              style: obj.fontStyle || "normal",
               family: obj.fontFamily || "Arial",
               source: "system",
-              weight: 400,
+              weight: obj.fontWeight || 400,
               variant: "regular"
             },
-            style: "normal",
-            weight: 400
+            style: obj.fontStyle || "normal",
+            weight: obj.fontWeight || 400
           },
           padding: {
             top: 0,
@@ -880,7 +890,7 @@ export const saveTemplateConfiguration = createAsyncThunk(
             bottom: 0
           },
           refitV2: false,
-          fontSize: Math.round(obj.fontSize),
+          fontSize: Math.round(obj.fontSize || 16),
           textColor: {
             kind: "solid",
             value: {
@@ -908,7 +918,7 @@ export const saveTemplateConfiguration = createAsyncThunk(
             },
             color: {
               kind: "static",
-              value: "rgba(0,0,0,0)"
+              value: obj.stroke || "rgba(0,0,0,0)"
             },
             style: "solid"
           },
@@ -919,9 +929,10 @@ export const saveTemplateConfiguration = createAsyncThunk(
               value: obj.backgroundColor || "rgba(0, 0, 0, 0)"
             }
           },
+          shadow: obj.shadow || null,
           exitUrlSpec: null,
           unicodeBidi: "plaintext",
-          mixBlendMode: "normal",
+          mixBlendMode: obj.globalCompositeOperation || "source-over",
           textVerticalAlign: "middle",
           textHorizontalAlign: obj.textAlign || "left",
           // Store the text value (with binding if exists)
@@ -939,7 +950,12 @@ export const saveTemplateConfiguration = createAsyncThunk(
             }
           },
           stroke: obj.stroke || null,
-          strokeWidth: obj.strokeWidth || 0
+          strokeWidth: obj.strokeWidth || 0,
+          strokeDashArray: obj.strokeDashArray || null,
+          strokeLineCap: obj.strokeLineCap || "butt",
+          strokeLineJoin: obj.strokeLineJoin || "miter",
+          shadow: obj.shadow || null,
+          mixBlendMode: obj.globalCompositeOperation || "source-over"
         };
       }
 
