@@ -146,11 +146,86 @@ const PropertySidebar = () => {
   const selected = useSelector(selectSelected);
   const canvas = useSelector(selectCanvasInstance);
   const dataBindings = useSelector(selectDataBindings);
+  
+  // Autocomplete state
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const [autocompletePosition, setAutocompletePosition] = useState({ top: 0, left: 0 });
+  const [filteredKeys, setFilteredKeys] = useState([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [currentPrefix, setCurrentPrefix] = useState('');
+  const textInputRef = useRef(null);
+
+  // Available keys for autocomplete
+  const availableKeys = selected?.type === 'image' 
+    ? ['image_url', 'additional_image_urls.0', 'additional_image_urls.1']
+    : ['name', 'price', 'offer', 'availability', 'id'];
+
+  // Check if cursor is inside {{}} and show autocomplete
+  const checkAutocomplete = (text, cursorPosition) => {
+    // Find the last {{ before cursor
+    const beforeCursor = text.substring(0, cursorPosition);
+    const lastOpenBrace = beforeCursor.lastIndexOf('{{');
+    
+    if (lastOpenBrace === -1) {
+      setShowAutocomplete(false);
+      return;
+    }
+    
+    // Check if there's a closing }} after the last {{
+    const afterOpenBrace = text.substring(lastOpenBrace);
+    const closeBraceIndex = afterOpenBrace.indexOf('}}');
+    
+    // If we're between {{ and }} or no closing brace yet
+    if (closeBraceIndex === -1 || closeBraceIndex > (cursorPosition - lastOpenBrace)) {
+      const textAfterBrace = beforeCursor.substring(lastOpenBrace + 2);
+      const prefix = textAfterBrace;
+      
+      // Filter keys that start with the prefix
+      const filtered = availableKeys.filter(key => 
+        key.toLowerCase().startsWith(prefix.toLowerCase())
+      );
+      
+      if (filtered.length > 0) {
+        setCurrentPrefix(prefix);
+        setFilteredKeys(filtered);
+        setSelectedIndex(0);
+        setShowAutocomplete(true);
+      } else {
+        setShowAutocomplete(false);
+      }
+    } else {
+      setShowAutocomplete(false);
+    }
+  };
 
   const handleTextChange = (property, value) => {
     if (property === 'fontFamily') {
       dispatch(changeFontFamily(value));
     } else if (property === 'text') {
+      // Check for autocomplete trigger
+      if (textInputRef.current) {
+        const cursorPosition = textInputRef.current.selectionStart;
+        
+        // Auto-close brackets
+        if (value.endsWith('{{') && !value.endsWith('{{}}')) {
+          const newValue = value + '}}';
+          dispatch(setLayerDataBinding({ layerName: selected.name, apiKey: newValue }));
+          dispatch(changeTextProperty({ property, value: newValue }));
+          
+          // Set cursor between braces
+          setTimeout(() => {
+            if (textInputRef.current) {
+              textInputRef.current.selectionStart = cursorPosition;
+              textInputRef.current.selectionEnd = cursorPosition;
+              checkAutocomplete(newValue, cursorPosition);
+            }
+          }, 0);
+          return;
+        }
+        
+        checkAutocomplete(value, cursorPosition);
+      }
+      
       // Always update the binding template when text changes
       dispatch(setLayerDataBinding({ layerName: selected.name, apiKey: value }));
       
@@ -170,6 +245,55 @@ const PropertySidebar = () => {
       }
     } else {
       dispatch(changeTextProperty({ property, value }));
+    }
+  };
+
+  const insertAutocompleteKey = (key) => {
+    if (!textInputRef.current || !selected) return;
+    
+    const currentText = dataBindings[selected.name] || selected.text || '';
+    const cursorPosition = textInputRef.current.selectionStart;
+    
+    // Find the {{ before cursor
+    const beforeCursor = currentText.substring(0, cursorPosition);
+    const lastOpenBrace = beforeCursor.lastIndexOf('{{');
+    
+    if (lastOpenBrace !== -1) {
+      const newText = currentText.substring(0, lastOpenBrace + 2) + 
+                     key + 
+                     '}}' + 
+                     currentText.substring(cursorPosition);
+      
+      handleTextChange('text', newText);
+      setShowAutocomplete(false);
+      
+      // Set cursor after the inserted key
+      setTimeout(() => {
+        if (textInputRef.current) {
+          const newCursorPos = lastOpenBrace + 2 + key.length + 2;
+          textInputRef.current.selectionStart = newCursorPos;
+          textInputRef.current.selectionEnd = newCursorPos;
+          textInputRef.current.focus();
+        }
+      }, 0);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (!showAutocomplete) return;
+    
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex(prev => (prev + 1) % filteredKeys.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex(prev => (prev - 1 + filteredKeys.length) % filteredKeys.length);
+    } else if (e.key === 'Enter' && filteredKeys.length > 0) {
+      e.preventDefault();
+      insertAutocompleteKey(filteredKeys[selectedIndex]);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      setShowAutocomplete(false);
     }
   };
 
@@ -490,15 +614,61 @@ const PropertySidebar = () => {
               />
             </Box>
 
-            <Box mb={2}>
-              <Text fontSize="xs" color="gray.500" mb={1}>Text</Text>
+            <Box mb={2} position="relative">
+              <HStack justify="space-between" mb={1}>
+                <Text fontSize="xs" color="gray.500">Text</Text>
+                <Tooltip label="Type {{ to insert variables" placement="top">
+                  <Text fontSize="xs" color="blue.500" cursor="help">Insert variable</Text>
+                </Tooltip>
+              </HStack>
               <Input
+                ref={textInputRef}
                 size="sm"
                 value={dataBindings[selected.name] || selected.text || ''}
                 onChange={(e) => handleTextChange('text', e.target.value)}
+                onKeyDown={handleKeyDown}
+                onClick={(e) => {
+                  const cursorPosition = e.target.selectionStart;
+                  checkAutocomplete(e.target.value, cursorPosition);
+                }}
                 borderRadius="lg"
                 fontSize="sm"
               />
+              
+              {/* Autocomplete Dropdown */}
+              {showAutocomplete && filteredKeys.length > 0 && (
+                <Box
+                  position="absolute"
+                  top="100%"
+                  left={0}
+                  right={0}
+                  mt={1}
+                  bg="white"
+                  border="1px solid"
+                  borderColor="gray.200"
+                  borderRadius="md"
+                  boxShadow="lg"
+                  maxH="200px"
+                  overflowY="auto"
+                  zIndex={1000}
+                >
+                  {filteredKeys.map((key, index) => (
+                    <Box
+                      key={key}
+                      px={3}
+                      py={2}
+                      cursor="pointer"
+                      bg={index === selectedIndex ? 'blue.50' : 'white'}
+                      color={index === selectedIndex ? 'blue.600' : 'gray.700'}
+                      _hover={{ bg: 'blue.50', color: 'blue.600' }}
+                      onClick={() => insertAutocompleteKey(key)}
+                      fontSize="sm"
+                    >
+                      {key}
+                    </Box>
+                  ))}
+                </Box>
+              )}
             </Box>
 
             <DebouncedColorPicker
