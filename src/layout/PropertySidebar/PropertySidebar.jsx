@@ -42,7 +42,8 @@ import {
   selectCanvasInstance,
   selectDataBindings,
   setLayerDataBinding,
-  applyDataBindings
+  applyDataBindings,
+  selectObject // Import selectObject
 } from '../../store/canvasSlice';
 
 const CompactNumberInput = ({ label, value, onChange, icon, suffix }) => {
@@ -97,12 +98,12 @@ const DebouncedColorPicker = ({ value, onChange, label }) => {
 
   const handleColorChange = (newColor) => {
     setLocalColor(newColor);
-    
+
     // Clear existing timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    
+
     // Debounce the actual update
     timeoutRef.current = setTimeout(() => {
       onChange(newColor);
@@ -147,7 +148,7 @@ const PropertySidebar = () => {
   const selected = useSelector(selectSelected);
   const canvas = useSelector(selectCanvasInstance);
   const dataBindings = useSelector(selectDataBindings);
-  
+
   // Autocomplete state
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [autocompletePosition, setAutocompletePosition] = useState({ top: 0, left: 0 });
@@ -159,38 +160,38 @@ const PropertySidebar = () => {
   // Available keys for autocomplete
   const availableKeys = selected?.type === 'image' 
     ? ['image_url', 'additional_image_urls.0', 'additional_image_urls.1']
-    : ['name', 'price', 'offer', 'availability', 'id'];
+    : ['name', 'price', 'availability', 'id'];
 
   // Check if cursor is inside {{}} and show autocomplete
   const checkAutocomplete = (text, cursorPosition, preserveSelection = false) => {
     // Find the last {{ before cursor
     const beforeCursor = text.substring(0, cursorPosition);
     const lastOpenBrace = beforeCursor.lastIndexOf('{{');
-    
+
     if (lastOpenBrace === -1) {
       setShowAutocomplete(false);
       return;
     }
-    
+
     // Check if there's a closing }} after the last {{
     const afterOpenBrace = text.substring(lastOpenBrace);
     const closeBraceIndex = afterOpenBrace.indexOf('}}');
-    
+
     // Calculate if cursor is between {{ and }}
     const isBetweenBraces = closeBraceIndex !== -1 && (cursorPosition - lastOpenBrace) <= closeBraceIndex + 2;
-    
+
     // If we're between {{ and }} or no closing brace yet
     if (isBetweenBraces || closeBraceIndex === -1) {
       const textAfterBrace = beforeCursor.substring(lastOpenBrace + 2);
       const prefix = textAfterBrace;
-      
+
       // Filter keys that start with the prefix (show all if prefix is empty)
       const filtered = prefix === '' 
         ? availableKeys 
         : availableKeys.filter(key => 
             key.toLowerCase().startsWith(prefix.toLowerCase())
           );
-      
+
       if (filtered.length > 0) {
         setCurrentPrefix(prefix);
         setFilteredKeys(filtered);
@@ -213,16 +214,16 @@ const PropertySidebar = () => {
     } else if (property === 'text') {
       // Always update the binding template when text changes
       dispatch(setLayerDataBinding({ layerName: selected.name, apiKey: value }));
-      
+
       // Always update the text on canvas immediately
       dispatch(changeTextProperty({ property, value }));
-      
+
       // Check for autocomplete after state update
       if (textInputRef.current) {
         const cursorPosition = textInputRef.current.selectionStart;
         checkAutocomplete(value, cursorPosition);
       }
-      
+
       // If there's binding data in localStorage, also re-render with it
       const savedData = localStorage.getItem('api_data');
       if (savedData) {
@@ -241,23 +242,23 @@ const PropertySidebar = () => {
 
   const insertAutocompleteKey = (key) => {
     if (!textInputRef.current || !selected) return;
-    
+
     const currentText = dataBindings[selected.name] || selected.text || '';
     const cursorPosition = textInputRef.current.selectionStart;
-    
+
     // Find the {{ before cursor
     const beforeCursor = currentText.substring(0, cursorPosition);
     const lastOpenBrace = beforeCursor.lastIndexOf('{{');
-    
+
     if (lastOpenBrace !== -1) {
       // Replace from {{ to cursor position with {{key}}
       const newText = currentText.substring(0, lastOpenBrace) + 
                      '{{' + key + '}}' + 
                      currentText.substring(cursorPosition);
-      
+
       handleTextChange('text', newText);
       setShowAutocomplete(false);
-      
+
       // Set cursor after the inserted {{key}}
       setTimeout(() => {
         if (textInputRef.current) {
@@ -272,7 +273,7 @@ const PropertySidebar = () => {
 
   const handleKeyDown = (e) => {
     if (!showAutocomplete) return;
-    
+
     if (e.key === 'ArrowDown') {
       e.preventDefault();
       e.stopPropagation();
@@ -334,7 +335,7 @@ const PropertySidebar = () => {
       const objTop = obj.top + activeObject.top;
       const objRight = objLeft + obj.width * obj.scaleX;
       const objBottom = objTop + obj.height * obj.scaleY;
-      
+
       return {
         left: Math.min(acc.left, objLeft),
         top: Math.min(acc.top, objTop),
@@ -345,7 +346,7 @@ const PropertySidebar = () => {
 
     const centerX = (bounds.left + bounds.right) / 2;
     const centerY = (bounds.top + bounds.bottom) / 2;
-    
+
     switch (alignment) {
       case 'left':
         objects.forEach(obj => {
@@ -457,7 +458,7 @@ const PropertySidebar = () => {
             />
           </HStack>
         </HStack>
-        
+
         {/* Alignment controls for multiple selection */}
         {isMultipleSelection && (
           <Box mb={2}>
@@ -521,7 +522,7 @@ const PropertySidebar = () => {
             <Divider mt={2} />
           </Box>
         )}
-        
+
         <Input
           size="sm"
           value={selected.name || ''}
@@ -580,12 +581,11 @@ const PropertySidebar = () => {
         {/* Text-specific properties */}
         {selected.type === 'textbox' && (
           <>
-            <Text fontSize="xs" fontWeight="bold" letterSpacing="wide" color="gray.600" mb={1} mt={1}>
-              APPEARANCE
-            </Text>
-
             {/* Font Family */}
-            <Box mb={1}>
+            <Box mb={1} mt={1}>
+              <Text fontSize="xs" fontWeight="bold" letterSpacing="wide" color="gray.600" mb={1}>
+                APPEARANCE
+              </Text>
               <Select
                 size="sm"
                 value={selected.fontFamily || 'Arial'}
@@ -1010,7 +1010,7 @@ const PropertySidebar = () => {
               </Tooltip>
             </HStack>
 
-            
+
 
             {/* Underline and Strikethrough */}
             <HStack spacing={1} mb={1}>
@@ -1043,7 +1043,7 @@ const PropertySidebar = () => {
             {/* Text Content */}
             <Box position="relative">
               <HStack justify="space-between" mb={1}>
-                <Text fontSize="2xs" color="gray.500">Text</Text>
+                <Text fontSize="2xs" color="gray.500">Text Content</Text> 
                 <Tooltip label="Type {{ to insert variables" placement="top">
                   <Text fontSize="2xs" color="blue.500" cursor="help">Insert variable</Text>
                 </Tooltip>
@@ -1076,7 +1076,7 @@ const PropertySidebar = () => {
                 minH="48px"
                 resize="vertical"
               />
-              
+
               {/* Autocomplete Dropdown */}
               {showAutocomplete && filteredKeys.length > 0 && (
                 <Box
