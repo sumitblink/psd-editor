@@ -272,15 +272,19 @@ const PropertySidebar = () => {
     
     if (e.key === 'ArrowDown') {
       e.preventDefault();
+      e.stopPropagation();
       setSelectedIndex(prev => (prev + 1) % filteredKeys.length);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
+      e.stopPropagation();
       setSelectedIndex(prev => (prev - 1 + filteredKeys.length) % filteredKeys.length);
     } else if (e.key === 'Enter' && filteredKeys.length > 0) {
       e.preventDefault();
+      e.stopPropagation();
       insertAutocompleteKey(filteredKeys[selectedIndex]);
     } else if (e.key === 'Escape') {
       e.preventDefault();
+      e.stopPropagation();
       setShowAutocomplete(false);
     }
   };
