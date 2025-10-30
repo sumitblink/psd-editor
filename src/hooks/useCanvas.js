@@ -164,29 +164,38 @@ export function useCanvas(props) {
           (activeObject && activeObject.type === 'activeSelection' && activeObject.contains(event.target));
         
         // If the object is NOT already selected and NOT shift-clicking for multi-select
-        // Disable its movability temporarily to allow selection box to work
+        // Lock its movement to allow selection box to work
         if (!isShiftPressed && !isAlreadySelected) {
-          const originalEvented = event.target.evented;
-          const originalSelectable = event.target.selectable;
-          
-          // Disable the object temporarily
-          event.target.evented = false;
-          event.target.selectable = false;
+          // Prevent default drag behavior
+          event.e.preventDefault();
           
           const startX = event.e.clientX;
           const startY = event.e.clientY;
           let isDragging = false;
           
+          // Lock movement on the object
+          const originalLockMovementX = event.target.lockMovementX;
+          const originalLockMovementY = event.target.lockMovementY;
+          const originalSelectable = event.target.selectable;
+          
+          event.target.lockMovementX = true;
+          event.target.lockMovementY = true;
+          event.target.selectable = false;
+          
           const onMouseMove = (e) => {
-            const moved = Math.abs(e.clientX - startX) > 3 || Math.abs(e.clientY - startY) > 3;
-            if (moved) {
+            const moved = Math.abs(e.clientX - startX) > 5 || Math.abs(e.clientY - startY) > 5;
+            if (moved && !isDragging) {
               isDragging = true;
+              // Enable selection mode on canvas
+              canvas.instance.selection = true;
+              cleanup();
             }
           };
           
           const onMouseUp = () => {
             // Restore object properties
-            event.target.evented = originalEvented;
+            event.target.lockMovementX = originalLockMovementX;
+            event.target.lockMovementY = originalLockMovementY;
             event.target.selectable = originalSelectable;
             
             if (!isDragging) {
