@@ -10,7 +10,8 @@ import {
   IconButton,
   Flex,
   Divider,
-  Tooltip
+  Tooltip,
+  Textarea
 } from '@chakra-ui/react';
 import { 
   Eye, 
@@ -624,7 +625,7 @@ const PropertySidebar = () => {
                   <Text fontSize="xs" color="blue.500" cursor="help">Insert variable</Text>
                 </Tooltip>
               </HStack>
-              <Input
+              <Textarea
                 ref={textInputRef}
                 size="sm"
                 value={dataBindings[selected.name] || selected.text || ''}
@@ -634,8 +635,15 @@ const PropertySidebar = () => {
                   const cursorPosition = e.target.selectionStart;
                   checkAutocomplete(e.target.value, cursorPosition);
                 }}
+                onKeyUp={(e) => {
+                  // Check autocomplete on key up to handle deletion
+                  const cursorPosition = e.target.selectionStart;
+                  checkAutocomplete(e.target.value, cursorPosition);
+                }}
                 borderRadius="lg"
                 fontSize="sm"
+                minH="60px"
+                resize="vertical"
               />
               
               {/* Autocomplete Dropdown */}
