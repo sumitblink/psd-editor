@@ -147,6 +147,34 @@ const Header = () => {
       // Parse PSD file
       const psd = await parsePSDFromFile(file);
 
+      // Validate color mode - must be RGB (mode 3)
+      if (psd.colorMode !== 3) {
+        const colorModes = {
+          0: 'Bitmap',
+          1: 'Grayscale',
+          2: 'Indexed',
+          3: 'RGB',
+          4: 'CMYK',
+          7: 'Multichannel',
+          8: 'Duotone',
+          9: 'Lab'
+        };
+        
+        const detectedMode = colorModes[psd.colorMode] || 'Unknown';
+        
+        toast({
+          title: 'Invalid PSD Color Mode',
+          description: `This PSD is in ${detectedMode} mode. Please convert it to RGB mode in Photoshop and re-upload.`,
+          status: 'error',
+          duration: 6000,
+          isClosable: true,
+        });
+        
+        // Reset file input
+        event.target.value = '';
+        return;
+      }
+
       // Convert to template format
       const template = await convertPSDTOTemplate(psd);
 
@@ -177,7 +205,14 @@ const Header = () => {
       event.target.value = '';
     } catch (error) {
       console.error('Error importing PSD:', error);
-      alert('Error importing PSD file. Please try again.');
+      toast({
+        title: 'Import Error',
+        description: 'Error importing PSD file. Please try again.',
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      });
+      event.target.value = '';
     }
   };
 
