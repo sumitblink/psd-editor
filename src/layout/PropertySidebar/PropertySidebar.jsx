@@ -176,10 +176,13 @@ const PropertySidebar = () => {
     const afterOpenBrace = text.substring(lastOpenBrace);
     const closeBraceIndex = afterOpenBrace.indexOf('}}');
     
+    // Calculate if cursor is between {{ and }}
+    const isBetweenBraces = closeBraceIndex !== -1 && (cursorPosition - lastOpenBrace) <= closeBraceIndex + 2;
+    
     // If we're between {{ and }} or no closing brace yet
-    if (closeBraceIndex === -1 || closeBraceIndex > (cursorPosition - lastOpenBrace)) {
+    if (isBetweenBraces || closeBraceIndex === -1) {
       const textAfterBrace = beforeCursor.substring(lastOpenBrace + 2);
-      const prefix = textAfterBrace.trim();
+      const prefix = textAfterBrace;
       
       // Filter keys that start with the prefix (show all if prefix is empty)
       const filtered = prefix === '' 
@@ -631,7 +634,16 @@ const PropertySidebar = () => {
                 ref={textInputRef}
                 size="sm"
                 value={dataBindings[selected.name] || selected.text || ''}
-                onChange={(e) => handleTextChange('text', e.target.value)}
+                onChange={(e) => {
+                  handleTextChange('text', e.target.value);
+                  // Check autocomplete after change
+                  setTimeout(() => {
+                    if (textInputRef.current) {
+                      const cursorPosition = textInputRef.current.selectionStart;
+                      checkAutocomplete(e.target.value, cursorPosition);
+                    }
+                  }, 0);
+                }}
                 onKeyDown={handleKeyDown}
                 onClick={(e) => {
                   const cursorPosition = e.target.selectionStart;
