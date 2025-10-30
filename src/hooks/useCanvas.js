@@ -127,14 +127,31 @@ export function useCanvas(props) {
       }
     };
     const handleMouseDown = (event) => {
-      // Only deselect if clicking on truly empty canvas (not starting a selection box drag)
-      if (!event.target && !event.e.shiftKey) {
-        // Check if this is the start of a selection drag by checking mouse movement
-        const isSelectionDrag = event.e.type === 'mousedown' && !event.e.ctrlKey;
-        if (!isSelectionDrag) {
-          dispatch(deselectObject());
-          canvas.instance.discardActiveObject().renderAll();
-        }
+      // Let Fabric.js handle selection naturally - only deselect on empty canvas click
+      // Don't interfere with drag selection at all
+      if (!event.target) {
+        // Wait a bit to see if this becomes a drag selection
+        const mouseDownX = event.e.clientX;
+        const mouseDownY = event.e.clientY;
+        
+        const checkForDrag = (e) => {
+          const moved = Math.abs(e.clientX - mouseDownX) > 5 || Math.abs(e.clientY - mouseDownY) > 5;
+          if (!moved) {
+            // It's a click, not a drag - deselect
+            dispatch(deselectObject());
+            canvas.instance.discardActiveObject().renderAll();
+          }
+          window.removeEventListener('mousemove', checkForDrag);
+          window.removeEventListener('mouseup', cleanupDragCheck);
+        };
+        
+        const cleanupDragCheck = () => {
+          window.removeEventListener('mousemove', checkForDrag);
+          window.removeEventListener('mouseup', cleanupDragCheck);
+        };
+        
+        window.addEventListener('mousemove', checkForDrag);
+        window.addEventListener('mouseup', cleanupDragCheck);
       }
     };
 
@@ -148,16 +165,22 @@ export function useCanvas(props) {
     };
 
     const handleMouseUp = (event) => {
-      // Clear movement flags and save state after movement completes
+      // Clear movement flags and save state once if any object was modified
       const objects = canvas.instance.getObjects();
+      let wasModified = false;
+      
       objects.forEach(obj => {
         if (obj.__isMoving || obj.__isScaling) {
           delete obj.__isMoving;
           delete obj.__isScaling;
-          // Save state after movement/scaling is complete
-          dispatch(saveState());
+          wasModified = true;
         }
       });
+      
+      // Only save state once after all modifications complete
+      if (wasModified) {
+        dispatch(saveState());
+      }
     };
 
     const handleMouseOver = (event) => {
