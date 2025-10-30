@@ -8,7 +8,9 @@ import {
   Grid, 
   HStack,
   IconButton,
-  Flex
+  Flex,
+  Divider,
+  Tooltip
 } from '@chakra-ui/react';
 import { 
   Eye, 
@@ -17,7 +19,13 @@ import {
   Trash2, 
   Lock, 
   Unlock,
-  MoreHorizontal 
+  MoreHorizontal,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignVerticalJustifyCenter,
+  AlignHorizontalJustifyCenter,
+  AlignVerticalSpaceAround
 } from 'lucide-react';
 import { Drawer } from '../container';
 import { 
@@ -170,6 +178,58 @@ const PropertySidebar = () => {
     }
   };
 
+  // Alignment functions for multiple selection
+  const handleAlign = (alignment) => {
+    if (!canvas) return;
+    const activeObject = canvas.getActiveObject();
+    if (!activeObject || activeObject.type !== 'activeSelection') return;
+
+    const objects = activeObject.getObjects();
+    if (objects.length < 2) return;
+
+    // Get bounding box of the selection
+    const group = activeObject;
+    
+    switch (alignment) {
+      case 'left':
+        objects.forEach(obj => {
+          obj.set('left', group.left - group.width / 2);
+        });
+        break;
+      case 'center-h':
+        objects.forEach(obj => {
+          obj.set('left', group.left);
+        });
+        break;
+      case 'right':
+        objects.forEach(obj => {
+          obj.set('left', group.left + group.width / 2);
+        });
+        break;
+      case 'top':
+        objects.forEach(obj => {
+          obj.set('top', group.top - group.height / 2);
+        });
+        break;
+      case 'center-v':
+        objects.forEach(obj => {
+          obj.set('top', group.top);
+        });
+        break;
+      case 'bottom':
+        objects.forEach(obj => {
+          obj.set('top', group.top + group.height / 2);
+        });
+        break;
+    }
+
+    activeObject.addWithUpdate();
+    canvas.renderAll();
+    dispatch(updateObjects());
+  };
+
+  const isMultipleSelection = selected && selected.type === 'activeSelection';
+
   if (!selected) {
     return (
       <Drawer>
@@ -231,6 +291,70 @@ const PropertySidebar = () => {
             />
           </HStack>
         </HStack>
+        
+        {/* Alignment controls for multiple selection */}
+        {isMultipleSelection && (
+          <Box mb={3}>
+            <HStack spacing={1} justify="center">
+              <Tooltip label="Align Left">
+                <IconButton
+                  icon={<AlignLeft size={18} />}
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleAlign('left')}
+                  aria-label="Align left"
+                />
+              </Tooltip>
+              <Tooltip label="Align Center Horizontally">
+                <IconButton
+                  icon={<AlignCenter size={18} />}
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleAlign('center-h')}
+                  aria-label="Align center horizontally"
+                />
+              </Tooltip>
+              <Tooltip label="Align Right">
+                <IconButton
+                  icon={<AlignRight size={18} />}
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleAlign('right')}
+                  aria-label="Align right"
+                />
+              </Tooltip>
+              <Box w="1px" h="24px" bg="gray.300" mx={1} />
+              <Tooltip label="Align Top">
+                <IconButton
+                  icon={<AlignVerticalSpaceAround size={18} style={{ transform: 'rotate(180deg)' }} />}
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleAlign('top')}
+                  aria-label="Align top"
+                />
+              </Tooltip>
+              <Tooltip label="Align Center Vertically">
+                <IconButton
+                  icon={<AlignVerticalJustifyCenter size={18} />}
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleAlign('center-v')}
+                  aria-label="Align center vertically"
+                />
+              </Tooltip>
+              <Tooltip label="Align Bottom">
+                <IconButton
+                  icon={<AlignVerticalSpaceAround size={18} />}
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleAlign('bottom')}
+                  aria-label="Align bottom"
+                />
+              </Tooltip>
+            </HStack>
+            <Divider mt={3} />
+          </Box>
+        )}
         
         <Text fontSize="xs" color="gray.500" mb={1}>Layer name</Text>
         <Input
