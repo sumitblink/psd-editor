@@ -202,17 +202,16 @@ const PropertySidebar = () => {
     if (property === 'fontFamily') {
       dispatch(changeFontFamily(value));
     } else if (property === 'text') {
-      // Check for autocomplete trigger
+      // Auto-close brackets first
       if (textInputRef.current) {
         const cursorPosition = textInputRef.current.selectionStart;
         
-        // Auto-close brackets
         if (value.endsWith('{{') && !value.endsWith('{{}}')) {
           const newValue = value + '}}';
           dispatch(setLayerDataBinding({ layerName: selected.name, apiKey: newValue }));
           dispatch(changeTextProperty({ property, value: newValue }));
           
-          // Set cursor between braces
+          // Set cursor between braces and show autocomplete
           setTimeout(() => {
             if (textInputRef.current) {
               textInputRef.current.selectionStart = cursorPosition;
@@ -222,8 +221,6 @@ const PropertySidebar = () => {
           }, 0);
           return;
         }
-        
-        checkAutocomplete(value, cursorPosition);
       }
       
       // Always update the binding template when text changes
@@ -231,6 +228,12 @@ const PropertySidebar = () => {
       
       // Always update the text on canvas immediately
       dispatch(changeTextProperty({ property, value }));
+      
+      // Check for autocomplete after state update
+      if (textInputRef.current) {
+        const cursorPosition = textInputRef.current.selectionStart;
+        checkAutocomplete(value, cursorPosition);
+      }
       
       // If there's binding data in localStorage, also re-render with it
       const savedData = localStorage.getItem('api_data');
