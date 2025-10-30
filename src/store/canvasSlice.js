@@ -532,6 +532,9 @@ export const applyDataBindings = createAsyncThunk(
     const bindings = canvas.dataBindings;
     const canvasObjects = canvas.instance.getObjects();
 
+    // Store data in localStorage for immediate re-rendering when template changes
+    localStorage.setItem('api_data', JSON.stringify(data));
+
     console.log('Applying data bindings:', bindings);
     console.log('Data received:', data);
 

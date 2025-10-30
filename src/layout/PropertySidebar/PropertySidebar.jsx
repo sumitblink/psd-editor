@@ -38,7 +38,10 @@ import {
   duplicateObject,
   deleteObject,
   updateObjects,
-  selectCanvasInstance
+  selectCanvasInstance,
+  selectDataBindings,
+  setLayerDataBinding,
+  applyDataBindings
 } from '../../store/canvasSlice';
 
 const CompactNumberInput = ({ label, value, onChange, icon, suffix }) => {
@@ -142,10 +145,31 @@ const PropertySidebar = () => {
   const dispatch = useDispatch();
   const selected = useSelector(selectSelected);
   const canvas = useSelector(selectCanvasInstance);
+  const dataBindings = useSelector(selectDataBindings);
 
   const handleTextChange = (property, value) => {
     if (property === 'fontFamily') {
       dispatch(changeFontFamily(value));
+    } else if (property === 'text') {
+      // Update the binding template if this is a bound layer
+      if (dataBindings[selected.name]) {
+        dispatch(setLayerDataBinding({ layerName: selected.name, apiKey: value }));
+      }
+      
+      // Update the text on canvas
+      dispatch(changeTextProperty({ property, value }));
+      
+      // If there's binding data in localStorage, immediately re-render with it
+      const savedData = localStorage.getItem('api_data');
+      if (savedData) {
+        try {
+          const data = JSON.parse(savedData);
+          // Apply data bindings to re-render the template
+          dispatch(applyDataBindings(data));
+        } catch (error) {
+          console.error('Error applying data bindings:', error);
+        }
+      }
     } else {
       dispatch(changeTextProperty({ property, value }));
     }
@@ -472,7 +496,7 @@ const PropertySidebar = () => {
               <Text fontSize="xs" color="gray.500" mb={1}>Text</Text>
               <Input
                 size="sm"
-                value={selected.text || ''}
+                value={dataBindings[selected.name] || selected.text || ''}
                 onChange={(e) => handleTextChange('text', e.target.value)}
                 borderRadius="lg"
                 fontSize="sm"
