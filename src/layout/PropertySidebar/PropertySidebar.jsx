@@ -154,7 +154,10 @@ const PropertySidebar = () => {
       // Always update the binding template when text changes
       dispatch(setLayerDataBinding({ layerName: selected.name, apiKey: value }));
       
-      // If there's binding data in localStorage, immediately re-render with it
+      // Always update the text on canvas immediately
+      dispatch(changeTextProperty({ property, value }));
+      
+      // If there's binding data in localStorage, also re-render with it
       const savedData = localStorage.getItem('api_data');
       if (savedData) {
         try {
@@ -164,9 +167,6 @@ const PropertySidebar = () => {
         } catch (error) {
           console.error('Error applying data bindings:', error);
         }
-      } else {
-        // If no saved data, just update the text directly
-        dispatch(changeTextProperty({ property, value }));
       }
     } else {
       dispatch(changeTextProperty({ property, value }));
